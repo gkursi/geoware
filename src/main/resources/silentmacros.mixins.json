@@ -1,0 +1,31 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "xyz.qweru.geo.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ClientConnectionMixin",
+    "EntityMixin",
+    "EntityTypeMixin",
+    "LivingEntityMixin",
+    "PlayerEntityMixin"
+  ],
+  "client": [
+    "ChatInputSuggestorMixin",
+    "ClientPlayerInteractionManagerMixin",
+    "ClientPlayNetworkHandlerMixin",
+    "GameRendererMixin",
+    "InGameHudMixin",
+    "MinecraftClientMixin",
+    "MouseMixin",
+    "SessionMixin",
+    "accessor.HandledScreenAccessor",
+    "accessor.MinecraftClientAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

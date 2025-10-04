@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "silentmacros",
+  "version": "${version}",
+  "name": "silentmacros",
+  "description": "",
+  "authors": ["qweru"],
+  "contact": {},
+  "license": "GPL-3.0",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "xyz.qweru.geo.GeoWare"
+    ]
+  },
+  "mixins": [
+    "silentmacros.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "minecraft": "${minecraft_version}"
+  }
+}
