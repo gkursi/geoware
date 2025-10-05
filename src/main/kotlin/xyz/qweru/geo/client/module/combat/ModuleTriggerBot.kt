@@ -21,7 +21,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     @Handler
     private fun onTick(e: PostTickEvent) {
         if (!inGame) return
-        if (mc.crosshairTarget is EntityHitResult && timer.hasPassed()) {
+        if (mc.crosshairTarget is EntityHitResult && timer.hasPassed() && mc.currentScreen == null) {
             val en = (mc.crosshairTarget as EntityHitResult).entity
             if (!AttackHelper.canAttack(en, playerWeaponOnly)) return
             if (!mc.thePlayer.activeItem.isEmpty) {
