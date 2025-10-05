@@ -5,14 +5,12 @@ import net.minecraft.item.Items;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.qweru.multirender.api.API;
-import xyz.qweru.geo.helper.HotbarHelper;
+import xyz.qweru.geo.helper.player.HotbarHelper;
 
 import static xyz.qweru.geo.core.Glob.mc;
 

@@ -1,4 +1,4 @@
-package xyz.qweru.geo.helper
+package xyz.qweru.geo.helper.player
 
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity

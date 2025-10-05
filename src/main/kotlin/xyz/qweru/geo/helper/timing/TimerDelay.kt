@@ -1,4 +1,4 @@
-package xyz.qweru.geo.helper
+package xyz.qweru.geo.helper.timing
 
 import java.util.Random
 

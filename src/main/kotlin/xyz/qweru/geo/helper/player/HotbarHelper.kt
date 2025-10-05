@@ -1,4 +1,4 @@
-package xyz.qweru.geo.helper
+package xyz.qweru.geo.helper.player
 
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack

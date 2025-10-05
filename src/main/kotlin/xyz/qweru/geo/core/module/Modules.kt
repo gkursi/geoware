@@ -2,6 +2,7 @@ package xyz.qweru.geo.core.module
 
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
+import xyz.qweru.geo.client.module.combat.ModuleAimAssist
 import xyz.qweru.geo.client.module.combat.ModuleHitbox
 import xyz.qweru.geo.client.module.combat.ModuleReach
 import xyz.qweru.geo.client.module.combat.ModuleTriggerBot
@@ -23,6 +24,7 @@ class Modules() : System("modules") {
         add(ModuleHitbox())
         add(ModuleReach())
         add(ModuleSafeWalk())
+        add(ModuleAimAssist())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }

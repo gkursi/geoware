@@ -7,8 +7,8 @@ import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.module.Category
 import xyz.qweru.geo.core.module.Module
 import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.helper.AttackHelper
-import xyz.qweru.geo.helper.TimerDelay
+import xyz.qweru.geo.helper.player.AttackHelper
+import xyz.qweru.geo.helper.timing.TimerDelay
 import xyz.qweru.multirender.api.API
 
 class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when hovering them", Category.COMBAT) {
