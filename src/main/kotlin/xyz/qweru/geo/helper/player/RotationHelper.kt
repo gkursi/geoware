@@ -36,4 +36,9 @@ object RotationHelper {
         return angles
     }
 
+    fun gcd(): Float {
+        val f = (mc.options.mouseSensitivity.getValue() * 0.6f + 0.2f).toFloat()
+        return f * f * f * 1.2f
+    }
+
 }
