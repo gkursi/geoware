@@ -14,7 +14,7 @@ import xyz.qweru.multirender.api.API
 class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when hovering them", Category.COMBAT) {
     val sGeneral = settings.group("General")
     val playerWeaponOnly by sGeneral.boolean("Player Weapon Only", "Only attack players with a weapon", false)
-    val delay by sGeneral.delay("Delay", "Attack delay", 45L, 65L, 0L, 500L)
+    val delay by sGeneral.delay("Delay", "Attack delay", 65L, 105L, 0L, 500L)
 
     val timer = TimerDelay()
 

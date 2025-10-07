@@ -17,9 +17,9 @@ class ModuleAimAssist : Module("AimAssist", "Auto aim", Category.COMBAT) {
     val sg = settings.group("General")
     var fov by sg.int("FOV", "Field of view", 720, 0, 360)
     var range by sg.float("Range", "Range of target players", 6f, 1f, 15f)
-    val hSpeed by sg.int("H Speed", "Horizontal camera speed", 100, 0, 360)
-    val vSpeed by sg.int("H Speed", "Horizontal camera speed", 100, 0, 360)
-    val random by sg.delay("Random", "Ramdomization", -15, 55, -100, 100)
+    val hSpeed by sg.int("H Speed", "Horizontal camera speed", 80, 0, 360)
+    val vSpeed by sg.int("H Speed", "Horizontal camera speed", 80, 0, 360)
+    val random by sg.delay("Random", "Randomization", -50, 75, -100, 100)
     val weaponOnly by sg.boolean("Weapon Only", "Only aim when holding a weapon", false)
 
     val rng = Random()

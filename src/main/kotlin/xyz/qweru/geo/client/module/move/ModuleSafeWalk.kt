@@ -12,7 +12,7 @@ import xyz.qweru.geo.helper.timing.TimerDelay
 class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEMENT) {
     val sg = settings.group("General")
     var sneak by sg.boolean("Sneak", "Also sneaks", true)
-    var sneakDelay by sg.delay("Stand Delay", "Delay for un-sneaking", 150, 250, 0, 400)
+    var sneakDelay by sg.delay("Stand Delay", "Delay for un-sneaking", 50, 65, 0, 400)
         .visible { sneak }
     var minFall by sg.int("Min Fall", "Minimum possible fall distance for safewalking", 2, 1, 25)
 
