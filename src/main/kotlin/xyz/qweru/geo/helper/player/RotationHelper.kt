@@ -19,7 +19,7 @@ object RotationHelper {
         return floatArrayOf(yaw, pitch)
     }
 
-    fun get(target: Entity) = get(target.pos.add(0.0, target.height * 0.65, 0.0))
+    fun get(target: Entity) = get(target.pos.add(0.0, target.height * (if (target.y < mc.thePlayer.y) 0.45 else 0.65), 0.0))
 
     fun getAngle(target: Entity): Float {
         val current = floatArrayOf(MathHelper.wrapDegrees(mc.thePlayer.yaw), mc.thePlayer.pitch)

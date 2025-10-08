@@ -29,7 +29,7 @@ public class ClientConnectionMixin {
 
     @Unique
     private void sm_doubleHand() {
-        HotbarHelper.INSTANCE.swap(i -> i.isOf(Items.TOTEM_OF_UNDYING));
+        HotbarHelper.INSTANCE.swap(i -> i.isOf(Items.TOTEM_OF_UNDYING), 100);
         // TODO reimplement
 //        if (Config.SCROLL_SWAP) Temp.INSTANCE.setFinishTotemSwap(HotbarHelper.INSTANCE.isInMainhand(it -> it.isOf(Items.TOTEM_OF_UNDYING)));
     }
