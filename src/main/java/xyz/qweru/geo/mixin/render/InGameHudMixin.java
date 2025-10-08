@@ -1,4 +1,4 @@
-package xyz.qweru.geo.mixin;
+package xyz.qweru.geo.mixin.render;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;

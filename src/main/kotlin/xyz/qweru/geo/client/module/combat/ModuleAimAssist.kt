@@ -36,7 +36,7 @@ class ModuleAimAssist : Module("AimAssist", "Auto aim", Category.COMBAT) {
         if (weaponOnly && !HotbarHelper.isInMainhand { HotbarHelper.isSword(it.item) || it.item is AxeItem || it.isOf(Items.MACE) }) return
         if (target == null || !lock || mc.thePlayer.squaredDistanceTo(target!!) > MathHelper.square(range) || !target!!.isAlive) target =
             TargetHelper.findTarget(range, fov, invisible)
-        if (target == null) return
+        if (target == null || RotationHelper.getAngle(target!!) > fov) return
 
         val mod = rng.nextLong(random.min, random.max) / 100
         val delta = RotationHelper.getDelta(target!!)

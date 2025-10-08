@@ -1,4 +1,4 @@
-package xyz.qweru.geo.mixin;
+package xyz.qweru.geo.mixin.input;
 
 import net.minecraft.client.Mouse;
 import org.spongepowered.asm.mixin.Mixin;

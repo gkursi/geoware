@@ -1,4 +1,4 @@
-package xyz.qweru.geo.mixin;
+package xyz.qweru.geo.mixin.game;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;

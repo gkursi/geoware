@@ -7,6 +7,7 @@ import xyz.qweru.geo.client.module.combat.ModuleHitbox
 import xyz.qweru.geo.client.module.combat.ModuleReach
 import xyz.qweru.geo.client.module.combat.ModuleTriggerBot
 import xyz.qweru.geo.client.module.config.ModuleSwap
+import xyz.qweru.geo.client.module.misc.ModuleNoPackFingerprint
 import xyz.qweru.geo.client.module.move.ModuleJumpReset
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk
 import xyz.qweru.geo.client.module.player.ModuleFastUse
@@ -29,6 +30,7 @@ class Modules() : System("modules") {
         add(ModuleAimAssist())
         add(ModuleSwap())
         add(ModuleMCA())
+        add(ModuleNoPackFingerprint())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }

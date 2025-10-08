@@ -1,4 +1,4 @@
-package xyz.qweru.geo.mixin;
+package xyz.qweru.geo.mixin.game;
 
 import net.minecraft.client.session.Session;
 import org.spongepowered.asm.mixin.Final;

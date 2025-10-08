@@ -1,4 +1,4 @@
-package xyz.qweru.geo.mixin;
+package xyz.qweru.geo.mixin.game;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.brigadier.ParseResults;
@@ -15,9 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import xyz.qweru.geo.core.Glob;
-import xyz.qweru.geo.core.command.Command;
 import xyz.qweru.geo.core.command.Commands;
 
 import java.util.concurrent.CompletableFuture;

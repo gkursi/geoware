@@ -1,4 +1,4 @@
-package xyz.qweru.geo.mixin;
+package xyz.qweru.geo.mixin.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;

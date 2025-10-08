@@ -1,9 +1,7 @@
-package xyz.qweru.geo.mixin;
+package xyz.qweru.geo.mixin.entity;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xyz.qweru.geo.client.module.combat.ModuleReach;
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk;
-import xyz.qweru.geo.core.Glob;
 import xyz.qweru.geo.core.module.Modules;
 import xyz.qweru.geo.core.system.Systems;
 
