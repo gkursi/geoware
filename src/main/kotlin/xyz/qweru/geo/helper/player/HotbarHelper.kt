@@ -3,12 +3,35 @@ package xyz.qweru.geo.helper.player
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
-import org.lwjgl.glfw.GLFW
+import xyz.qweru.geo.client.event.PostTickEvent
+import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.core.Glob.mc
+import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.module.Modules
+import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.extend.thePlayer
 import java.util.function.Predicate
 
 object HotbarHelper {
+
+    private var lastSwapPriority = -1
+    private var module: ModuleSwap? = null
+        get() {
+            if (field == null) {
+                field = Systems.get(Modules::class).get(ModuleSwap::class)
+            }
+            return field
+        }
+
+    @Handler
+    private fun postTick(e: PostTickEvent) {
+        lastSwapPriority = -1
+        module = Systems.get(Modules::class).get(ModuleSwap::class)
+    }
+
+    fun isHolding(item: Predicate<ItemStack>): Boolean =
+        isInMainhand(item) || isInOffhand(item)
+
     fun isInMainhand(item: Predicate<ItemStack>): Boolean =
         item.test(getMainhand())
 
@@ -19,19 +42,20 @@ object HotbarHelper {
 
     fun getOffhand(): ItemStack = mc.thePlayer.inventory.getStack(45)
 
-    fun isSword(item: Item): Boolean
-        = item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD
+    fun isSword(item: Item): Boolean =
+        item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD
 
-    fun swap(item: Predicate<ItemStack>): Boolean {
+    fun swap(item: Item, priority: Int = 0): Boolean = swap({ it.isOf(item) }, priority)
+
+    fun swap(item: Predicate<ItemStack>, priority: Int = 0): Boolean {
         val res = find(item)
-        return res.found().also { if (it) res.swap() }
+        return res.found().also { if (it) res.swap(priority) }
     }
 
-    fun swap(slot: Int) {
+    fun swap(slot: Int, priority: Int = 0) {
         if (slot == mc.thePlayer.inventory.selectedSlot) return
-            // TODO reimplement global config
-//        if (Config.SCROLL_SWAP && slot >= Config.SCROLL_SWAP_MIN) swap0(scrollSlot(slot))
-        else swap0(slot)
+        if (module!!.scrollSwap && slot >= module!!.scrollSwapMin - 1) swap0(scrollSlot(slot), priority)
+        else swap0(slot, priority)
     }
 
     fun find(item: Predicate<ItemStack>): FindResult {
@@ -44,39 +68,19 @@ object HotbarHelper {
         return FindResult.NONE
     }
 
-    private fun swap0(slot: Int) {
-        // TODO reimplement global config
-//        if (Config.KEY_SWAP) {
-//            val key = map(slot)
-//            API.keyboardHandler.press(key)
-//            API.keyboardHandler.release(key)
-//        }
+    private fun swap0(slot: Int, priority: Int) {
+        if (priority <= lastSwapPriority) return
         mc.thePlayer.inventory.selectedSlot = slot
     }
 
     private fun scrollSlot(target: Int): Int {
         val current = mc.thePlayer.inventory.selectedSlot
         val rightDist = (target - current + 9) % 9
-        val leftDist  = (current - target + 9) % 9
+        val leftDist = (current - target + 9) % 9
 
         return when {
             rightDist <= leftDist -> (current + 1) % 9 // go right
             else -> (current + 9 - 1) % 9            // go left
-        }
-    }
-
-    fun map(slot: Int): Int {
-        return when (slot) {
-            0 -> GLFW.GLFW_KEY_1
-            1 -> GLFW.GLFW_KEY_2
-            2 -> GLFW.GLFW_KEY_3
-            3 -> GLFW.GLFW_KEY_4
-            4 -> GLFW.GLFW_KEY_5
-            5 -> GLFW.GLFW_KEY_6
-            6 -> GLFW.GLFW_KEY_7
-            7 -> GLFW.GLFW_KEY_8
-            8 -> GLFW.GLFW_KEY_9
-            else -> throw IllegalArgumentException()
         }
     }
 
@@ -88,8 +92,8 @@ object HotbarHelper {
         fun found(): Boolean =
             this != NONE
 
-        fun swap() {
-            if (found()) swap(slot)
+        fun swap(priority: Int = 0) {
+            if (found()) swap(slot, priority)
             else throw IllegalStateException("Item not found")
         }
     }
