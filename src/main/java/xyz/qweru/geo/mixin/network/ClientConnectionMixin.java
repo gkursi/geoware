@@ -2,11 +2,10 @@ package xyz.qweru.geo.mixin.network;
 
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.item.Items;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,31 +15,33 @@ import xyz.qweru.geo.client.event.PacketEvent;
 import xyz.qweru.geo.client.event.PacketReceiveEvent;
 import xyz.qweru.geo.client.event.PacketSendEvent;
 import xyz.qweru.geo.core.event.Events;
-import xyz.qweru.geo.helper.player.HotbarHelper;
 
-import static xyz.qweru.geo.core.Glob.mc;
+import java.util.Iterator;
 
 @Mixin(ClientConnection.class)
 public class ClientConnectionMixin {
 
-    @Inject(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/packet/Packet;)V", at = @At("HEAD"))
+    @Inject(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/packet/Packet;)V", at = @At("HEAD"), cancellable = true)
     private void onPacket(ChannelHandlerContext channelHandlerContext, Packet<?> packet, CallbackInfo ci) {
         if (packet instanceof BundleS2CPacket p) {
-            p.getPackets().forEach(pck -> onPacket(pck, PacketReceiveEvent.INSTANCE));
+            Iterator<Packet<? super ClientPlayPacketListener>> i = p.getPackets().iterator();
+            while (i.hasNext()) if (onPacket(i.next(), PacketReceiveEvent.INSTANCE)) i.remove();
             return;
         }
-        onPacket(packet, PacketReceiveEvent.INSTANCE);
+        if (onPacket(packet, PacketReceiveEvent.INSTANCE)) ci.cancel();
     }
 
-    @Inject(method = "sendInternal", at = @At("HEAD"))
+    @Inject(method = "sendInternal", at = @At("HEAD"), cancellable = true)
     private void onPacketSend(Packet<?> packet, ChannelFutureListener channelFutureListener, boolean flush, CallbackInfo ci) {
-        onPacket(packet, PacketSendEvent.INSTANCE);
+        if (onPacket(packet, PacketSendEvent.INSTANCE)) {
+            ci.cancel();
+        }
     }
 
     @Unique
-    private void onPacket(Packet<?> packet, PacketEvent event) {
+    private boolean onPacket(Packet<?> packet, PacketEvent event) {
         event.setPacket(packet);
-        Events.INSTANCE.post(event);
+        return Events.INSTANCE.post(event).getCancelled();
     }
 
 }
