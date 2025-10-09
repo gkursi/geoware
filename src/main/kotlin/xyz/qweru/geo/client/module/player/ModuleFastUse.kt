@@ -8,7 +8,7 @@ import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.module.Category
 import xyz.qweru.geo.core.module.Module
-import xyz.qweru.geo.helper.player.HotbarHelper
+import xyz.qweru.geo.helper.player.InvHelper
 import xyz.qweru.geo.helper.timing.TimerDelay
 import xyz.qweru.geo.mixin.accessor.MinecraftClientAccessor
 
@@ -33,8 +33,8 @@ class ModuleFastUse : Module("FastUse", "Reduce item use cooldown", Category.PLA
     }
 
     private fun isHoldingItem(): Boolean {
-        val mainStack = HotbarHelper.getMainhand()
-        val offStack = HotbarHelper.getOffhand()
+        val mainStack = InvHelper.getMainhand()
+        val offStack = InvHelper.getOffhand()
         return isValidStack(mainStack) || (mainStack.useAction == UseAction.NONE && isValidStack(offStack))
     }
 

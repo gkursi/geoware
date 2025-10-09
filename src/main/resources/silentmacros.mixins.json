@@ -4,23 +4,26 @@
   "package": "xyz.qweru.geo.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "network.ClientConnectionMixin",
+    "accessor.HorseScreenHandlerAccessor",
+    "accessor.ItemGroupsAccessor",
     "entity.EntityMixin",
     "entity.EntityTypeMixin",
     "entity.LivingEntityMixin",
-    "entity.PlayerEntityMixin"
+    "entity.PlayerEntityMixin",
+    "network.ClientConnectionMixin"
   ],
   "client": [
+    "accessor.CreativeInventoryScreenAccessor",
+    "accessor.HandledScreenAccessor",
+    "accessor.MinecraftClientAccessor",
     "game.ChatInputSuggestorMixin",
     "game.ClientPlayerInteractionManagerMixin",
+    "game.MinecraftClientMixin",
+    "game.SessionMixin",
+    "input.MouseMixin",
     "network.ClientPlayNetworkHandlerMixin",
     "render.GameRendererMixin",
-    "render.InGameHudMixin",
-    "game.MinecraftClientMixin",
-    "input.MouseMixin",
-    "game.SessionMixin",
-    "accessor.HandledScreenAccessor",
-    "accessor.MinecraftClientAccessor"
+    "render.InGameHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

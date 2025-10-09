@@ -1,5 +1,6 @@
 package xyz.qweru.geo.helper.timing
 
+import xyz.qweru.geo.client.setting.DelaySetting
 import java.util.Random
 
 class TimerDelay : Timer() {
@@ -12,4 +13,6 @@ class TimerDelay : Timer() {
         target = if (min == max) min else random.nextLong(min, max)
         reset()
     }
+
+    fun reset(delay: DelaySetting.Delay) = reset(delay.min, delay.max)
 }

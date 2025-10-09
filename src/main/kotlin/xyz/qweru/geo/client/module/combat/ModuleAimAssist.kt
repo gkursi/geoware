@@ -10,7 +10,7 @@ import xyz.qweru.geo.core.module.Category
 import xyz.qweru.geo.core.module.Module
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.helper.entity.TargetHelper
-import xyz.qweru.geo.helper.player.HotbarHelper
+import xyz.qweru.geo.helper.player.InvHelper
 import xyz.qweru.geo.helper.player.RotationHelper
 import xyz.qweru.multirender.api.API
 import xyz.qweru.multirender.impl.mixin.mixininterface.MouseInvoker
@@ -33,7 +33,7 @@ class ModuleAimAssist : Module("AimAssist", "Auto aim", Category.COMBAT) {
     @Handler
     private fun onFrame(e: GameRenderEvent) {
         if (!inGame || mc.currentScreen != null) return
-        if (weaponOnly && !HotbarHelper.isInMainhand { HotbarHelper.isSword(it.item) || it.item is AxeItem || it.isOf(Items.MACE) }) return
+        if (weaponOnly && !InvHelper.isInMainhand { InvHelper.isSword(it.item) || it.item is AxeItem || it.isOf(Items.MACE) }) return
         if (target == null || !lock || mc.thePlayer.squaredDistanceTo(target!!) > MathHelper.square(range) || !target!!.isAlive) target =
             TargetHelper.findTarget(range, fov, invisible)
         if (target == null || RotationHelper.getAngle(target!!) > fov) return

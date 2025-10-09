@@ -1,5 +1,7 @@
 package xyz.qweru.geo.helper.player
 
+import net.minecraft.entity.EquipmentSlot
+import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
@@ -12,7 +14,7 @@ import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.extend.thePlayer
 import java.util.function.Predicate
 
-object HotbarHelper {
+object InvHelper {
 
     private var lastSwapPriority = -1
     private var module: ModuleSwap? = null
@@ -23,24 +25,36 @@ object HotbarHelper {
             return field
         }
 
+    var selectedSlot: Int
+        get() = inventory.selectedSlot
+        set(value) {
+            inventory.selectedSlot = value
+        }
+
+    val inventory: PlayerInventory
+        get() = mc.thePlayer.getInventory()
+
     @Handler
     private fun postTick(e: PostTickEvent) {
         lastSwapPriority = -1
         module = Systems.get(Modules::class).get(ModuleSwap::class)
     }
 
-    fun isHolding(item: Predicate<ItemStack>): Boolean =
-        isInMainhand(item) || isInOffhand(item)
+    fun isHolding(item: Predicate<ItemStack>): Boolean = isInMainhand(item) || isInOffhand(item)
 
-    fun isInMainhand(item: Predicate<ItemStack>): Boolean =
-        item.test(getMainhand())
+    fun isHolding(item: Item): Boolean = isHolding { it.isOf(item) }
 
-    fun isInOffhand(item: Predicate<ItemStack>): Boolean =
-        item.test(getOffhand())
+    fun isInMainhand(item: Predicate<ItemStack>): Boolean = item.test(getMainhand())
 
-    fun getMainhand(): ItemStack = mc.thePlayer.inventory.getStack(mc.thePlayer.inventory.selectedSlot)
+    fun isInMainhand(item: Item): Boolean = isInMainhand { it.isOf(item) }
 
-    fun getOffhand(): ItemStack = mc.thePlayer.inventory.getStack(45)
+    fun isInOffhand(item: Predicate<ItemStack>): Boolean = item.test(getOffhand())
+
+    fun isInOffhand(item: Item): Boolean = isInOffhand { it.isOf(item) }
+
+    fun getMainhand(): ItemStack = inventory.getStack(selectedSlot)
+
+    fun getOffhand(): ItemStack = mc.thePlayer.getEquippedStack(EquipmentSlot.OFFHAND)
 
     fun isSword(item: Item): Boolean =
         item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD
@@ -53,15 +67,14 @@ object HotbarHelper {
     }
 
     fun swap(slot: Int, priority: Int = 0) {
-        if (slot == mc.thePlayer.inventory.selectedSlot) return
+        if (slot == selectedSlot) return
         if (module!!.scrollSwap && slot >= module!!.scrollSwapMin - 1) swap0(scrollSlot(slot), priority)
         else swap0(slot, priority)
     }
 
-    fun find(item: Predicate<ItemStack>): FindResult {
-        val player = mc.thePlayer
-        for (i in 0..8) {
-            if (item.test(player.inventory.getStack(i))) {
+    fun find(item: Predicate<ItemStack>, start: Int = 0, end: Int = 9): FindResult {
+        for (i in start..end - 1) {
+            if (item.test(inventory.getStack(i))) {
                 return FindResult(i)
             }
         }
@@ -70,11 +83,11 @@ object HotbarHelper {
 
     private fun swap0(slot: Int, priority: Int) {
         if (priority <= lastSwapPriority) return
-        mc.thePlayer.inventory.selectedSlot = slot
+        selectedSlot = slot
     }
 
     private fun scrollSlot(target: Int): Int {
-        val current = mc.thePlayer.inventory.selectedSlot
+        val current = inventory.selectedSlot
         val rightDist = (target - current + 9) % 9
         val leftDist = (current - target + 9) % 9
 
@@ -89,12 +102,13 @@ object HotbarHelper {
             val NONE = FindResult(-1)
         }
 
-        fun found(): Boolean =
-            this != NONE
+        fun found(): Boolean = this != NONE
 
         fun swap(priority: Int = 0) {
             if (found()) swap(slot, priority)
             else throw IllegalStateException("Item not found")
         }
+
+        fun toId(): Int = SlotHelper.indexToId(slot)
     }
 }

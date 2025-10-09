@@ -2,6 +2,7 @@ package xyz.qweru.geo
 
 import net.fabricmc.api.ModInitializer
 import xyz.qweru.geo.client.module.combat.ModuleAimAssist
+import xyz.qweru.geo.client.module.combat.ModuleAutoTotem
 import xyz.qweru.geo.client.module.combat.ModuleReach
 import xyz.qweru.geo.client.module.combat.ModuleTriggerBot
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk
@@ -11,7 +12,7 @@ import xyz.qweru.geo.core.command.Commands
 import xyz.qweru.geo.core.event.Events
 import xyz.qweru.geo.core.module.Modules
 import xyz.qweru.geo.core.system.Systems
-import xyz.qweru.geo.helper.player.HotbarHelper
+import xyz.qweru.geo.helper.player.InvHelper
 
 class GeoWare : ModInitializer {
 
@@ -22,7 +23,7 @@ class GeoWare : ModInitializer {
         Commands.register()
 
         Events.subscribe(this)
-        Events.subscribe(HotbarHelper)
+        Events.subscribe(InvHelper)
         createInputListeners()
 
         Glob.logger.info("Initialized ${Glob.mod} in ${(System.nanoTime() - i)/1000000}ms")
@@ -56,5 +57,6 @@ class GeoWare : ModInitializer {
         Systems.get(Modules::class).get(ModuleReach::class).enabled = true
         Systems.get(Modules::class).get(ModuleSafeWalk::class).enabled = true
         Systems.get(Modules::class).get(ModuleAimAssist::class).enabled = true
+        Systems.get(Modules::class).get(ModuleAutoTotem::class).enabled = true
     }
 }

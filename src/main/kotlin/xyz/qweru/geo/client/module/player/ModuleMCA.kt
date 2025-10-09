@@ -7,16 +7,19 @@ import net.minecraft.util.hit.EntityHitResult
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.module.Category
 import xyz.qweru.geo.core.module.Module
-import xyz.qweru.geo.helper.player.HotbarHelper
+import xyz.qweru.geo.extend.thePlayer
+import xyz.qweru.geo.helper.player.InvHelper
 import xyz.qweru.geo.helper.timing.TimerDelay
 import xyz.qweru.multirender.api.API
 
-class ModuleMCA : Module("MCA", "Bind actions to your middle mouse button") {
+class ModuleMCA : Module("MCA", "Bind actions to your middle mouse button", Category.PLAYER) {
     val sg = settings.group("General")
     var groundAction by sg.enum("Ground", "Action to do when middle clicking the ground", Action.PEARL)
     var airAction by sg.enum("Air", "Action to execute while middle clicking air", Action.PEARL)
     var entityAction by sg.enum("Entity", "Action to execute while middle clicking an entity", Action.PEARL)
+    var elytraFirework by sg.boolean("Elytra Rocket", "Use rockets while flying with an elytra", true)
     var delay by sg.delay("Delay", "Delay between actions", 500, 550, 0, 1000)
 
     private val timer = TimerDelay()
@@ -26,15 +29,15 @@ class ModuleMCA : Module("MCA", "Bind actions to your middle mouse button") {
     private fun onTick(e: PreTickEvent) {
         if (!inGame || (!mc.mouse.wasMiddleButtonClicked() && !doAction)) return
         if (!timer.hasPassed()) return
-        val action = when(mc.crosshairTarget) {
+        val action = when (mc.crosshairTarget) {
             is BlockHitResult -> groundAction
             is EntityHitResult -> entityAction
             null -> Action.NONE
-            else -> airAction
+            else -> if (elytraFirework && mc.thePlayer.isGliding) Action.FIREWORK else airAction
         }
         if (action == Action.NONE) return
-        HotbarHelper.swap(action.item, 0)
-        if (!HotbarHelper.isInMainhand {it.isOf(action.item)}) {
+        InvHelper.swap(action.item, 0)
+        if (!InvHelper.isInMainhand { it.isOf(action.item) }) {
             doAction = true
             return
         }
@@ -48,6 +51,8 @@ class ModuleMCA : Module("MCA", "Bind actions to your middle mouse button") {
         PEARL(Items.ENDER_PEARL),
         EXP(Items.EXPERIENCE_BOTTLE),
         POTION(Items.POTION),
+        WIND_CHARGE(Items.WIND_CHARGE),
+        FIREWORK(Items.FIREWORK_ROCKET),
         NONE(Items.AIR);
     }
 }

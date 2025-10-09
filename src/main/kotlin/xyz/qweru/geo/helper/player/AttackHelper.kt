@@ -12,9 +12,9 @@ import xyz.qweru.geo.extend.thePlayer
 object AttackHelper {
     fun canAttack(target: Entity, playerWeaponOnly: Boolean = false): Boolean {
         if (target is EndCrystalEntity) return target.isAlive
-        if (HotbarHelper.isInMainhand { st -> st.item is AxeItem } && target is LivingEntity && target.activeItem.isOf(Items.SHIELD))
+        if (InvHelper.isInMainhand { st -> st.item is AxeItem } && target is LivingEntity && target.activeItem.isOf(Items.SHIELD))
             return true
-        if (!HotbarHelper.isInMainhand { st -> HotbarHelper.isSword(st.item) || st.item is AxeItem } && target is PlayerEntity && playerWeaponOnly)
+        if (!InvHelper.isInMainhand { st -> InvHelper.isSword(st.item) || st.item is AxeItem } && target is PlayerEntity && playerWeaponOnly)
             return false
 
         return Glob.mc.thePlayer.getAttackCooldownProgress(0.5f) >= 1f

@@ -3,6 +3,8 @@ package xyz.qweru.geo.core.module
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import xyz.qweru.geo.client.module.combat.ModuleAimAssist
+import xyz.qweru.geo.client.module.combat.ModuleAutoAnchor
+import xyz.qweru.geo.client.module.combat.ModuleAutoTotem
 import xyz.qweru.geo.client.module.combat.ModuleHitbox
 import xyz.qweru.geo.client.module.combat.ModuleReach
 import xyz.qweru.geo.client.module.combat.ModuleTriggerBot
@@ -31,6 +33,8 @@ class Modules() : System("modules") {
         add(ModuleSwap())
         add(ModuleMCA())
         add(ModuleNoPackFingerprint())
+        add(ModuleAutoAnchor())
+        add(ModuleAutoTotem())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }
