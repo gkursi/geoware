@@ -32,27 +32,13 @@ public class HeldItemRendererMixin {
     @Unique
     ModuleViewModel viewModel = null;
 
-    @ModifyExpressionValue(
-            method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F",
-                    ordinal = 0
-            )
-    )
+    @ModifyExpressionValue(method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F", ordinal = 0))
     private float removeLerpPitch(float original, @Local(argsOnly = true) ClientPlayerEntity player, @Local(argsOnly = true) float td) {
         viewModel = Systems.Companion.get(Modules.class).get(ModuleViewModel.class);
         return viewModel.getEnabled() && !viewModel.getHandInterp() ? player.getPitch(td) : original;
     }
 
-    @ModifyExpressionValue(
-            method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F",
-                    ordinal = 1
-            )
-    )
+    @ModifyExpressionValue(method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F", ordinal = 1))
     private float removeLerpYaw(float original, @Local(argsOnly = true) ClientPlayerEntity player, @Local(argsOnly = true) float td) {
         return viewModel.getEnabled() && !viewModel.getHandInterp() ? player.getYaw(td) : original;
     }
@@ -107,10 +93,28 @@ public class HeldItemRendererMixin {
     }
 
     @ModifyArgs(method = "applyEatOrDrinkTransformation", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V", ordinal = 1))
-    private void modifyArgs(Args args, @Local(ordinal = 3) float progress, @Local int arm) {
+    private void changePos(Args args, @Local(ordinal = 3) float progress, @Local int arm) {
         if (!viewModel.getEnabled()) return;
         args.set(0, viewModel.getEatX() * progress * arm);
         args.set(1, viewModel.getEatY() * progress);
         args.set(2, viewModel.getEatZ() * progress);
+    }
+
+    @ModifyArgs(method = "applyEatOrDrinkTransformation", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/RotationAxis;rotationDegrees(F)Lorg/joml/Quaternionf;", ordinal = 0))
+    private void changeDegY(Args args, @Local(ordinal = 3) float progress, @Local int arm) {
+        if (!viewModel.getEnabled()) return;
+        args.set(0, viewModel.getEatRY() * arm * progress);
+    }
+
+    @ModifyArgs(method = "applyEatOrDrinkTransformation", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/RotationAxis;rotationDegrees(F)Lorg/joml/Quaternionf;", ordinal = 1))
+    private void changeDegX(Args args, @Local(ordinal = 3) float progress, @Local int arm) {
+        if (!viewModel.getEnabled()) return;
+        args.set(0, viewModel.getEatRX() * progress);
+    }
+
+    @ModifyArgs(method = "applyEatOrDrinkTransformation", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/RotationAxis;rotationDegrees(F)Lorg/joml/Quaternionf;", ordinal = 2))
+    private void changeDegZ(Args args, @Local(ordinal = 3) float progress, @Local int arm) {
+        if (!viewModel.getEnabled()) return;
+        args.set(0, viewModel.getEatRZ() * arm * progress);
     }
 }

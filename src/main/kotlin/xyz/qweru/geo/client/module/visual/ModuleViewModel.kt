@@ -56,4 +56,5 @@ class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VI
         else vec(offX, offY, offZ)
 
     private fun vec(x: Float, y: Float, z: Float): Vector3f = Vector3f(x, y, z)
+
 }

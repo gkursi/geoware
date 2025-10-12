@@ -22,7 +22,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val playerWeaponOnly by sGeneral.boolean("Player Weapon Only", "Only attack players with a weapon", true)
     val delay by sGeneral.longRange("Delay", "Attack delay", 55L..100L, 0L..500L)
     val miss by sGeneral.float("Miss%", "Chance of missing an attack", 0.1f, 0f, 0.9f)
-    val awaitCrit by sGeneral.boolean("Await Crit", "Don't attack if a crit is possible", true)
+    val awaitCrit by sGeneral.boolean("Await Crit", "Don't attack if a crit is possible", false)
     val awaitJump by sGeneral.boolean("Await Jump", "Don't attack before the jump cooldown is over", true).visible { awaitCrit }
     val itemCooldown by sGeneral.float("Cooldown", "Vanilla item cooldown required to attack", 0.9f, 0f, 1f)
 
