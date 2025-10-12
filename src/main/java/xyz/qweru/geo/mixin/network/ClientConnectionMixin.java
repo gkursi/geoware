@@ -31,7 +31,7 @@ public class ClientConnectionMixin {
         if (onPacket(packet, PacketReceiveEvent.INSTANCE)) ci.cancel();
     }
 
-    @Inject(method = "sendInternal", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "sendImmediately", at = @At("HEAD"), cancellable = true)
     private void onPacketSend(Packet<?> packet, ChannelFutureListener channelFutureListener, boolean flush, CallbackInfo ci) {
         if (onPacket(packet, PacketSendEvent.INSTANCE)) {
             ci.cancel();

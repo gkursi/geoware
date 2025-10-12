@@ -1,25 +1,29 @@
-package xyz.qweru.geo.core.setting
+package xyz.qweru.geo.core.system.setting
 
 import com.google.gson.JsonObject
 import kotlin.reflect.KProperty
 
 @Suppress("UNCHECKED_CAST")
 abstract class Setting<T : Setting<T, V>, V>(val name: String, val description: String, val default: V, val group: SettingGroup) {
-    var changeListener: (V) -> Unit = {}
-    var visibleProvider: () -> Boolean = {true}
+    private var changeListener: (T) -> Unit = {}
+    private var visibleProvider: () -> Boolean = {true}
+
+    val visible: Boolean
+        get() = visibleProvider.invoke()
 
     var value: V = default
         set(value) {
             field = value
-            changeListener.invoke(value)
+            changeListener.invoke(this as T)
         }
 
-    fun onChange(listener: (V) -> Unit): T {
+    fun onChange(listener: (T) -> Unit): T {
         changeListener = listener
         return this as T
     }
 
     fun visible(provider: () -> Boolean): T {
+        visibleProvider = provider
         return this as T
     }
 

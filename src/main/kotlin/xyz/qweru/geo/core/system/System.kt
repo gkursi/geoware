@@ -55,7 +55,6 @@ abstract class System(val name: String) {
     open fun init() {
         sub.clear()
         initThis()
-        if (firstInit) Events.subscribe(this)
         firstInit = false
     }
 

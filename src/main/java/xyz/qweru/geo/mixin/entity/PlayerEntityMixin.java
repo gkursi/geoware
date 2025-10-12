@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xyz.qweru.geo.client.module.combat.ModuleReach;
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk;
-import xyz.qweru.geo.core.module.Modules;
+import xyz.qweru.geo.core.system.module.Modules;
 import xyz.qweru.geo.core.system.Systems;
 
 @Mixin(PlayerEntity.class)

@@ -12,22 +12,22 @@ import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PlaceBlockEvent
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.client.setting.DelaySetting
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.module.Category
-import xyz.qweru.geo.core.module.Module
+import xyz.qweru.geo.core.system.module.Category
+import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.theWorld
 import xyz.qweru.geo.helper.player.InvHelper
 import xyz.qweru.geo.helper.timing.TimerDelay
 import xyz.qweru.multirender.api.API
 
-class ModuleAutoAnchor : Module("AutoAnchor", "Automatically place and break anchors", Category.COMBAT) {
+class ModuleAnchorMacro : Module("AnchorMacro", "Automatically place and break anchors", Category.COMBAT) {
     val sa = settings.group("Actions")
     val fillAnchor by sa.boolean("Fill", "Place anchor", true)
-    val fillDelay by sa.delay("Fill Delay", "Delay for filling", 0, 5, 0, 500)
+    val fillDelay by sa.longRange("Fill Delay", "Delay for filling", 0L..5, 0L..500L)
     val breakAnchor by sa.boolean("Break", "Break anchor", true)
-    val breakDelay by sa.delay("Break Delay", "Delay for breaking", 0, 5, 0, 500)
+    val breakDelay by sa.longRange("Break Delay", "Delay for breaking", 0L..5, 0L..500L)
     val onlyOwn by sa.boolean("Only Own", "Only break anchors placed by you", true)
+    val replace by sa.boolean("Replace", "Replace broken anchors", true)
 
     private val fillTimer = TimerDelay()
     private val breakTimer = TimerDelay()
@@ -69,12 +69,12 @@ class ModuleAutoAnchor : Module("AutoAnchor", "Automatically place and break anc
         brokenAnchors.remove(packet.pos)
     }
 
-    private fun place(item: Item, timer: TimerDelay, delay: DelaySetting.Delay) {
+    private fun place(item: Item, timer: TimerDelay, delay: LongRange) {
         if (!fillAnchor) return
         if (!InvHelper.isInMainhand(item)) {
             initSlot = InvHelper.selectedSlot
             InvHelper.swap(item, 50)
-            timer.reset(delay.min, delay.max)
+            timer.reset(delay)
             return
         }
         if (!timer.hasPassed()) return
@@ -89,7 +89,7 @@ class ModuleAutoAnchor : Module("AutoAnchor", "Automatically place and break anc
             if (initSlot == -1) InvHelper.swap({ !it.isOf(Items.GLOWSTONE) }, 50)
             else InvHelper.swap(initSlot, 50)
             if (InvHelper.selectedSlot == initSlot) initSlot = -1
-            breakTimer.reset(breakDelay.min, breakDelay.max)
+            breakTimer.reset(breakDelay)
             return
         }
         if (!breakTimer.hasPassed()) return

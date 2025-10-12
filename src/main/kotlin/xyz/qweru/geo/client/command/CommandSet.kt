@@ -7,8 +7,8 @@ import com.mojang.brigadier.exceptions.BuiltInExceptions
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import net.minecraft.client.network.ClientCommandSource
 import xyz.qweru.geo.core.command.Command
-import xyz.qweru.geo.core.module.Module
-import xyz.qweru.geo.core.module.Modules
+import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.module.Modules
 import xyz.qweru.geo.core.system.Systems
 import java.util.concurrent.CompletableFuture
 

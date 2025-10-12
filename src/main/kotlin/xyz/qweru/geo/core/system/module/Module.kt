@@ -1,9 +1,9 @@
-package xyz.qweru.geo.core.module
+package xyz.qweru.geo.core.system.module
 
 import com.google.gson.JsonObject
 import xyz.qweru.geo.core.Glob
 import xyz.qweru.geo.core.event.Events
-import xyz.qweru.geo.core.setting.Settings
+import xyz.qweru.geo.core.system.setting.Settings
 import xyz.qweru.geo.core.system.System
 
 abstract class Module(name: String, val description: String = "$name module", val category: Category = Category.MISC,
@@ -18,10 +18,12 @@ abstract class Module(name: String, val description: String = "$name module", va
             if (field != prev) {
                 if (field) {
                     Events.subscribe(this)
+                    println("Subscribed $name")
                     enable()
                 }
                 else {
                     Events.unsubscribe(this)
+                    println("Unsubscribed $name")
                     disable()
                 }
             }

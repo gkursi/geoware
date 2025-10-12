@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.setting
+package xyz.qweru.geo.core.system.setting
 
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList

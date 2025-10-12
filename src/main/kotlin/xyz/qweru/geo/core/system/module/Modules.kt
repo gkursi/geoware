@@ -1,19 +1,20 @@
-package xyz.qweru.geo.core.module
+package xyz.qweru.geo.core.system.module
 
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import xyz.qweru.geo.client.module.combat.ModuleAimAssist
-import xyz.qweru.geo.client.module.combat.ModuleAutoAnchor
+import xyz.qweru.geo.client.module.combat.ModuleAnchorMacro
 import xyz.qweru.geo.client.module.combat.ModuleAutoTotem
 import xyz.qweru.geo.client.module.combat.ModuleHitbox
 import xyz.qweru.geo.client.module.combat.ModuleReach
 import xyz.qweru.geo.client.module.combat.ModuleTriggerBot
 import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.client.module.misc.ModuleNoPackFingerprint
-import xyz.qweru.geo.client.module.move.ModuleJumpReset
+import xyz.qweru.geo.client.module.move.ModuleVelocity
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk
 import xyz.qweru.geo.client.module.player.ModuleFastUse
 import xyz.qweru.geo.client.module.player.ModuleMCA
+import xyz.qweru.geo.client.module.visual.ModuleViewModel
 import xyz.qweru.geo.core.system.System
 
 class Modules() : System("modules") {
@@ -24,7 +25,7 @@ class Modules() : System("modules") {
         sorted.clear()
 
         add(ModuleFastUse())
-        add(ModuleJumpReset())
+        add(ModuleVelocity())
         add(ModuleTriggerBot())
         add(ModuleHitbox())
         add(ModuleReach())
@@ -33,8 +34,9 @@ class Modules() : System("modules") {
         add(ModuleSwap())
         add(ModuleMCA())
         add(ModuleNoPackFingerprint())
-        add(ModuleAutoAnchor())
+        add(ModuleAnchorMacro())
         add(ModuleAutoTotem())
+        add(ModuleViewModel())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }

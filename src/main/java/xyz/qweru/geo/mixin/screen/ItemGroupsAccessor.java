@@ -1,4 +1,4 @@
-package xyz.qweru.geo.mixin.accessor;
+package xyz.qweru.geo.mixin.screen;
 
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;

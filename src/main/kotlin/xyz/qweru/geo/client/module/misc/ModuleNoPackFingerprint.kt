@@ -5,8 +5,8 @@ import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket
 import net.minecraft.text.Text
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.module.Category
-import xyz.qweru.geo.core.module.Module
+import xyz.qweru.geo.core.system.module.Category
+import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.thePlayer
 
 class ModuleNoPackFingerprint : Module("NoFingerprint", "Prevents the server from fingerprinting the client", Category.MISC) {

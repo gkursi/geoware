@@ -1,7 +1,7 @@
 package xyz.qweru.geo.client.module.combat
 
-import xyz.qweru.geo.core.module.Category
-import xyz.qweru.geo.core.module.Module
+import xyz.qweru.geo.core.system.module.Category
+import xyz.qweru.geo.core.system.module.Module
 
 class ModuleHitbox : Module("Hitbox", "Expand player hitboxes", Category.COMBAT) {
     val sGeneral = settings.group("General")

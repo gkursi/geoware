@@ -6,17 +6,17 @@ import net.minecraft.item.Items
 import net.minecraft.item.consume.UseAction
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.module.Category
-import xyz.qweru.geo.core.module.Module
+import xyz.qweru.geo.core.system.module.Category
+import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.helper.player.InvHelper
 import xyz.qweru.geo.helper.timing.TimerDelay
-import xyz.qweru.geo.mixin.accessor.MinecraftClientAccessor
+import xyz.qweru.geo.mixin.game.MinecraftClientAccessor
 
 class ModuleFastUse : Module("FastUse", "Reduce item use cooldown", Category.PLAYER) {
     private val sGeneral = settings.group("General")
     private val sTargets = settings.group("Target")
 
-    private val delay by sGeneral.delay("Delay", "Use delay", 35L, 85L, 0L, 500L)
+    private val delay by sGeneral.longRange("Delay", "Use delay", 35L..85L, 0L..500L)
 
     private var crystals by sTargets.boolean("Crystals", "Fast-use crystals", true)
     private var blocks by sTargets.boolean("Blocks", "Fast-use blocks", true)
@@ -27,8 +27,8 @@ class ModuleFastUse : Module("FastUse", "Reduce item use cooldown", Category.PLA
     @Handler
     private fun onTick(e: PreTickEvent) {
         if (inGame && isHoldingItem() && timer.hasPassed()) {
-            (mc as MinecraftClientAccessor).setItemUseCooldown(0)
-            timer.reset(delay.min, delay.max)
+            (mc as MinecraftClientAccessor).geo_setItemUseCooldown(0)
+            timer.reset(delay)
         }
     }
 

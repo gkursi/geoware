@@ -7,8 +7,8 @@ import net.minecraft.util.hit.EntityHitResult
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.module.Category
-import xyz.qweru.geo.core.module.Module
+import xyz.qweru.geo.core.system.module.Category
+import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.helper.player.InvHelper
 import xyz.qweru.geo.helper.timing.TimerDelay
@@ -20,7 +20,7 @@ class ModuleMCA : Module("MCA", "Bind actions to your middle mouse button", Cate
     var airAction by sg.enum("Air", "Action to execute while middle clicking air", Action.PEARL)
     var entityAction by sg.enum("Entity", "Action to execute while middle clicking an entity", Action.PEARL)
     var elytraFirework by sg.boolean("Elytra Rocket", "Use rockets while flying with an elytra", true)
-    var delay by sg.delay("Delay", "Delay between actions", 500, 550, 0, 1000)
+    var delay by sg.longRange("Delay", "Delay between actions", 500L..550L, 0L..1000L)
 
     private val timer = TimerDelay()
     private var doAction = false // if scroll-swapping is enabled, this might take multiple ticks
@@ -29,22 +29,21 @@ class ModuleMCA : Module("MCA", "Bind actions to your middle mouse button", Cate
     private fun onTick(e: PreTickEvent) {
         if (!inGame || (!mc.mouse.wasMiddleButtonClicked() && !doAction)) return
         if (!timer.hasPassed()) return
-        val action = when (mc.crosshairTarget) {
+        val action = if (elytraFirework && mc.thePlayer.isGliding) Action.FIREWORK else when (mc.crosshairTarget) {
             is BlockHitResult -> groundAction
             is EntityHitResult -> entityAction
-            null -> Action.NONE
-            else -> if (elytraFirework && mc.thePlayer.isGliding) Action.FIREWORK else airAction
+            else -> airAction
         }
         if (action == Action.NONE) return
         InvHelper.swap(action.item, 0)
-        if (!InvHelper.isInMainhand { it.isOf(action.item) }) {
+        if (!InvHelper.isInMainhand { it.isOf(action.item) } && InvHelper.find({it.isOf(action.item)}).found()) {
             doAction = true
             return
         }
         API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_2)
         API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_2)
         doAction = false
-        timer.reset(delay.min, delay.max)
+        timer.reset(delay)
     }
 
     enum class Action(val item: Item) {

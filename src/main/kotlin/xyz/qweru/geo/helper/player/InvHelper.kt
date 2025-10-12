@@ -9,7 +9,7 @@ import xyz.qweru.geo.client.event.PostTickEvent
 import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.core.Glob.mc
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.module.Modules
+import xyz.qweru.geo.core.system.module.Modules
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.extend.thePlayer
 import java.util.function.Predicate

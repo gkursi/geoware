@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
 import xyz.qweru.geo.core.Glob.mc
-import xyz.qweru.geo.core.friend.Friends
+import xyz.qweru.geo.core.system.friend.Friends
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.extend.theWorld

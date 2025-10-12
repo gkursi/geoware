@@ -10,7 +10,8 @@ import xyz.qweru.geo.client.module.player.ModuleFastUse
 import xyz.qweru.geo.core.Glob
 import xyz.qweru.geo.core.command.Commands
 import xyz.qweru.geo.core.event.Events
-import xyz.qweru.geo.core.module.Modules
+import xyz.qweru.geo.core.manager.Managers
+import xyz.qweru.geo.core.system.module.Modules
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.helper.player.InvHelper
 
@@ -21,9 +22,8 @@ class GeoWare : ModInitializer {
 
         Systems.init()
         Commands.register()
-
+        Managers.init()
         Events.subscribe(this)
-        Events.subscribe(InvHelper)
         createInputListeners()
 
         Glob.logger.info("Initialized ${Glob.mod} in ${(System.nanoTime() - i)/1000000}ms")

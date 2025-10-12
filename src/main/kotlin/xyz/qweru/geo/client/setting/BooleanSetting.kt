@@ -1,8 +1,8 @@
 package xyz.qweru.geo.client.setting
 
 import com.google.gson.JsonObject
-import xyz.qweru.geo.core.setting.Setting
-import xyz.qweru.geo.core.setting.SettingGroup
+import xyz.qweru.geo.core.system.setting.Setting
+import xyz.qweru.geo.core.system.setting.SettingGroup
 
 class BooleanSetting(name: String, description: String, default: Boolean, group: SettingGroup) : Setting<BooleanSetting, Boolean>(
     name,

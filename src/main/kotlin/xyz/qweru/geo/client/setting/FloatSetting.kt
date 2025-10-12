@@ -1,8 +1,8 @@
 package xyz.qweru.geo.client.setting
 
 import com.google.gson.JsonObject
-import xyz.qweru.geo.core.setting.Setting
-import xyz.qweru.geo.core.setting.SettingGroup
+import xyz.qweru.geo.core.system.setting.Setting
+import xyz.qweru.geo.core.system.setting.SettingGroup
 
 class FloatSetting(name: String, description: String, default: Float, group: SettingGroup,
                    val min: Float, val max: Float)

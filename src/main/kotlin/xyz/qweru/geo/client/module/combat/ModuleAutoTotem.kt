@@ -8,13 +8,13 @@ import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.module.Category
-import xyz.qweru.geo.core.module.Module
+import xyz.qweru.geo.core.system.module.Category
+import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.extend.theWorld
 import xyz.qweru.geo.helper.player.InvHelper
 import xyz.qweru.geo.helper.timing.TimerDelay
-import xyz.qweru.geo.mixin.accessor.HandledScreenAccessor
+import xyz.qweru.geo.mixin.screen.HandledScreenAccessor
 import xyz.qweru.multirender.api.API
 
 class ModuleAutoTotem : Module("AutoTotem", "Automatically use totems", Category.COMBAT) {
@@ -24,16 +24,16 @@ class ModuleAutoTotem : Module("AutoTotem", "Automatically use totems", Category
 //    var silent by sg.boolean("Silent Inv", "Open inventory silently", false)
 
     var openInv by sg.boolean("Open Inv", "Opens the inventory on pop", true)
-    var openDelay by sg.delay("Open Delay", "How long to wait before opening the inventory", 100, 150, 0, 500)
+    var openDelay by sg.longRange("Open Delay", "How long to wait before opening the inventory", 0L..10L, 0L..500L)
     var autoSwap by sg.boolean("Auto Swap", "Swap automatically", true)
-    var swapTime by sg.delay("Swap Delay", "How long to hover a totem before offhanding", 400, 500, 0, 1000)
+    var swapTime by sg.longRange("Swap Delay", "How long to hover a totem before offhanding", 10L..50L, 0L..1000L)
     var swapMode by sg.enum("Swap Mode", "Mode for triggering swap", Mode.Packet)
     var closeInv by sg.boolean("Close Inv", "Closes the inventory after equipping a totem", true)
-    var closeDelay by sg.delay("Open Delay", "How long to wait before closing the inventory", 100, 150, 0, 500)
+    var closeDelay by sg.longRange("Open Delay", "How long to wait before closing the inventory", 0L..10L, 0L..500L)
 
     var doubleHand by sdh.boolean("Double-hand", "Auto double-hand on pop", true)
     var instantDh by sdh.boolean("DH Instant", "Instantly trigger double-hand", true)
-    var dhDelay by sdh.delay("DH Delay", "Double hand delay", 0, 50, 0, 500).visible { !instantDh }
+    var dhDelay by sdh.longRange("DH Delay", "Double hand delay", 0L..50L, 0L..500L).visible { !instantDh }
     var pauseScreen by sdh.boolean("DH Pause Screen", "Pause double hand on screen", false)
 
     private var finishSwap = false
@@ -97,7 +97,7 @@ class ModuleAutoTotem : Module("AutoTotem", "Automatically use totems", Category
     }
 
     private fun hoverSwap() {
-        val slot = (mc.currentScreen as HandledScreenAccessor).sm_getFocusedSlot()
+        val slot = (mc.currentScreen as HandledScreenAccessor).geo_getFocusedSlot()
         if (slot == null) return
         val stack = slot.stack
         if (!stack.isOf(Items.TOTEM_OF_UNDYING)) return

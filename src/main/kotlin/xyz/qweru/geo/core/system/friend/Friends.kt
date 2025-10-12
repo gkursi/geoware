@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.friend
+package xyz.qweru.geo.core.system.friend
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject

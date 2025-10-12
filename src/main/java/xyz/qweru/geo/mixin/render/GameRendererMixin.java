@@ -2,13 +2,19 @@ package xyz.qweru.geo.mixin.render;
 
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.client.event.GameRenderEvent;
 import xyz.qweru.geo.client.event.WorldRenderEvent;
+import xyz.qweru.geo.client.module.visual.ModuleViewModel;
 import xyz.qweru.geo.core.event.Events;
+import xyz.qweru.geo.core.system.Systems;
+import xyz.qweru.geo.core.system.module.Modules;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
@@ -21,6 +27,19 @@ public class GameRendererMixin {
     @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;shouldRenderCrosshair()Z"))
     private void onWorldRender(RenderTickCounter renderTickCounter, CallbackInfo ci) {
         Events.INSTANCE.post(WorldRenderEvent.INSTANCE);
+    }
+
+    @Unique
+    ModuleViewModel viewModel = null;
+
+    @Inject(method = "renderHand", at = @At("HEAD"))
+    private void renderHand(float tickProgress, boolean sleeping, Matrix4f positionMatrix, CallbackInfo ci) {
+        viewModel = Systems.Companion.get(Modules.class).get(ModuleViewModel.class);
+    }
+
+    @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
+    private void bobView(MatrixStack matrices, float tickProgress, CallbackInfo ci) {
+        if (viewModel.getEnabled() && !viewModel.getHandSway()) ci.cancel();
     }
 
 }

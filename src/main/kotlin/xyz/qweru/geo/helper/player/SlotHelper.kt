@@ -9,9 +9,9 @@ import net.minecraft.registry.Registries
 import net.minecraft.screen.*
 import xyz.qweru.geo.core.Glob.mc
 import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.mixin.accessor.CreativeInventoryScreenAccessor
-import xyz.qweru.geo.mixin.accessor.HorseScreenHandlerAccessor
-import xyz.qweru.geo.mixin.accessor.ItemGroupsAccessor
+import xyz.qweru.geo.mixin.screen.CreativeInventoryScreenAccessor
+import xyz.qweru.geo.mixin.screen.HorseScreenHandlerAccessor
+import xyz.qweru.geo.mixin.screen.ItemGroupsAccessor
 
 
 object SlotHelper {

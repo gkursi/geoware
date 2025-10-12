@@ -2,8 +2,8 @@ package xyz.qweru.geo.core.system
 
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ReferenceCollection
-import xyz.qweru.geo.core.friend.Friends
-import xyz.qweru.geo.core.module.Modules
+import xyz.qweru.geo.core.system.friend.Friends
+import xyz.qweru.geo.core.system.module.Modules
 import kotlin.reflect.KClass
 
 /**

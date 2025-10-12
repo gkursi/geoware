@@ -3,8 +3,8 @@ package xyz.qweru.geo.client.module.move
 import net.minecraft.util.PlayerInput
 import xyz.qweru.geo.client.event.PostTickEvent
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.module.Category
-import xyz.qweru.geo.core.module.Module
+import xyz.qweru.geo.core.system.module.Category
+import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.extend.theWorld
 import xyz.qweru.geo.helper.timing.TimerDelay
@@ -12,7 +12,7 @@ import xyz.qweru.geo.helper.timing.TimerDelay
 class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEMENT) {
     val sg = settings.group("General")
     var sneak by sg.boolean("Sneak", "Also sneaks", true)
-    var sneakDelay by sg.delay("Stand Delay", "Delay for un-sneaking", 50, 65, 0, 400)
+    var sneakDelay by sg.longRange("Stand Delay", "Delay for un-sneaking", 50L..65L, 0L..400L)
         .visible { sneak }
     var minFall by sg.int("Min Fall", "Minimum possible fall distance for safewalking", 2, 1, 25)
 
@@ -27,7 +27,7 @@ class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEM
                 mc.options.sneakKey.isPressed = true
                 mc.thePlayer.input.playerInput = PlayerInput(input.forward(), input.backward(), input.left(), input.right(), input.jump(), true, input.sprint())
                 wasSneaking = true
-                timer.reset(sneakDelay.min, sneakDelay.max)
+                timer.reset(sneakDelay)
             } else if (wasSneaking) {
                 if (timer.hasPassed()) {
                     mc.options.sneakKey.isPressed = false

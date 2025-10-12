@@ -1,8 +1,8 @@
 package xyz.qweru.geo.client.setting
 
 import com.google.gson.JsonObject
-import xyz.qweru.geo.core.setting.Setting
-import xyz.qweru.geo.core.setting.SettingGroup
+import xyz.qweru.geo.core.system.setting.Setting
+import xyz.qweru.geo.core.system.setting.SettingGroup
 
 class IntSetting(name: String, description: String, default: Int, group: SettingGroup,
                  val min: Int, val max: Int)

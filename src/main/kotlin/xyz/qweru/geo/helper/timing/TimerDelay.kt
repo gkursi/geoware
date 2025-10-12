@@ -1,6 +1,6 @@
 package xyz.qweru.geo.helper.timing
 
-import xyz.qweru.geo.client.setting.DelaySetting
+import xyz.qweru.geo.client.setting.LongRangeSetting
 import java.util.Random
 
 class TimerDelay : Timer() {
@@ -14,5 +14,5 @@ class TimerDelay : Timer() {
         reset()
     }
 
-    fun reset(delay: DelaySetting.Delay) = reset(delay.min, delay.max)
+    fun reset(delay: LongRange) = reset(delay.start, delay.endInclusive + 1L)
 }
