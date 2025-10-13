@@ -4,6 +4,7 @@ import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.hit.HitResult
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PostTickEvent
+import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
@@ -25,6 +26,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val awaitCrit by sGeneral.boolean("Await Crit", "Don't attack if a crit is possible", false)
     val awaitJump by sGeneral.boolean("Await Jump", "Don't attack before the jump cooldown is over", true).visible { awaitCrit }
     val itemCooldown by sGeneral.float("Cooldown", "Vanilla item cooldown required to attack", 0.9f, 0f, 1f)
+    val sprintReset by sGeneral.boolean("Sprint Reset", "Automatically resets sprint on hit", true)
 
     val failAttack by sFailAttack.boolean("Fail Attack", "Try to attack (and fail) if the target is slightly out of reach", true)
     val failReach by sFailAttack.float("Fail Reach", "Extra reach for failing", 0.25f, 0.01f, 1f)
@@ -38,9 +40,12 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         if (!inGame || mc.currentScreen != null || !timer.hasPassed()) return
         if (mc.crosshairTarget is EntityHitResult) {
             val en = (mc.crosshairTarget as EntityHitResult).entity
+
             if (!AttackHelper.canAttack(en, playerWeaponOnly, cooldown = itemCooldown)) return
             if (!mc.thePlayer.activeItem.isEmpty) return
             if (awaitCrit && AttackHelper.willCrit(awaitJump = awaitJump) && !AttackHelper.canCrit()) return
+            else if (sprintReset) ModuleSprint.reset()
+
             if (random.nextFloat() > miss) {
                 API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_1)
                 API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_1)
@@ -50,6 +55,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
             if (random.nextFloat() > failChance) return
             val hit = mc.theWorld.target(mc.thePlayer.entityInteractionRange + failReach)
             if (hit !is EntityHitResult) return
+            
             API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_1)
             API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_1)
             timer.reset(delay)

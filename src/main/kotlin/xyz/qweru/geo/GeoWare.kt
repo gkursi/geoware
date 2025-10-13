@@ -7,6 +7,7 @@ import xyz.qweru.geo.client.module.combat.ModuleAutoTotem
 import xyz.qweru.geo.client.module.combat.ModuleReach
 import xyz.qweru.geo.client.module.combat.ModuleTriggerBot
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk
+import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.client.module.move.ModuleVelocity
 import xyz.qweru.geo.client.module.player.ModuleFastUse
 import xyz.qweru.geo.client.module.player.ModuleMCA
@@ -68,5 +69,6 @@ class GeoWare : ModInitializer {
         Systems.get(Modules::class).get(ModuleViewModel::class).enabled = true
         Systems.get(Modules::class).get(ModuleAnchorMacro::class).enabled = true
         Systems.get(Modules::class).get(ModuleMCA::class).enabled = true
+        Systems.get(Modules::class).get(ModuleSprint::class).enabled = true
     }
 }

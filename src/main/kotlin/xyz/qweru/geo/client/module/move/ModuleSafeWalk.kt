@@ -12,7 +12,7 @@ import xyz.qweru.geo.helper.timing.TimerDelay
 class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEMENT) {
     val sg = settings.group("General")
     var sneak by sg.boolean("Sneak", "Also sneaks", true)
-    var sneakDelay by sg.longRange("Stand Delay", "Delay for un-sneaking", 50L..65L, 0L..400L)
+    var standDelay by sg.longRange("Stand Delay", "Delay for un-sneaking", 50L..65L, 0L..400L)
         .visible { sneak }
     var minFall by sg.int("Min Fall", "Minimum possible fall distance for safewalking", 2, 1, 25)
     var minPitch by sg.int("Min Pitch", "Min pitch for safewalking (90 - straight down, -90 - straight up)", 35, -90, 90)
@@ -28,7 +28,7 @@ class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEM
                 mc.options.sneakKey.isPressed = true
                 mc.thePlayer.input.playerInput = PlayerInput(input.forward(), input.backward(), input.left(), input.right(), input.jump(), true, input.sprint())
                 wasSneaking = true
-                timer.reset(sneakDelay)
+                timer.reset(standDelay)
             } else if (wasSneaking) {
                 if (timer.hasPassed()) {
                     mc.options.sneakKey.isPressed = false

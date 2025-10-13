@@ -6,6 +6,7 @@ import xyz.qweru.geo.client.setting.EnumSetting
 import xyz.qweru.geo.client.setting.FloatSetting
 import xyz.qweru.geo.client.setting.IntSetting
 
+// todo: maybe move setting storage to groups instead of the main setting object for easier display in the gui
 class SettingGroup(val name: String, val parent: Settings, private var visibleProvider: () -> Boolean = {true}) {
     val visible: Boolean
         get() = visibleProvider.invoke()
