@@ -2,6 +2,7 @@ package xyz.qweru.geo.core.manager
 
 import xyz.qweru.geo.core.event.Events
 import xyz.qweru.geo.core.manager.ticking.MovementTicker
+import xyz.qweru.geo.helper.entity.TargetHelper
 import xyz.qweru.geo.helper.player.InvHelper
 
 /**
@@ -12,6 +13,7 @@ object Managers {
     fun init() {
         manage(MovementTicker)
         manage(InvHelper)
+        manage(TargetHelper)
     }
 
     private fun manage(o: Any) {

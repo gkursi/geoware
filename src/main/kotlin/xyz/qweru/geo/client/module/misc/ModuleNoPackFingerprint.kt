@@ -21,9 +21,9 @@ class ModuleNoPackFingerprint : Module("NoFingerprint", "Prevents the server fro
     @Handler
     private fun onPacketSend(e: PacketSendEvent) {
         if (e.packet is ResourcePackStatusC2SPacket) {
-            val pack = e.packet as ResourcePackStatusC2SPacket
-            if (pack.status == ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD) {
-                e.cancelled = true
+            val packet = e.packet as ResourcePackStatusC2SPacket
+            if (packet.status == ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED) {
+                e.cancelled = true // not the best way, but works
                 if (disconnect && inGame) mc.thePlayer.networkHandler.onDisconnected(info)
             }
         }

@@ -44,7 +44,7 @@ public abstract class PlayerEntityMixin {
     private void setClipAtLedge(CallbackInfoReturnable<Boolean> cir) {
         ModuleSafeWalk safeWalk = Systems.Companion.get(Modules.class).get(ModuleSafeWalk.class);
         if (safeWalk.getEnabled()) {
-            if (!safeWalk.getSneak()) cir.setReturnValue(true);
+            if (!safeWalk.getSneak() && safeWalk.check()) cir.setReturnValue(true);
         }
     }
 

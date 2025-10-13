@@ -19,7 +19,7 @@ import xyz.qweru.multirender.api.API
 class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT) {
     val sg = settings.group("General")
 
-    var mode by sg.enum("Mode", "Mode for velocity", Mode.VANILLA)
+    var mode by sg.enum("Mode", "Mode for velocity", Mode.JUMP_RESET)
     var explosions by sg.boolean("Explosions", "Remove explosion velocity", false)
 
     var canJump = true

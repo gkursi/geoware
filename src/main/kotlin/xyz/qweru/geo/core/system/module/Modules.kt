@@ -12,6 +12,7 @@ import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.client.module.misc.ModuleNoPackFingerprint
 import xyz.qweru.geo.client.module.move.ModuleVelocity
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk
+import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.client.module.player.ModuleFastUse
 import xyz.qweru.geo.client.module.player.ModuleMCA
 import xyz.qweru.geo.client.module.visual.ModuleViewModel
@@ -37,6 +38,7 @@ class Modules() : System("modules") {
         add(ModuleAnchorMacro())
         add(ModuleAutoTotem())
         add(ModuleViewModel())
+        add(ModuleSprint())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }
