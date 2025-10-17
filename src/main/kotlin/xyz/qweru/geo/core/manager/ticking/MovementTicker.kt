@@ -14,6 +14,7 @@ object MovementTicker {
     private var tickTimer = Timer()
     var tickSpeed = 20
     var canSendPackets = true
+        private set
     var tickingMovement = false
         private set
 
@@ -25,8 +26,10 @@ object MovementTicker {
     fun tick() {
         if (mc.player == null) return
         tickingMovement = true
+
         tickPlayer(mc.thePlayer)
         mc.networkHandler!!.sendPacket(ClientTickEndC2SPacket.INSTANCE)
+
         canSendPackets = false
         tickingMovement = false
         tickTimer.reset()

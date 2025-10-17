@@ -14,11 +14,6 @@ import xyz.qweru.geo.extend.theWorld
 import xyz.qweru.geo.helper.player.RotationHelper
 
 object TargetHelper {
-
-    private var trackedTarget: PlayerEntity? = null
-    val target: PlayerEntity
-        get() = trackedTarget!!
-
     fun findTarget(range: Float, fov: Int, invisible: Boolean = true): PlayerEntity? {
         var bestRange = Double.MAX_VALUE
         val theRange = range * range
@@ -41,11 +36,4 @@ object TargetHelper {
         || !p.getEquippedStack(EquipmentSlot.BODY).isEmpty || !p.getEquippedStack(EquipmentSlot.LEGS).isEmpty
 
     fun hasItems(p: PlayerEntity): Boolean = !p.mainHandStack.isEmpty || !p.offHandStack.isEmpty
-
-    fun isTrackingTarget(): Boolean = trackedTarget != null
-
-    @Handler(priority = 1000)
-    private fun postTick(e: PreTickEvent) {
-
-    }
 }

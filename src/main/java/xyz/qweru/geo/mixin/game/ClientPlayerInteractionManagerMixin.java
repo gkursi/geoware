@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import xyz.qweru.geo.client.event.AttackEntityEvent;
 import xyz.qweru.geo.client.event.PlaceBlockEvent;
 import xyz.qweru.geo.core.event.Events;
 
@@ -26,5 +27,12 @@ public class ClientPlayerInteractionManagerMixin {
     private void preInteract(ClientPlayerEntity player, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
         PlaceBlockEvent.INSTANCE.hit = hitResult;
         Events.INSTANCE.post(PlaceBlockEvent.INSTANCE);
+    }
+
+    @Inject(method = "attackEntity", at = @At("HEAD"))
+    private void onAttack(PlayerEntity player, Entity target, CallbackInfo ci) {
+        AttackEntityEvent.INSTANCE.setPlayer(player);
+        AttackEntityEvent.INSTANCE.setEntity(target);
+        Events.INSTANCE.post(AttackEntityEvent.INSTANCE);
     }
 }

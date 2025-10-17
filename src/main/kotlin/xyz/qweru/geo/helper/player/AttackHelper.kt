@@ -8,8 +8,10 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.AxeItem
 import net.minecraft.item.Items
 import xyz.qweru.geo.core.Glob.mc
+import xyz.qweru.geo.extend.groundTicks
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.mixin.entity.LivingEntityAccessor
+import kotlin.compareTo
 
 object AttackHelper {
     fun canAttack(target: Entity, playerWeaponOnly: Boolean = false, cooldown: Float = 1f): Boolean {
@@ -22,13 +24,13 @@ object AttackHelper {
         return mc.thePlayer.getAttackCooldownProgress(0.5f) >= cooldown
     }
 
-    fun canCrit(entity: PlayerEntity = mc.thePlayer, cooldown: Float = mc.thePlayer.getAttackCooldownProgress(0.5f)): Boolean =
-        cooldown > 0.9f
-        && entity.fallDistance > 0.1f
+    fun canCrit(entity: PlayerEntity = mc.thePlayer): Boolean =
+        entity.fallDistance > 0.1f
         && willCrit(entity)
 
-    fun willCrit(entity: PlayerEntity = mc.thePlayer, awaitJump: Boolean = false): Boolean =
-        (!entity.isOnGround || ((entity as LivingEntityAccessor).geo_getJumpingCooldown() > 0 && awaitJump))
+    fun willCrit(entity: PlayerEntity = mc.thePlayer, groundTicks: Int = 0, cooldown: Float = entity.getAttackCooldownProgress(0.5f)): Boolean =
+        cooldown > 0.9f
+        && (!entity.isOnGround || entity.groundTicks < groundTicks)
         && !entity.isClimbing && !entity.isTouchingWater && !entity.isSprinting
         && !entity.hasStatusEffect(StatusEffects.BLINDNESS)
         && !entity.hasVehicle()

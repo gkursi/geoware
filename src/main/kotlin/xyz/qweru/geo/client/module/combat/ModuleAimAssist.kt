@@ -19,13 +19,14 @@ import java.util.*
 class ModuleAimAssist : Module("AimAssist", "Auto aim", Category.COMBAT) {
     val sg = settings.group("General")
     var fov by sg.int("FOV", "Field of view", 25, 0, 360)
-    var range by sg.float("Range", "Range of target players", 6f, 1f, 15f)
-    val hSpeed by sg.int("H Speed", "Horizontal camera speed", 25, 0, 360)
-    val vSpeed by sg.int("H Speed", "Horizontal camera speed", 25, 0, 360)
-    val random by sg.longRange("Random", "Randomization", -50L..45L, -100L..100L)
+    var range by sg.float("Range", "Range of target players", 5f, 1f, 15f)
+    val hSpeed by sg.int("H Speed", "Horizontal camera speed", 40, 0, 360)
+    val vSpeed by sg.int("V Speed", "Horizontal camera speed", 30, 0, 360)
+    val random by sg.longRange("Random", "Randomization", -70L..75L, -100L..100L)
     val weaponOnly by sg.boolean("Weapon Only", "Only aim when holding a weapon", true)
     val lock by sg.boolean("Lock Target", "Don't switch targets as long as the current target is in range", true)
     val invisible by sg.boolean("Invisible", "Allow targeting of completely invisible players (no armor & held item)", false)
+    val disableRange by sg.float("Disable Range", "Won't aim assist when this close to an enemy", 1.5f, 0f, 3f)
 
     val rng = Random()
     var target: PlayerEntity? = null
@@ -36,7 +37,7 @@ class ModuleAimAssist : Module("AimAssist", "Auto aim", Category.COMBAT) {
         if (weaponOnly && !InvHelper.isInMainhand { InvHelper.isSword(it.item) || it.item is AxeItem || it.isOf(Items.MACE) }) return
         if (target == null || !lock || mc.thePlayer.squaredDistanceTo(target!!) > MathHelper.square(range) || !target!!.isAlive) target =
             TargetHelper.findTarget(range, fov, invisible)
-        if (target == null || RotationHelper.getAngle(target!!) > fov) return
+        if (target == null || RotationHelper.getAngle(target!!) > fov || mc.thePlayer.squaredDistanceTo(target) < MathHelper.square(disableRange)) return
 
         val mod = rng.nextLong(random.start, random.endInclusive + 1) / 100
         val delta = RotationHelper.getDelta(target!!)
