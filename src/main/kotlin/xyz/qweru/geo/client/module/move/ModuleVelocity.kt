@@ -9,6 +9,7 @@ import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.Glob
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.manager.combat.CombatState
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.thePlayer
@@ -18,9 +19,16 @@ import xyz.qweru.multirender.api.API
 
 class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT) {
     val sg = settings.group("General")
+    val sJr = settings.group("Conditions").visible { mode == Mode.JUMP_RESET }
 
     var mode by sg.enum("Mode", "Mode for velocity", Mode.JUMP_RESET)
-    var explosions by sg.boolean("Explosions", "Remove explosion velocity", false)
+    var explosions by sg.boolean("Explosions", "Remove explosion velocity", false).visible { mode == Mode.VANILLA }
+
+    var always by sJr.boolean("Always", "Always jump reset", false)
+    var firstHit by sJr.boolean("First Hit", "Jump Reset on the first hit in an exchange", true)
+    var sprintHit by sJr.boolean("Sprint Hit", "Jump reset when getting sprint-hit", true)
+    var combo by sJr.int("Combo", "When combo count >= this (0 = disabled)", 2, 0, 5)
+    var pauseCombo by sJr.int("Pause Combo", "Don't reset when the combo against you >= this (0 = disabled)", 2, 0, 5)
 
     var canJump = true
 
@@ -28,7 +36,7 @@ class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT)
     private fun onTick(e: PreTickEvent) {
         if (!inGame) return
         if (mode != Mode.JUMP_RESET) return
-        if (mc.thePlayer.hurtTime == Glob.mc.player!!.maxHurtTime - 1 && canJump && mc.thePlayer.isOnGround) {
+        if (mc.thePlayer.hurtTime == Glob.mc.player!!.maxHurtTime - 1 && canJump && mc.thePlayer.isOnGround && checkConditions()) {
             API.keyboardHandler.press(GLFW.GLFW_KEY_SPACE)
             API.keyboardHandler.release(GLFW.GLFW_KEY_SPACE)
             canJump = false
@@ -63,9 +71,14 @@ class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT)
                 accessor.geo_setY(0.0)
                 accessor.geo_setZ(0.0)
             }
+
             else -> {}
         }
     }
+
+    private fun checkConditions(): Boolean =
+        (always || (firstHit && CombatState.SELF.combo <= 1 && CombatState.TARGET.combo <= 1) || (sprintHit && CombatState.TARGET.lastAttack.sprint) || (combo != 0 && CombatState.SELF.combo >= combo))
+        && !(pauseCombo > 0 && CombatState.TARGET.combo >= pauseCombo)
 
     enum class Mode {
         VANILLA, JUMP_RESET,
