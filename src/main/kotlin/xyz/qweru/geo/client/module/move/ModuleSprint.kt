@@ -34,7 +34,7 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     val resetTime by sg.longRange("Reset Time", "Delay between stopping and starting sprint", 200L..250L, 0L..1500L)
     val keyTime by sg.longRange("Key Time", "How long should we hold a key for", 10..90L, 0L..100L)
         .visible { keyMode != KeyMode.NONE }
-    val awaitGround by sg.boolean("Await Ground", "Land before resetting sprint", true)
+    val awaitGround by sg.boolean("Await Ground", "Land before resetting sprint", false)
 
     var sprinting = false
         set(value) {

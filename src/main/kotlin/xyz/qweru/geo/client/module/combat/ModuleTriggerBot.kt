@@ -33,7 +33,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val attackFirst by sGeneral.boolean("Require Target", "Requires you to attack the player manually before tbotting", false)
     val delay by sGeneral.longRange("Delay", "Attack delay", 55L..100L, 0L..500L)
     val miss by sGeneral.float("Miss%", "Chance of missing an attack", 0.1f, 0f, 0.9f)
-    val awaitCrit by sGeneral.boolean("Await Crit", "Don't attack if a crit will be possible", false)
+    val awaitCrit by sGeneral.boolean("Await Crit", "Don't attack if a crit will be possible", true)
     val groundTicks by sGeneral.int("Ground Ticks", "Time to wait for crits after landing", 5, 0, 20)
         .visible { awaitCrit }
     val sprintCrit by sGeneral.boolean("Sprint Crit", "Don't reset sprint on crit", true)
@@ -65,7 +65,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
             if (forwardTimer.hasPassed()) resetForward = false
         }
 
-        if (mc.currentScreen != null || !timer.hasPassed())
+        if (mc.currentScreen != null || !timer.hasPassed()) return
         nextDamage = Attack()
         if (mc.crosshairTarget is EntityHitResult) {
             val en = (mc.crosshairTarget as EntityHitResult).entity
