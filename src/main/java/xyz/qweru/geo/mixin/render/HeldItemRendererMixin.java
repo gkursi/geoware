@@ -14,6 +14,8 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import org.joml.Quaternionf;
+import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -57,6 +59,12 @@ public class HeldItemRendererMixin {
         if (!viewModel.getEnabled()) return;
         Vector3f scale = viewModel.getScale(hand);
         Vector3f off = viewModel.getOffset(hand);
+        Vector3f rot = viewModel.getRot(hand);
+
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rot.x));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rot.y));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rot.z));
+
         matrices.scale(scale.x, scale.y, scale.z);
         matrices.translate(off.x, off.y, off.z);
     }
