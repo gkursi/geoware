@@ -14,7 +14,7 @@ import xyz.qweru.geo.extend.theWorld
 import xyz.qweru.geo.helper.player.RotationHelper
 
 object TargetHelper {
-    fun findTarget(range: Float, fov: Int, invisible: Boolean = true): PlayerEntity? {
+    fun findTarget(range: Float, fov: Float, invisible: Boolean = true): PlayerEntity? {
         var bestRange = Double.MAX_VALUE
         val theRange = range * range
         var entity: PlayerEntity? = null

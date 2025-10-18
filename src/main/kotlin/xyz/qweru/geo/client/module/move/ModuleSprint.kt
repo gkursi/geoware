@@ -31,8 +31,8 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     val sg = settings.group("General")
     val mode by sg.enum("Mode", "Mode for applying sprint", Mode.NORMAL)
     val keyMode by sg.enum("Key", "Key to tap when resetting sprint", KeyMode.W)
-    val resetTime by sg.longRange("Reset Time", "Delay between stopping and starting sprint", 200L..250L, 0L..1500L)
-    val keyTime by sg.longRange("Key Time", "How long should we hold a key for", 10..90L, 0L..100L)
+    val resetTime by sg.longRange("Reset Time", "Delay between stopping and starting sprint", 50L..100L, 0L..1500L)
+    val keyTime by sg.longRange("Key Time", "How long should we hold a key for", 10..40L, 0L..100L)
         .visible { keyMode != KeyMode.NONE }
     val awaitGround by sg.boolean("Await Ground", "Land before resetting sprint", false)
 

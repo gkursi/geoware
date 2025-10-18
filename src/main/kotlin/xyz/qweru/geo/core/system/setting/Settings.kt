@@ -5,22 +5,22 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import xyz.qweru.geo.core.system.System
 
 class Settings : System("settings") {
-    val settings = ObjectArrayList<Setting<*, *>>(5)
+    val allSettings = ObjectArrayList<Setting<*, *>>(5)
 
     fun group(name: String): SettingGroup = SettingGroup(name, this)
 
     fun add(setting: Setting<*, *>) {
-        settings.add(setting)
-        logger.info("Added setting ${setting.name} with value ${setting.value} in group ${setting.group.name} (${settings.size} total)")
+        allSettings.add(setting)
+        logger.info("Added setting ${setting.name} with value ${setting.value} in group ${setting.group.name} (${allSettings.size} total)")
     }
 
     override fun loadThis(json: JsonObject) {
-        for (setting in settings)
+        for (setting in allSettings)
             json[setting.name]?.let { setting.load(it.asJsonObject) }
     }
 
     override fun saveThis(json: JsonObject) {
-        for (setting in settings) {
+        for (setting in allSettings) {
             val obj = JsonObject()
             setting.save(obj)
             json.add(setting.name, obj)

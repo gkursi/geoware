@@ -12,19 +12,19 @@ class SettingGroup(val name: String, val parent: Settings, private var visiblePr
         get() = visibleProvider.invoke()
 
     fun boolean(name: String, description: String = "$name setting", value: Boolean): BooleanSetting =
-        BooleanSetting(name, description, value, this).apply { parent.add(this) }
+        BooleanSetting(name.lowercase().replace(" ", "-"), description, value, this).apply { parent.add(this) }
 
     fun float(name: String, description: String = "$name setting", value: Float, min: Float, max: Float): FloatSetting =
-        FloatSetting(name, description, value, this, min, max).apply { parent.add(this) }
+        FloatSetting(name.lowercase().replace(" ", "-"), description, value, this, min, max).apply { parent.add(this) }
 
     fun longRange(name: String, description: String = "$name setting", value: LongRange, minMax: LongRange): LongRangeSetting =
-        LongRangeSetting(name, description, value, minMax, this).apply { parent.add(this) }
+        LongRangeSetting(name.lowercase().replace(" ", "-"), description, value, minMax, this).apply { parent.add(this) }
 
     fun int(name: String, description: String = "$name setting", value: Int, min: Int, max: Int): IntSetting =
-        IntSetting(name, description, value, this, min, max).apply { parent.add(this) }
+        IntSetting(name.lowercase().replace(" ", "-"), description, value, this, min, max).apply { parent.add(this) }
 
     fun <T : Enum<*>> enum(name: String, description: String = "$name setting", value: T): EnumSetting<T> =
-        EnumSetting(name, description, value, this).apply { parent.add(this) }
+        EnumSetting(name.lowercase().replace(" ", "-"), description, value, this).apply { parent.add(this) }
 
     fun visible(v: () -> Boolean): SettingGroup {
         visibleProvider = v

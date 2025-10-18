@@ -13,6 +13,7 @@ import xyz.qweru.geo.client.module.misc.ModuleNoPackFingerprint
 import xyz.qweru.geo.client.module.move.ModuleVelocity
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk
 import xyz.qweru.geo.client.module.move.ModuleSprint
+import xyz.qweru.geo.client.module.move.ModuleTargetStrafe
 import xyz.qweru.geo.client.module.player.ModuleFastUse
 import xyz.qweru.geo.client.module.player.ModuleMCA
 import xyz.qweru.geo.client.module.visual.ModuleViewModel
@@ -39,9 +40,12 @@ class Modules() : System("modules") {
         add(ModuleAutoTotem())
         add(ModuleViewModel())
         add(ModuleSprint())
+        add(ModuleTargetStrafe())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }
+
+    fun get(name: String): Module? = sorted.find { it.name == name }
 
     override fun add(system: System) {
         if (system !is Module) throw IllegalArgumentException()

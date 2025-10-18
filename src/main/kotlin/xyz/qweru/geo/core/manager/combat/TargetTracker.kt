@@ -1,12 +1,14 @@
 package xyz.qweru.geo.core.manager.combat
 
 import net.minecraft.entity.player.PlayerEntity
+import xyz.qweru.geo.client.event.AttackFromPlayerEvent
 import xyz.qweru.geo.client.event.AttackPlayerEvent
 import xyz.qweru.geo.client.event.PlayerAttackPlayerEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.Glob.mc
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.extend.inRange
 
 /**
  * TODO global config for tracking conditions
@@ -21,7 +23,7 @@ object TargetTracker {
     }
 
     @Handler(priority = EventPriority.FIRST)
-    private fun onAttacked(e: PlayerAttackPlayerEvent) {
+    private fun onAttacked(e: AttackFromPlayerEvent) {
         if (e.player != mc.player) return
         target = e.source
     }
@@ -29,7 +31,7 @@ object TargetTracker {
     @Handler(priority = EventPriority.FIRST)
     private fun onTick(e: PreTickEvent) {
         if (target == null) return
-        if (mc.world == null || mc.player == null || target!!.squaredDistanceTo(mc.player) > 64)
+        if (mc.world == null || mc.player == null || !target!!.inRange(64f))
             target = null
     }
 }

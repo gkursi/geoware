@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.client.network.ClientCommandSource
 import net.minecraft.command.CommandSource
-import xyz.qweru.geo.client.command.CommandHelp
+import xyz.qweru.geo.client.command.CommandSet
 import xyz.qweru.geo.client.command.CommandToggle
 import xyz.qweru.geo.core.Glob.mc
 import kotlin.jvm.Throws
@@ -18,8 +18,8 @@ object Commands {
     val commands = ObjectArrayList<Command>()
 
     fun register() {
-        add(CommandHelp())
         add(CommandToggle())
+        add(CommandSet())
     }
 
     private fun add(command: Command) {
