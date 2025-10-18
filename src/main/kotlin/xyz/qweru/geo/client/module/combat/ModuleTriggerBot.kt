@@ -31,8 +31,8 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
 
     val playerWeaponOnly by sGeneral.boolean("Player Weapon Only", "Only attack players with a weapon", true)
     val attackFirst by sGeneral.boolean("Require Target", "Requires you to attack the player manually before tbotting", false)
-    val delay by sGeneral.longRange("Delay", "Attack delay", 55L..100L, 0L..500L)
-    val miss by sGeneral.float("Miss%", "Chance of missing an attack", 0.1f, 0f, 0.9f)
+    val delay by sGeneral.longRange("Delay", "Attack delay", 0L..1L, 0L..500L)
+    val miss by sGeneral.float("Miss%", "Chance of missing an attack", 0f, 0f, 0.9f)
     val awaitCrit by sGeneral.boolean("Await Crit", "Don't attack if a crit will be possible", true)
     val groundTicks by sGeneral.int("Ground Ticks", "Time to wait for crits after landing", 5, 0, 20)
         .visible { awaitCrit }
@@ -45,7 +45,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val failChance by sFailAttack.float("Fail%", "Chance of failing an out-of-reach attack", 0.1f, 0f, 1f)
 
     val critDeflect by sTech.boolean("Crit Deflect", "Sprinthit the opponent right after they land a crit on you", true)
-    val awaitDeflect by sTech.boolean("Await Deflect", "Don't hit until the crit has landed", true)
+    val awaitDeflect by sTech.boolean("Await Deflect", "Don't hit until the crit has landed", false)
         .visible { critDeflect }
     val inputTime by sTech.longRange("Input Time", "How long to press W for, if you aren't already sprinting", 50L..100L, 0L..1000L)
         .visible { critDeflect }
