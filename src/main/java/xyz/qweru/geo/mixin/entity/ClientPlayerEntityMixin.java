@@ -8,13 +8,17 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.qweru.geo.core.manager.ticking.MovementTicker;
+import xyz.qweru.geo.client.event.VelocityTickEvent;
+import xyz.qweru.geo.core.event.Events;
+import xyz.qweru.geo.core.manager.movement.MovementState;
+import xyz.qweru.geo.core.manager.movement.MovementTicker;
 import xyz.qweru.geo.imixin.IClientPlayerEntity;
 
 @Mixin(ClientPlayerEntity.class)
@@ -28,6 +32,18 @@ public abstract class ClientPlayerEntityMixin implements IClientPlayerEntity {
     @Inject(method = "tickMovement", at = @At("HEAD"), cancellable = true)
     private void tickMovement(CallbackInfo ci) {
         if (!MovementTicker.INSTANCE.canTick()) ci.cancel();
+        // reset all states computed after this
+        MovementState.INSTANCE.setSlowedByBlock(false);
+        MovementState.INSTANCE.setBounce(false);
+    }
+
+    @Inject(method = "tickMovement", at = @At("TAIL"))
+    private void postMovement(CallbackInfo ci) {
+        Vec3d vel = ((Entity)(Object) this).getVelocity();
+        VelocityTickEvent.INSTANCE.setX(vel.x);
+        VelocityTickEvent.INSTANCE.setY(vel.y);
+        VelocityTickEvent.INSTANCE.setZ(vel.z);
+        Events.INSTANCE.post(VelocityTickEvent.INSTANCE);
     }
 
     @ModifyExpressionValue(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasVehicle()Z"))

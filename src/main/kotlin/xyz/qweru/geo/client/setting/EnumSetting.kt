@@ -46,8 +46,9 @@ class EnumSetting<T : Enum<*>>(name: String, description: String, default: T, gr
     }
 
     override fun parseAndSet(string: String) {
+        val str = string.replace(" ", "_").uppercase()
         constants.forEachIndexed { i, it ->
-            if (it.name == string) {
+            if (it.name == str) {
                 value = it
                 index = i
                 return

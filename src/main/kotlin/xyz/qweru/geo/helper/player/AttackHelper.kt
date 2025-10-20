@@ -24,12 +24,13 @@ object AttackHelper {
         return mc.thePlayer.getAttackCooldownProgress(0.5f) >= cooldown
     }
 
-    fun canCrit(entity: PlayerEntity = mc.thePlayer): Boolean =
+    fun canCrit(entity: PlayerEntity = mc.thePlayer, cooldown: Float = entity.getAttackCooldownProgress(0.5f)): Boolean =
         entity.fallDistance > 0.1f
-        && willCrit(entity)
+        && cooldown > 0.9f
+        && willCrit(entity, cooldown = cooldown)
 
     fun willCrit(entity: PlayerEntity = mc.thePlayer, groundTicks: Int = 0, cooldown: Float = entity.getAttackCooldownProgress(0.5f)): Boolean =
-        cooldown > 0.9f
+        cooldown > 0.75f
         && (!entity.isOnGround || entity.groundTicks < groundTicks)
         && !entity.isClimbing && !entity.isTouchingWater && !entity.isSprinting
         && !entity.hasStatusEffect(StatusEffects.BLINDNESS)

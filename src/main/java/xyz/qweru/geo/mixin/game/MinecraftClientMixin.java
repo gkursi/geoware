@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.client.event.PostTickEvent;
 import xyz.qweru.geo.client.event.PreTickEvent;
 import xyz.qweru.geo.core.event.Events;
-import xyz.qweru.geo.core.manager.ticking.MovementTicker;
+import xyz.qweru.geo.core.manager.movement.MovementTicker;
 
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {

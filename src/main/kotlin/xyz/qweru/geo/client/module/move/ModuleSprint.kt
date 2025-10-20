@@ -35,6 +35,7 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     val keyTime by sg.longRange("Key Time", "How long should we hold a key for", 10..40L, 0L..100L)
         .visible { keyMode != KeyMode.NONE }
     val awaitGround by sg.boolean("Await Ground", "Land before resetting sprint", false)
+    val onlyKey by sg.boolean("Only Key", "Don't sprint at all", false)
 
     var sprinting = false
         set(value) {
@@ -58,7 +59,7 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
             sprinting = true
             waitForGround = false
         }
-        if (sprinting != mc.thePlayer.isSprinting) sprint(sprinting)
+        if (mc.currentScreen != null && sprinting != mc.thePlayer.isSprinting && !onlyKey) sprint(sprinting)
         if (resetKey && keyDelay.hasPassed()) {
             tap(false)
             resetKey = false

@@ -23,6 +23,7 @@ class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around t
     val time by sg.longRange("Hold Time", "How long to hold in each direction", 550L..750L, 0L..2000L)
     val hitInvert by sg.boolean("Hit Invert", "Switch movement direction on attack", false)
     val damageInvert by sg.boolean("Damage Invert", "Switch movement direction on damage", true)
+    val pauseScreen by sg.boolean("Pause Screen", "Pause while a screen is opened", true)
 
     private val holdTime = TimerDelay()
     private var key = Key.LEFT
@@ -31,7 +32,7 @@ class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around t
     @Handler
     private fun onTick(e: PreTickEvent) {
         if (!inGame) return
-        if (TargetTracker.target == null || CombatState.SELF.combo < minCombo || !validTarget(TargetTracker.target!!)) {
+        if (TargetTracker.target == null || CombatState.SELF.combo < minCombo || !validTarget(TargetTracker.target!!) || (pauseScreen && mc.currentScreen != null)) {
             checkReset()
             return
         }

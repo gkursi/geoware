@@ -4,6 +4,10 @@
   "package": "xyz.qweru.geo.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "block.BedBlockMixin",
+    "block.BerryBushBlockMixin",
+    "block.CobwebBlockMixin",
+    "block.SlimeBlockMixin",
     "entity.EntityMixin",
     "entity.EntityTypeMixin",
     "entity.EntityVelocityUpdateS2CPacketAccessor",

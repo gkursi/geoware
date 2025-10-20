@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.manager.ticking
+package xyz.qweru.geo.core.manager.movement
 
 import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.network.packet.c2s.play.ClientTickEndC2SPacket

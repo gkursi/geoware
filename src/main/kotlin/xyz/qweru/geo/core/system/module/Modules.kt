@@ -10,6 +10,7 @@ import xyz.qweru.geo.client.module.combat.ModuleReach
 import xyz.qweru.geo.client.module.combat.ModuleTriggerBot
 import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.client.module.misc.ModuleNoPackFingerprint
+import xyz.qweru.geo.client.module.move.ModuleGrimMovement
 import xyz.qweru.geo.client.module.move.ModuleVelocity
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk
 import xyz.qweru.geo.client.module.move.ModuleSprint
@@ -41,6 +42,7 @@ class Modules() : System("modules") {
         add(ModuleViewModel())
         add(ModuleSprint())
         add(ModuleTargetStrafe())
+        add(ModuleGrimMovement())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }

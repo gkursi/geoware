@@ -7,7 +7,7 @@ import xyz.qweru.geo.core.system.setting.Settings
 import xyz.qweru.geo.core.system.System
 
 abstract class Module(name: String, val description: String = "$name module", val category: Category = Category.MISC,
-                      val alwaysEnabled: Boolean = false) : System(name) {
+                      val alwaysEnabled: Boolean = false, var bind: Int = -1) : System(name) {
     protected val mc = Glob.mc
     val settings = Settings()
 

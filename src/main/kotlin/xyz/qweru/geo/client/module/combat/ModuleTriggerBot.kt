@@ -36,9 +36,10 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val awaitCrit by sGeneral.boolean("Await Crit", "Don't attack if a crit will be possible", true)
     val groundTicks by sGeneral.int("Ground Ticks", "Time to wait for crits after landing", 5, 0, 20)
         .visible { awaitCrit }
-    val sprintCrit by sGeneral.boolean("Sprint Crit", "Don't reset sprint on crit", true)
+    val sprintCrit by sGeneral.boolean("Sprint Crit", "Don't reset on crit", false)
     val itemCooldown by sGeneral.float("Cooldown", "Vanilla item cooldown required to attack", 1f, 0f, 1f)
     val sprintReset by sGeneral.boolean("Sprint Reset", "Automatically resets sprint on hit", true)
+    val inputTime by sTech.longRange("Input Time", "How long to press keys for when changing input", 100L..140L, 0L..1000L)
 
     val failAttack by sFailAttack.boolean("Fail Attack", "Try to attack (and fail) if the target is slightly out of reach", false)
     val failReach by sFailAttack.float("Fail Reach", "Extra reach for failing", 0.25f, 0.01f, 1f)
@@ -47,13 +48,12 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val critDeflect by sTech.boolean("Crit Deflect", "Sprinthit the opponent right after they land a crit on you", true)
     val awaitDeflect by sTech.boolean("Await Deflect", "Don't hit until the crit has landed", false)
         .visible { critDeflect }
-    val inputTime by sTech.longRange("Input Time", "How long to press W for, if you aren't already sprinting", 50L..100L, 0L..1000L)
-        .visible { critDeflect }
 
     val timer = TimerDelay()
     val random = Random()
     var nextDamage = Attack()
     var resetForward = false
+    var moveForward = false
     var forwardTimer = TimerDelay()
 
     @Handler
@@ -61,8 +61,11 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         if (!inGame) return
 
         if (resetForward) {
-            mc.options.forwardKey.isPressed = !forwardTimer.hasPassed() || GameInput.forwardKey
-            if (forwardTimer.hasPassed()) resetForward = false
+            if (forwardTimer.hasPassed()) {
+                resetForward = false
+                mc.options.forwardKey.isPressed = GameInput.forwardKey
+            }
+            else mc.options.forwardKey.isPressed = moveForward
         }
 
         if (mc.currentScreen != null || !timer.hasPassed()) return
@@ -98,17 +101,24 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         if (!AttackHelper.canAttack(en, playerWeaponOnly, cooldown = itemCooldown)) return true
         if (awaitCrit && AttackHelper.willCrit(groundTicks = groundTicks) && !nextAttack.crit) return true
 
-        if (critDeflect && !sprinting) {
+        if (critDeflect && !sprinting && !nextAttack.crit) {
             if (CombatState.SELF.lastDamage.crit) {
                 if (!mc.options.forwardKey.isPressed) {
                     GameInput.forwardKey = true
                     resetForward = true
+                    moveForward = true
                     forwardTimer.reset(inputTime)
                 }
                 ModuleSprint.sprint(true, now = true)
             } else if (awaitDeflect && CombatState.TARGET.predictNextAttack().crit) {
                 return true
             }
+        }
+        if (nextAttack.crit && !sprintCrit) {
+            GameInput.forwardKey = false
+            resetForward = true
+            moveForward = false
+            forwardTimer.reset(inputTime)
         }
         // this takes effect post tick
         if (sprintReset && sprinting && !(nextAttack.crit && sprintCrit)) ModuleSprint.sprint(false)
