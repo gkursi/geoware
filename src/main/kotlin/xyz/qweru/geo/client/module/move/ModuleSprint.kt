@@ -1,5 +1,6 @@
 package xyz.qweru.geo.client.module.move
 
+import net.minecraft.client.option.GameOptions
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.event.PreTickEvent
@@ -55,11 +56,11 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     @Handler(priority = EventPriority.LAST)
     private fun onTick(e: PreTickEvent) {
         if (!inGame) return
-        if (mc.options.forwardKey.isPressed && resetDelay.hasPassed() && !(waitForGround && !mc.thePlayer.isOnGround)) {
+        if (GameInput.forwardKey && resetDelay.hasPassed() && !(waitForGround && !mc.thePlayer.isOnGround)) {
             sprinting = true
             waitForGround = false
         }
-        if (mc.currentScreen != null && sprinting != mc.thePlayer.isSprinting && !onlyKey) sprint(sprinting)
+        if (mc.currentScreen == null && sprinting != mc.thePlayer.isSprinting && !onlyKey) sprint(sprinting)
         if (resetKey && keyDelay.hasPassed()) {
             tap(false)
             resetKey = false

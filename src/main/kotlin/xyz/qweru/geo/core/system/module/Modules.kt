@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import xyz.qweru.geo.client.module.combat.ModuleAimAssist
 import xyz.qweru.geo.client.module.combat.ModuleAnchorMacro
 import xyz.qweru.geo.client.module.combat.ModuleAutoTotem
+import xyz.qweru.geo.client.module.combat.ModuleBacktrack
 import xyz.qweru.geo.client.module.combat.ModuleHitbox
 import xyz.qweru.geo.client.module.combat.ModuleReach
 import xyz.qweru.geo.client.module.combat.ModuleTriggerBot
@@ -43,7 +44,8 @@ class Modules() : System("modules") {
         add(ModuleSprint())
         add(ModuleTargetStrafe())
         add(ModuleGrimMovement())
-
+        add(ModuleBacktrack())
+        
         sorted.sortWith(Comparator.comparing(Module::name))
     }
 

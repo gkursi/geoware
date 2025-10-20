@@ -51,6 +51,7 @@ class CombatState(private val playerProvider: (CombatState) -> PlayerEntity?) {
 
     private fun set(attack: Attack, source: PlayerEntity) {
         attack.crit = AttackHelper.canCrit(source)
+        attack.critPossible = AttackHelper.willCrit(source)
         attack.sprint = source.isSprinting
     }
 

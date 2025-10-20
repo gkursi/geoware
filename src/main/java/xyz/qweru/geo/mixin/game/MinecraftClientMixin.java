@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import xyz.qweru.geo.client.event.HandleTaskEvent;
 import xyz.qweru.geo.client.event.PostTickEvent;
 import xyz.qweru.geo.client.event.PreTickEvent;
 import xyz.qweru.geo.core.event.Events;
@@ -52,5 +53,10 @@ public class MinecraftClientMixin {
     @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V"))
     private void cancelEndPacket(ClientPlayNetworkHandler instance, Packet<?> packet, Operation<Void> original) {
         if (MovementTicker.INSTANCE.getTickSpeed() == 20) original.call(instance, packet);
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;runTasks()V", shift = At.Shift.BEFORE))
+    private void preRunTasks(boolean tick, CallbackInfo ci) {
+        Events.INSTANCE.post(HandleTaskEvent.INSTANCE);
     }
 }

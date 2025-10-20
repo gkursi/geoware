@@ -114,14 +114,13 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
                 return true
             }
         }
-        if (nextAttack.crit && !sprintCrit) {
-            GameInput.forwardKey = false
-            resetForward = true
-            moveForward = false
-            forwardTimer.reset(inputTime)
+        if (nextAttack.crit && mc.thePlayer.isSprinting) {
+            ModuleSprint.sprint(false, now = true)
+            if (sprintCrit) ModuleSprint.sprint(true) // start sprinting post-tick
+        } else if (sprintReset && sprinting) {
+            // this takes effect post tick
+            ModuleSprint.sprint(false)
         }
-        // this takes effect post tick
-        if (sprintReset && sprinting && !(nextAttack.crit && sprintCrit)) ModuleSprint.sprint(false)
 
         return false
     }
