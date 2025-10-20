@@ -86,6 +86,7 @@ object Events {
 
     fun <T : Cancellable> post(event: T): T {
         check(true) { "Event cannot be null" }
+        event.cancelled = false
         handles[event::class.java]?.let {
             for (info in it) {
                 info.func.invoke(info.instance, event)
