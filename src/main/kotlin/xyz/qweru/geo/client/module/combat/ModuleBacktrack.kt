@@ -1,15 +1,21 @@
 package xyz.qweru.geo.client.module.combat
 
+import net.minecraft.entity.TrackedPosition
+import net.minecraft.entity.player.PlayerPosition
 import net.minecraft.network.listener.ClientPlayPacketListener
 import net.minecraft.network.packet.Packet
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket
+import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket
+import net.minecraft.network.packet.s2c.play.EntityPositionSyncS2CPacket
+import net.minecraft.network.packet.s2c.play.EntityS2CPacket
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket
 import net.minecraft.sound.SoundEvents
+import net.minecraft.util.math.Vec3d
 import xyz.qweru.geo.client.event.HandleTaskEvent
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.core.event.EventPriority
@@ -20,6 +26,7 @@ import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.getRelativeVelocity
 import xyz.qweru.geo.extend.inRange
+import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.helper.timing.TimerDelay
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -30,6 +37,7 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra rea
     val timing by sg.enum("Timing", "Timing for packets", Timing.BULK)
     val delay by sg.longRange("Delay", "Packet delay", 150L..250L, 0L..1500L)
     val requireTarget by sg.boolean("Require Target", "Requires a target to be active", true)
+    val smartReset by sg.boolean("Smart Reset", "Stop backtracking if the real player is closer than the backtracked player", true)
 
     val always by sc.boolean("Always", "Always backtrack", false)
     val combo by sc.int("Combo", "Backtrack when you have this combo or more (0 = disabled)", 0, 0, 5)
@@ -40,16 +48,21 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra rea
     private val receivedPacketQueue = ConcurrentLinkedQueue<StoredPacket>()
     private val packetsToProcess = ConcurrentLinkedQueue<StoredPacket>()
     private val bulkDelay = TimerDelay()
+    private var trackedPosition: TrackedPosition? = null
 
     @Handler
     private fun onPacketProcess(e: HandleTaskEvent) {
+        if (!inGame) {
+            handleAll(false)
+            packetsToProcess.clear()
+            return
+        }
+        if (smartReset && TargetTracker.target?.let { mc.thePlayer.squaredDistanceTo(trackedPosition?.pos ?: Vec3d.ZERO) < it.squaredDistanceTo(mc.player) } ?: false)
+            handleAll()
+
         when (timing) {
             Timing.BULK -> {
-                if (bulkDelay.hasPassed()) {
-                    val s = packetsToProcess.size
-                    handleAll()
-                    logger.info("${packetsToProcess.size - s}")
-                }
+                if (bulkDelay.hasPassed()) handleAll()
             }
             Timing.SINGLE -> receivedPacketQueue.removeIf {
                 if (it.timer.hasPassed()) {
@@ -60,7 +73,6 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra rea
             }
         }
 
-        if (!inGame) packetsToProcess.clear()
         while (!packetsToProcess.isEmpty()) {
             val sp = packetsToProcess.poll()
             sp.packet.apply(mc.networkHandler)
@@ -103,6 +115,30 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra rea
             }
         }
 
+        if (packet is EntityPositionS2CPacket && packet.entityId == (TargetTracker.target?.id ?: -1)
+            || packet is EntityS2CPacket && packet.getEntity(mc.world) == TargetTracker.target
+            || packet is EntityPositionSyncS2CPacket && packet.id == (TargetTracker.target?.id ?: -1)) {
+
+            TargetTracker.target?.let {
+                if (trackedPosition != null) return
+                trackedPosition = TrackedPosition()
+                trackedPosition!!.pos = it.pos
+            }
+
+            when (packet) {
+                is EntityPositionS2CPacket -> trackedPosition?.pos = PlayerPosition.apply(PlayerPosition.fromEntity(TargetTracker.target), packet.change(), packet.relatives).position
+                is EntityS2CPacket -> {
+                    trackedPosition?.pos = packet.getEntity(mc.world)?.pos ?: Vec3d.ZERO
+                    if (packet.isPositionChanged) trackedPosition?.pos =
+                        trackedPosition?.withDelta(packet.deltaX.toLong(), packet.deltaY.toLong(), packet.deltaZ.toLong())
+                }
+                is EntityPositionSyncS2CPacket -> trackedPosition?.pos = packet.values.position
+                else -> throw IllegalArgumentException()
+            }
+
+            logger.info("Tracked at ${trackedPosition?.pos} (rendering at ${TargetTracker.target!!.pos})")
+        }
+
         receivedPacketQueue.add(StoredPacket(packet, TimerDelay().also { it.reset(delay) }))
         e.cancelled = true
     }
@@ -120,6 +156,7 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra rea
             packetsToProcess.addAll(receivedPacketQueue)
         }
         receivedPacketQueue.clear()
+        trackedPosition = null
     }
 
     private data class StoredPacket(val packet: Packet<ClientPlayPacketListener>, val timer: TimerDelay)
