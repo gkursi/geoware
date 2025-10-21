@@ -38,7 +38,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
     implementation("xyz.qweru:multirender-api:1.0-SNAPSHOT")
-    modImplementation("xyz.qweru:multirender-mc1.21.8:0.0.2")
+    modImplementation("xyz.qweru:multirender-mc1.21.8:0.0.2")?.let { include(it) }
     modImplementation("com.ptsmods:devlogin:3.5") // For Fabric and Quilt
 
 //    modImplementation("net.fabricmc.fabric-api:fabric-api:0.133.4+1.21.8")
