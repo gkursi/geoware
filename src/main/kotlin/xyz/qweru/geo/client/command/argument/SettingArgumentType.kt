@@ -22,7 +22,11 @@ class SettingArgumentType(val moduleArgName: String) : ArgumentType<String> {
 
     override fun <S : Any?> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
         val input = builder.remaining.lowercase()
-        val module = ModuleArgumentType.get(context, moduleArgName)
+        val module = try {
+            ModuleArgumentType.get(context, moduleArgName)
+        } catch (_: Throwable) {
+            return builder.buildFuture()
+        }
         for (setting in module.settings.allSettings) {
             if (!setting.name.lowercase().startsWith(input)) continue
             builder.suggest(setting.name)
