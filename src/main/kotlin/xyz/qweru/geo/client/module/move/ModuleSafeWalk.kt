@@ -7,7 +7,7 @@ import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.extend.theWorld
-import xyz.qweru.geo.helper.timing.TimerDelay
+import xyz.qweru.geo.client.helper.timing.TimerDelay
 
 class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEMENT) {
     val sg = settings.group("General")

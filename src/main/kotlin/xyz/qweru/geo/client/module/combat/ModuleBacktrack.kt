@@ -27,7 +27,7 @@ import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.getRelativeVelocity
 import xyz.qweru.geo.extend.inRange
 import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.helper.timing.TimerDelay
+import xyz.qweru.geo.client.helper.timing.TimerDelay
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra reach", Category.COMBAT) {

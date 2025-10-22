@@ -3,8 +3,8 @@ package xyz.qweru.geo.core.manager.combat
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket
 import xyz.qweru.geo.client.event.*
-import xyz.qweru.geo.core.Glob.mc
-import xyz.qweru.geo.core.event.Events
+import xyz.qweru.geo.core.Global.mc
+import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.event.Handler
 
 object CombatEventHandler {
@@ -32,9 +32,9 @@ object CombatEventHandler {
     }
 
     private fun post(attacker: PlayerEntity, target: PlayerEntity) {
-        if (attacker == mc.player) Events.post(set(AttackPlayerEvent, attacker, target))
-        else if (target == mc.player) Events.post(set(AttackFromPlayerEvent, attacker, target))
-        Events.post(set(PlayerAttackPlayerEvent, attacker, target))
+        if (attacker == mc.player) EventBus.post(set(AttackPlayerEvent, attacker, target))
+        else if (target == mc.player) EventBus.post(set(AttackFromPlayerEvent, attacker, target))
+        EventBus.post(set(PlayerAttackPlayerEvent, attacker, target))
     }
 
     private fun <T : CombatEvent> set(event: T, source: PlayerEntity, player: PlayerEntity): T {

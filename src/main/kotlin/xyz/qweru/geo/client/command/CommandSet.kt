@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.BuiltInExceptions
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import net.minecraft.client.network.ClientCommandSource
-import xyz.qweru.geo.core.command.Command
+import xyz.qweru.geo.core.manager.command.Command
 import xyz.qweru.geo.client.command.argument.ModuleArgumentType
 import xyz.qweru.geo.client.command.argument.SettingArgumentType
 import xyz.qweru.geo.client.command.argument.SettingValueArgumentType

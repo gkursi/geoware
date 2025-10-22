@@ -22,14 +22,14 @@ public abstract class PlayerEntityMixin {
     @Inject(method = "getEntityInteractionRange", at = @At("RETURN"), cancellable = true)
     private void setEntityReach(CallbackInfoReturnable<Double> cir) {
         double init = cir.getReturnValueD();
-        ModuleReach reach = Systems.Companion.get(Modules.class).get(ModuleReach.class);
+        ModuleReach reach = Systems.INSTANCE.get(Modules.class).get(ModuleReach.class);
         cir.setReturnValue(!reach.getEnabled() || init > reach.getEntity() ? init : reach.getEntity());
     }
 
     @Inject(method = "getBlockInteractionRange", at = @At("RETURN"), cancellable = true)
     private void setBlockReach(CallbackInfoReturnable<Double> cir) {
         double init = cir.getReturnValueD();
-        ModuleReach reach = Systems.Companion.get(Modules.class).get(ModuleReach.class);
+        ModuleReach reach = Systems.INSTANCE.get(Modules.class).get(ModuleReach.class);
         cir.setReturnValue(!reach.getEnabled() || init > reach.getBlock() ? init : reach.getBlock());
     }
 
@@ -42,7 +42,7 @@ public abstract class PlayerEntityMixin {
 
     @Inject(method = "clipAtLedge", at = @At("RETURN"), cancellable = true)
     private void setClipAtLedge(CallbackInfoReturnable<Boolean> cir) {
-        ModuleSafeWalk safeWalk = Systems.Companion.get(Modules.class).get(ModuleSafeWalk.class);
+        ModuleSafeWalk safeWalk = Systems.INSTANCE.get(Modules.class).get(ModuleSafeWalk.class);
         if (safeWalk.getEnabled()) {
             if (!safeWalk.getSneak() && safeWalk.check()) cir.setReturnValue(true);
         }

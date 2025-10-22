@@ -5,6 +5,9 @@ import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.hit.HitResult
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PreTickEvent
+import xyz.qweru.geo.client.helper.input.GameInput
+import xyz.qweru.geo.client.helper.player.AttackHelper
+import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.manager.combat.Attack
@@ -15,9 +18,6 @@ import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.target
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.extend.theWorld
-import xyz.qweru.geo.helper.input.GameInput
-import xyz.qweru.geo.helper.player.AttackHelper
-import xyz.qweru.geo.helper.timing.TimerDelay
 import xyz.qweru.multirender.api.API
 import java.util.*
 

@@ -21,7 +21,7 @@ import xyz.qweru.geo.client.module.player.ModuleMCA
 import xyz.qweru.geo.client.module.visual.ModuleViewModel
 import xyz.qweru.geo.core.system.System
 
-class Modules() : System("modules") {
+class Modules() : System("modules", Type.ROOT) {
 
     val sorted: ObjectArrayList<Module> = ObjectArrayList()
 
@@ -58,5 +58,7 @@ class Modules() : System("modules") {
     }
 
     override fun loadThis(json: JsonObject) {}
-    override fun saveThis(json: JsonObject) {}
+    override fun saveThis(json: JsonObject) {
+
+    }
 }

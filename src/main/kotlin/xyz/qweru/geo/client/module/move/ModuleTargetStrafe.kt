@@ -11,8 +11,8 @@ import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.inFov
 import xyz.qweru.geo.extend.inRange
-import xyz.qweru.geo.helper.input.GameInput
-import xyz.qweru.geo.helper.timing.TimerDelay
+import xyz.qweru.geo.client.helper.input.GameInput
+import xyz.qweru.geo.client.helper.timing.TimerDelay
 
 class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around the target", Category.MOVEMENT) {
     val sg = settings.group("General")

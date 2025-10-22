@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.client.event.HandleTaskEvent;
 import xyz.qweru.geo.client.event.PostTickEvent;
 import xyz.qweru.geo.client.event.PreTickEvent;
-import xyz.qweru.geo.core.event.Events;
+import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.manager.movement.MovementTicker;
 
 @Mixin(MinecraftClient.class)
@@ -27,12 +27,12 @@ public class MinecraftClientMixin {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
-        Events.INSTANCE.post(PreTickEvent.INSTANCE);
+        EventBus.INSTANCE.post(PreTickEvent.INSTANCE);
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void postTick(CallbackInfo ci) {
-        Events.INSTANCE.post(PostTickEvent.INSTANCE);
+        EventBus.INSTANCE.post(PostTickEvent.INSTANCE);
     }
 
     @Inject(
@@ -57,6 +57,6 @@ public class MinecraftClientMixin {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;runTasks()V", shift = At.Shift.BEFORE))
     private void preRunTasks(boolean tick, CallbackInfo ci) {
-        Events.INSTANCE.post(HandleTaskEvent.INSTANCE);
+        EventBus.INSTANCE.post(HandleTaskEvent.INSTANCE);
     }
 }

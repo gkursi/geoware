@@ -10,8 +10,8 @@ import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.helper.player.InvHelper
-import xyz.qweru.geo.helper.timing.TimerDelay
+import xyz.qweru.geo.client.helper.player.InvHelper
+import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.multirender.api.API
 
 class ModuleMCA : Module("MCA", "Bind actions to your middle mouse button", Category.PLAYER) {

@@ -36,7 +36,7 @@ public class HeldItemRendererMixin {
 
     @ModifyExpressionValue(method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F", ordinal = 0))
     private float removeLerpPitch(float original, @Local(argsOnly = true) ClientPlayerEntity player, @Local(argsOnly = true) float td) {
-        viewModel = Systems.Companion.get(Modules.class).get(ModuleViewModel.class);
+        viewModel = Systems.INSTANCE.get(Modules.class).get(ModuleViewModel.class);
         return viewModel.getEnabled() && !viewModel.getHandInterp() ? player.getPitch(td) : original;
     }
 

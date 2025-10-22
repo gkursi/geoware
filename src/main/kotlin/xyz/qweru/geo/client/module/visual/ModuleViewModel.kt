@@ -4,9 +4,12 @@ import net.minecraft.util.Hand
 import org.joml.Vector3f
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.setting.SettingUsage
+import xyz.qweru.geo.core.system.setting.Usage
 
 class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VISUAL) {
-    val mainHand = settings.group("Main Hand")
+    @Usage(SettingUsage.VISUAL, SettingUsage.POSITION)
+    val mainHand by settings.group("Main Hand")
     var mainX by mainHand.float("Main X", "Hand transformation", 0f, -5f, 5f)
     var mainY by mainHand.float("Main Y", "Hand transformation", 0.2f, -5f, 5f)
     var mainZ by mainHand.float("Main Z", "Hand transformation", 0f, -5f, 5f)
@@ -17,7 +20,8 @@ class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VI
     var mainRY by mainHand.float("Main Rot Y", "Hand transformation", 0f, -5f, 5f)
     var mainRZ by mainHand.float("Main Rot Z", "Hand transformation", 0f, -5f, 5f)
 
-    val offHand = settings.group("Off Hand")
+    @Usage(SettingUsage.VISUAL, SettingUsage.POSITION)
+    val offHand by settings.group("Off Hand")
     var offX by offHand.float("Off X", "Hand transformation", 0f, -5f, 5f)
     var offY by offHand.float("Off Y", "Hand transformation", -0.05f, -5f, 5f)
     var offZ by offHand.float("Off Z", "Hand transformation", -0.5f, -5f, 5f)
@@ -28,12 +32,14 @@ class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VI
     var offRY by mainHand.float("Off Rot Y", "Hand transformation", 0f, -5f, 5f)
     var offRZ by mainHand.float("Off Rot Z", "Hand transformation", 0f, -5f, 5f)
 
-    val animations = settings.group("Animations")
+    @Usage(SettingUsage.VISUAL)
+    val animations by settings.group("Animations")
     var equipOffset by animations.boolean("Equip Anim", "Equip animation", false)
     var handSway by animations.boolean("Hand Sway", "Hand sway", false)
     var handInterp by animations.boolean("Hand Interp", "Delayed hand rotation", false)
 
-    val swing = settings.group("Swing")
+    @Usage(SettingUsage.VISUAL, SettingUsage.POSITION)
+    val swing by settings.group("Swing")
     var swingSpeed by swing.float("Speed", "Swing speed", 0.5f, 0.01f, 3f)
     var swingX by swing.float("Swing X", "Swing position", 0f, -2f, 2f)
     var swingY by swing.float("Swing Y", "Swing position", 0.02f, -2f, 2f)
@@ -44,7 +50,8 @@ class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VI
     var swingRAY by swing.float("Swing RAY", "Swing absolute rotation degrees", 0f, -180f, 180f)
     var swingRPZ by swing.float("Swing RPZ", "Swing progress-based rotation degrees", 0f, -180f, 180f)
 
-    val eat = settings.group("Eat")
+    @Usage(SettingUsage.VISUAL, SettingUsage.POSITION)
+    val eat by settings.group("Eat")
     var eatJitter by eat.float("Jitter", "Eating Y jitter", 0.1f, 0f, 2f)
     var eatX by eat.float("Eat X", "Eat position", 0.6f, -2f, 2f)
     var eatY by eat.float("Eat Y", "Eat position", -0.5f, -2f, 2f)

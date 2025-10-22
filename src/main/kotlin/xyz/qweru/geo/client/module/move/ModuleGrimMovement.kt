@@ -16,7 +16,7 @@ import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.extend.theWorld
-import xyz.qweru.geo.helper.world.WorldHelper
+import xyz.qweru.geo.client.helper.world.WorldHelper
 
 class ModuleGrimMovement : Module("GrimMovement", "grim bypass test", Category.MOVEMENT) {
 

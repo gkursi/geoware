@@ -8,7 +8,7 @@ import net.minecraft.entity.player.PlayerEntity
 import xyz.qweru.geo.core.system.System
 import java.util.*
 
-class Friends : System("friends") {
+class Friends : System("friends", Type.ROOT) {
     private val friends = ObjectOpenHashSet<UUID>()
 
     fun add(uuid: UUID) = friends.add(uuid)
@@ -18,7 +18,8 @@ class Friends : System("friends") {
     override fun initThis() {}
 
     override fun loadThis(json: JsonObject) {
-        val friends = json["friends"]
+        val friends = json["list"]
+        this.friends.clear()
         if (friends != null) for (element in friends.asJsonArray) {
             val content = element.asString
             try {
@@ -27,12 +28,13 @@ class Friends : System("friends") {
                 logger.warn("Skipping invalid friend UUID: $content")
             }
         }
+        this.friends.trim()
     }
 
     override fun saveThis(json: JsonObject) {
         val array = JsonArray(friends.size)
         for (id in friends)
             array.add(JsonPrimitive(id.toString()))
-        json.add("friends", array)
+        json.add("list", array)
     }
 }

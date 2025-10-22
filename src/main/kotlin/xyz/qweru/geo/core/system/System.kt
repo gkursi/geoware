@@ -3,25 +3,24 @@ package xyz.qweru.geo.core.system
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceCollection
-import xyz.qweru.geo.core.Glob
-import xyz.qweru.geo.core.event.Events
+import xyz.qweru.geo.core.Global
+import xyz.qweru.geo.core.system.helper.tree.SystemContext
 import kotlin.reflect.KClass
 
-abstract class System(val name: String) {
+/**
+ * @param name must be lowercase
+ * @param type indicator for config options
+ */
+abstract class System(open val name: String, val type: Type = Type.INTERNAL) {
     private val sub: Reference2ReferenceOpenHashMap<KClass<out System>, System> = Reference2ReferenceOpenHashMap()
 
     protected var firstInit = true
         private set
-    protected val logger = Glob.logger
+    protected val logger = Global.logger
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : System> get(system: KClass<T>): T {
-        return sub[system]!! as T
-    }
-
-    fun <T : System> get(system: Class<T>): T {
-        return get(system.kotlin)
-    }
+    fun <T : System> get(system: KClass<T>): T = sub[system]!! as T
+    fun <T : System> get(system: Class<T>): T = get(system.kotlin)
 
     open fun add(system: System) {
         sub[system::class] = system
@@ -29,24 +28,27 @@ abstract class System(val name: String) {
     }
 
     /**
-     * @param stateProvider lets you selectively load subsystems
+     * @param ctx lets you selectively load subsystems
      */
-    open fun load(json: JsonObject, stateProvider: (System, System) -> Boolean = {_, _ -> true}) {
+    open fun load(json: JsonObject, ctx: SystemContext = SystemContext()) {
         loadThis(json)
         for (system in sub.values) {
-            if (!stateProvider.invoke(this, system)) continue
-            json[system.name]?.let { system.load(it as JsonObject, stateProvider) }
+            if (ctx.systemFilter.isPresent && !ctx.systemFilter.get().invoke(this, system)) continue
+            json[system.name]?.let { system.load(it as JsonObject, ctx) }
         }
     }
 
     /**
-     * @param stateProvider lets you selectively save subsystems
+     * @param ctx lets you selectively save subsystems
      */
-    open fun save(json: JsonObject, stateProvider: (System, System) -> Boolean = {_, _ -> true}) {
+    open fun save(json: JsonObject, ctx: SystemContext = SystemContext()) {
         saveThis(json)
         for (system in sub.values) {
-            if (!stateProvider.invoke(this, system)) continue
-            json[system.name]?.let { system.save(it as JsonObject, stateProvider) }
+            if (system == null) throw IllegalStateException("System is null!")
+            if (ctx.systemFilter.isPresent && !ctx.systemFilter.get().invoke(this, system)) continue
+            val obj = JsonObject()
+            system.save(obj, ctx)
+            json.add(system.name, obj)
         }
     }
 
@@ -61,4 +63,8 @@ abstract class System(val name: String) {
     protected abstract fun initThis()
     protected abstract fun loadThis(json: JsonObject)
     protected abstract fun saveThis(json: JsonObject)
+
+    enum class Type {
+        ROOT, MODULE, INTERNAL
+    }
 }

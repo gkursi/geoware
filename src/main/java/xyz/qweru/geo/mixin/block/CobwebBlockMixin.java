@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.core.manager.movement.MovementState;
 
-import static xyz.qweru.geo.core.Glob.mc;
+import static xyz.qweru.geo.core.Global.mc;
 
 @Mixin(CobwebBlock.class)
 public class CobwebBlockMixin {

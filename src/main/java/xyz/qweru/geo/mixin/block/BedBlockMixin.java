@@ -1,7 +1,6 @@
 package xyz.qweru.geo.mixin.block;
 
 import net.minecraft.block.BedBlock;
-import net.minecraft.block.SlimeBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.Mixin;
@@ -10,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.core.manager.movement.MovementState;
 
-import static xyz.qweru.geo.core.Glob.mc;
+import static xyz.qweru.geo.core.Global.mc;
 
 @Mixin(BedBlock.class)
 public class BedBlockMixin {

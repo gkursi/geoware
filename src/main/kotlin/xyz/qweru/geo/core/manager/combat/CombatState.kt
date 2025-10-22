@@ -2,11 +2,10 @@ package xyz.qweru.geo.core.manager.combat
 
 import net.minecraft.entity.player.PlayerEntity
 import xyz.qweru.geo.client.event.PlayerAttackPlayerEvent
-import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.core.Glob.mc
+import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.helper.player.AttackHelper
+import xyz.qweru.geo.client.helper.player.AttackHelper
 
 class CombatState(private val playerProvider: (CombatState) -> PlayerEntity?) {
 

@@ -13,15 +13,13 @@ import xyz.qweru.geo.client.module.move.ModuleVelocity
 import xyz.qweru.geo.client.module.player.ModuleFastUse
 import xyz.qweru.geo.client.module.player.ModuleMCA
 import xyz.qweru.geo.client.module.visual.ModuleViewModel
-import xyz.qweru.geo.core.Glob
-import xyz.qweru.geo.core.command.Commands
-import xyz.qweru.geo.core.event.EventPriority
-import xyz.qweru.geo.core.event.Events
-import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.Global
+import xyz.qweru.geo.core.manager.command.CommandManager
+import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.manager.Managers
 import xyz.qweru.geo.core.system.module.Modules
 import xyz.qweru.geo.core.system.Systems
-import xyz.qweru.geo.helper.player.InvHelper
+import xyz.qweru.geo.core.system.config.Configs
 
 class GeoWare : ModInitializer {
 
@@ -29,14 +27,14 @@ class GeoWare : ModInitializer {
         val i = System.nanoTime()
 
         Systems.init()
-        Commands.register()
+        CommandManager.register()
         Managers.init()
-        Events.subscribe(this)
-        Events.post(":3")
+        Systems.get(Configs::class).init()
+
+        EventBus.subscribe(this)
         createInputListeners()
 
-        Glob.logger.info("Initialized ${Glob.mod} in ${(System.nanoTime() - i)/1000000}ms")
-        config()
+        Global.logger.info("Initialized ${Global.MOD} in ${(System.nanoTime() - i)/1000000}ms")
     }
 
     private fun createInputListeners() {
@@ -55,22 +53,5 @@ class GeoWare : ModInitializer {
 //                Events.post(KeyboardInputEvent)
 //            }
 //        }
-    }
-
-    // temporary
-    private fun config() {
-        Systems.get(Modules::class).get(ModuleFastUse::class).enabled = true
-        Systems.get(Modules::class).get(ModuleVelocity::class).enabled = true
-        Systems.get(Modules::class).get(ModuleTriggerBot::class).enabled = true
-//        Systems.get(Modules::class).get(ModuleHitbox::class).enabled = true
-        Systems.get(Modules::class).get(ModuleReach::class).enabled = true
-        Systems.get(Modules::class).get(ModuleSafeWalk::class).enabled = true
-        Systems.get(Modules::class).get(ModuleAimAssist::class).enabled = true
-        Systems.get(Modules::class).get(ModuleAutoTotem::class).enabled = true
-        Systems.get(Modules::class).get(ModuleViewModel::class).enabled = true
-        Systems.get(Modules::class).get(ModuleAnchorMacro::class).enabled = true
-        Systems.get(Modules::class).get(ModuleMCA::class).enabled = true
-        Systems.get(Modules::class).get(ModuleSprint::class).enabled = true
-        Systems.get(Modules::class).get(ModuleTargetStrafe::class).enabled = true
     }
 }

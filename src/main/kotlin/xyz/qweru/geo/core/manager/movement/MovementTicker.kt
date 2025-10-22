@@ -2,9 +2,9 @@ package xyz.qweru.geo.core.manager.movement
 
 import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.network.packet.c2s.play.ClientTickEndC2SPacket
-import xyz.qweru.geo.core.Glob.mc
+import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.helper.timing.Timer
+import xyz.qweru.geo.client.helper.timing.Timer
 import xyz.qweru.geo.imixin.IClientPlayerEntity
 
 /**

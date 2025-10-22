@@ -8,8 +8,8 @@ import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.helper.player.InvHelper
-import xyz.qweru.geo.helper.timing.TimerDelay
+import xyz.qweru.geo.client.helper.player.InvHelper
+import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.mixin.game.MinecraftClientAccessor
 
 class ModuleFastUse : Module("FastUse", "Reduce item use cooldown", Category.PLAYER) {

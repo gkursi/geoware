@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.client.event.GameRenderEvent;
 import xyz.qweru.geo.client.event.WorldRenderEvent;
 import xyz.qweru.geo.client.module.visual.ModuleViewModel;
-import xyz.qweru.geo.core.event.Events;
+import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.system.Systems;
 import xyz.qweru.geo.core.system.module.Modules;
 
@@ -21,12 +21,12 @@ public class GameRendererMixin {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void onFrame(RenderTickCounter tickCounter, boolean tick, CallbackInfo ci) {
-        Events.INSTANCE.post(GameRenderEvent.INSTANCE);
+        EventBus.INSTANCE.post(GameRenderEvent.INSTANCE);
     }
 
     @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;shouldRenderCrosshair()Z"))
     private void onWorldRender(RenderTickCounter renderTickCounter, CallbackInfo ci) {
-        Events.INSTANCE.post(WorldRenderEvent.INSTANCE);
+        EventBus.INSTANCE.post(WorldRenderEvent.INSTANCE);
     }
 
     @Unique
@@ -34,7 +34,7 @@ public class GameRendererMixin {
 
     @Inject(method = "renderHand", at = @At("HEAD"))
     private void renderHand(float tickProgress, boolean sleeping, Matrix4f positionMatrix, CallbackInfo ci) {
-        viewModel = Systems.Companion.get(Modules.class).get(ModuleViewModel.class);
+        viewModel = Systems.INSTANCE.get(Modules.class).get(ModuleViewModel.class);
     }
 
     @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)

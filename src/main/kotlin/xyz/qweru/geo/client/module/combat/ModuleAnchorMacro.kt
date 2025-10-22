@@ -16,8 +16,8 @@ import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.theWorld
-import xyz.qweru.geo.helper.player.InvHelper
-import xyz.qweru.geo.helper.timing.TimerDelay
+import xyz.qweru.geo.client.helper.player.InvHelper
+import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.multirender.api.API
 
 class ModuleAnchorMacro : Module("AnchorMacro", "Automatically place and break anchors", Category.COMBAT) {

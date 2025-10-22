@@ -1,6 +1,6 @@
 package xyz.qweru.geo.client.event
 
-import xyz.qweru.geo.core.Glob.mc
+import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.mixin.game.Vec3dAccesor
 

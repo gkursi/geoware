@@ -8,12 +8,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.client.event.HudRenderEvent;
-import xyz.qweru.geo.core.event.Events;
+import xyz.qweru.geo.core.event.EventBus;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
     @Inject(method = "render", at = @At("TAIL"))
     private void renderHUD(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        Events.INSTANCE.post(HudRenderEvent.INSTANCE);
+        EventBus.INSTANCE.post(HudRenderEvent.INSTANCE);
     }
 }

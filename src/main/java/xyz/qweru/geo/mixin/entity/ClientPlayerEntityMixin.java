@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.client.event.VelocityTickEvent;
-import xyz.qweru.geo.core.event.Events;
+import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.manager.movement.MovementState;
 import xyz.qweru.geo.core.manager.movement.MovementTicker;
 import xyz.qweru.geo.imixin.IClientPlayerEntity;
@@ -43,7 +43,7 @@ public abstract class ClientPlayerEntityMixin implements IClientPlayerEntity {
         VelocityTickEvent.INSTANCE.setX(vel.x);
         VelocityTickEvent.INSTANCE.setY(vel.y);
         VelocityTickEvent.INSTANCE.setZ(vel.z);
-        Events.INSTANCE.post(VelocityTickEvent.INSTANCE);
+        EventBus.INSTANCE.post(VelocityTickEvent.INSTANCE);
     }
 
     @ModifyExpressionValue(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasVehicle()Z"))

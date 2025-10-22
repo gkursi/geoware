@@ -11,9 +11,9 @@ import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.inFov
 import xyz.qweru.geo.extend.inRange
 import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.helper.entity.TargetHelper
-import xyz.qweru.geo.helper.player.InvHelper
-import xyz.qweru.geo.helper.player.RotationHelper
+import xyz.qweru.geo.client.helper.entity.TargetHelper
+import xyz.qweru.geo.client.helper.player.InvHelper
+import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.multirender.api.API
 import xyz.qweru.multirender.impl.mixin.mixininterface.MouseInvoker
 import java.util.*

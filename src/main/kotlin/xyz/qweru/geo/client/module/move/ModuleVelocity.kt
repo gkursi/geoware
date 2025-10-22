@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.core.Glob
+import xyz.qweru.geo.core.Global
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.manager.combat.CombatState
 import xyz.qweru.geo.core.system.module.Category
@@ -36,7 +36,7 @@ class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT)
     private fun onTick(e: PreTickEvent) {
         if (!inGame) return
         if (mode != Mode.JUMP_RESET) return
-        if (mc.thePlayer.hurtTime == Glob.mc.player!!.maxHurtTime - 1 && canJump && mc.thePlayer.isOnGround && checkConditions()) {
+        if (mc.thePlayer.hurtTime == Global.mc.player!!.maxHurtTime - 1 && canJump && mc.thePlayer.isOnGround && checkConditions()) {
             API.keyboardHandler.press(GLFW.GLFW_KEY_SPACE)
             API.keyboardHandler.release(GLFW.GLFW_KEY_SPACE)
             canJump = false

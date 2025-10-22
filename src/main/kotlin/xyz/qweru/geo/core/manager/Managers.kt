@@ -1,11 +1,12 @@
 package xyz.qweru.geo.core.manager
 
-import xyz.qweru.geo.core.event.Events
+import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.manager.combat.CombatEventHandler
 import xyz.qweru.geo.core.manager.combat.CombatState
 import xyz.qweru.geo.core.manager.combat.TargetTracker
+import xyz.qweru.geo.core.manager.command.CommandManager
 import xyz.qweru.geo.core.manager.movement.MovementTicker
-import xyz.qweru.geo.helper.player.InvHelper
+import xyz.qweru.geo.client.helper.player.InvHelper
 
 /**
  * Misc managing classes that don't implement the system class
@@ -13,6 +14,7 @@ import xyz.qweru.geo.helper.player.InvHelper
 object Managers {
 
     fun init() {
+        manage(CommandManager)
         manage(MovementTicker)
         manage(InvHelper)
         manage(CombatState.SELF)
@@ -22,7 +24,7 @@ object Managers {
     }
 
     private fun manage(o: Any) {
-        Events.subscribe(o)
+        EventBus.subscribe(o)
     }
 
 }

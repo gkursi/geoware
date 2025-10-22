@@ -1,15 +1,15 @@
 package xyz.qweru.geo.core.system.module
 
 import com.google.gson.JsonObject
-import xyz.qweru.geo.core.Glob
-import xyz.qweru.geo.core.event.Events
+import xyz.qweru.geo.core.Global
+import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.system.setting.Settings
 import xyz.qweru.geo.core.system.System
 
-abstract class Module(name: String, val description: String = "$name module", val category: Category = Category.MISC,
-                      val alwaysEnabled: Boolean = false, var bind: Int = -1) : System(name) {
-    protected val mc = Glob.mc
-    val settings = Settings()
+abstract class Module(name: String, val description: String = "${name.lowercase()} module", val category: Category = Category.MISC,
+                      val alwaysEnabled: Boolean = false, var bind: Int = -1) : System(name, Type.MODULE) {
+    protected val mc = Global.mc
+    val settings = Settings(this)
 
     var enabled: Boolean = alwaysEnabled
         set(value) {
@@ -17,12 +17,12 @@ abstract class Module(name: String, val description: String = "$name module", va
             field = if (alwaysEnabled) true else value
             if (field != prev) {
                 if (field) {
-                    Events.subscribe(this)
+                    EventBus.subscribe(this)
                     println("Subscribed $name")
                     enable()
                 }
                 else {
-                    Events.unsubscribe(this)
+                    EventBus.unsubscribe(this)
                     println("Unsubscribed $name")
                     disable()
                 }

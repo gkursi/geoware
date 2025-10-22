@@ -1,10 +1,9 @@
 package xyz.qweru.geo.client.module.move
 
-import net.minecraft.client.option.GameOptions
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.core.Glob.mc
+import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.Systems
@@ -12,9 +11,9 @@ import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.core.system.module.Modules
 import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.helper.input.GameInput
-import xyz.qweru.geo.helper.network.PacketHelper
-import xyz.qweru.geo.helper.timing.TimerDelay
+import xyz.qweru.geo.client.helper.input.GameInput
+import xyz.qweru.geo.client.helper.network.PacketHelper
+import xyz.qweru.geo.client.helper.timing.TimerDelay
 
 class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT) {
 

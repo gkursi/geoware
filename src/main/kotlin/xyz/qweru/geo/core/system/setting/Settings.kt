@@ -3,8 +3,10 @@ package xyz.qweru.geo.core.system.setting
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import xyz.qweru.geo.core.system.System
+import xyz.qweru.geo.core.system.helper.tree.SystemContext
+import xyz.qweru.geo.core.system.module.Module
 
-class Settings : System("settings") {
+class Settings(val module: Module) : System("settings") {
     val allSettings = ObjectArrayList<Setting<*, *>>(5)
 
     fun group(name: String): SettingGroup = SettingGroup(name, this)
@@ -19,13 +21,17 @@ class Settings : System("settings") {
             json[setting.name]?.let { setting.load(it.asJsonObject) }
     }
 
-    override fun saveThis(json: JsonObject) {
+    override fun save(json: JsonObject, ctx: SystemContext) {
         for (setting in allSettings) {
+            if (ctx.settingFilter.isPresent && !ctx.settingFilter.get().invoke(module, setting))
+                continue
             val obj = JsonObject()
             setting.save(obj)
             json.add(setting.name, obj)
         }
     }
+
+    override fun saveThis(json: JsonObject) = throw AssertionError()
 
     override fun initThis() {}
 }

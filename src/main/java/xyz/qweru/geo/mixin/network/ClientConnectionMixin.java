@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.client.event.PacketEvent;
 import xyz.qweru.geo.client.event.PacketReceiveEvent;
 import xyz.qweru.geo.client.event.PacketSendEvent;
-import xyz.qweru.geo.core.event.Events;
+import xyz.qweru.geo.core.event.EventBus;
 
 import java.util.Iterator;
 
@@ -41,7 +41,7 @@ public class ClientConnectionMixin {
     @Unique
     private boolean onPacket(Packet<?> packet, PacketEvent event) {
         event.setPacket(packet);
-        return Events.INSTANCE.post(event).getCancelled();
+        return EventBus.INSTANCE.post(event).getCancelled();
     }
 
 }
