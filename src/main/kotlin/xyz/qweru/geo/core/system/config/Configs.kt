@@ -51,7 +51,6 @@ class Configs : System("configs", type = Type.INTERNAL) {
             do {
                 watchKey = watchService.take()
                 configsChanged = true
-                Global.logger.info("Config dir changed! ${watchKey.pollEvents().joinToString(", ", transform = { it.kind().name() })}")
             } while (watchKey.reset())
         }
 
@@ -69,19 +68,18 @@ class Configs : System("configs", type = Type.INTERNAL) {
         loadThis((if (configFile.exists()) FileReader(configFile).use { JsonParser.parseReader(it)?.asJsonObject } else emptyJson) ?: emptyJson)
         for (system in Systems.getSubsystems()) {
             if (system.type != Type.ROOT) continue
-            sources.forEach { system.load(it.json.get(system.name)?.asJsonObject ?: emptyJson, SystemContext.of(it.type)) }
+            system.load(moduleSource.json.get(system.name)?.asJsonObject ?: emptyJson, SystemContext.of(moduleSource.type))
         }
     }
 
     override fun loadThis(json: JsonObject) {
-        Global.logger.info(json.toString())
         findConfig(json.get("modules")?.asString ?: "")?.let {
-            moduleSource = it
-            sources.add(it)
+            if (it.isEmpty) return@let
+            moduleSource = Config(it.name, ConfigType.MODULE, it.json)
         }
         findConfig(json.get("friends")?.asString ?: "")?.let {
-            friendSource = it
-            sources.add(it)
+            if (it.isEmpty) return@let
+            friendSource = Config(it.name, ConfigType.FRIEND, it.json)
         }
 
         if (moduleSource.isEmpty || friendSource.isEmpty)
@@ -100,18 +98,18 @@ class Configs : System("configs", type = Type.INTERNAL) {
 
         writeConfig(moduleSource)
         writeConfig(friendSource)
-        saveConfig(moduleSource)
         saveConfig(friendSource)
+        saveConfig(moduleSource)
     }
 
     fun save(name: String, type: ConfigType) {
         val config = findConfig(name) ?: Config(name, type, JsonObject())
+        if (config == Config.EMPTY) return
         writeConfig(config)
         saveConfig(config)
     }
 
     fun findConfig(name: String): Config? {
-        Global.logger.info("Searching for config")
         if (name == "") return Config.EMPTY
         if (configsChanged) scanConfigs()
         return knownConfigs[name]
@@ -131,7 +129,7 @@ class Configs : System("configs", type = Type.INTERNAL) {
     fun loadConfig(config: Config) {
         for (system in Systems.getSubsystems()) {
             if (system.type != Type.ROOT) continue
-            system.load(config.json, SystemContext.of(config.type))
+            system.load(config.json.get(system.name)?.asJsonObject ?: emptyJson, SystemContext.of(config.type))
         }
 
         if (config.type.hasModules) moduleSource = config
@@ -154,18 +152,15 @@ class Configs : System("configs", type = Type.INTERNAL) {
     }
 
     private fun scanConfigs() {
-        Global.logger.info("Scanning for configs in $configDir (isDirectory: ${configDir.isDirectory}, files: ${configDir.listFiles().size}")
         knownConfigs.clear()
         for (file in configDir.listFiles()) {
             try {
                 val config = getConfig(file) ?: continue
                 knownConfigs[file.nameWithoutExtension] = config
-                Global.logger.info("Found config: ${config.name}")
             } catch (_: IOException) {
                 Global.logger.warn("Skipping invalid config entry: $file")
             }
         }
-        Global.logger.info("Found ${knownConfigs.size} configs")
         knownConfigs.trim()
         configsChanged = false
     }

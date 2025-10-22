@@ -17,7 +17,7 @@ import xyz.qweru.geo.client.module.move.ModuleSafeWalk
 import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.client.module.move.ModuleTargetStrafe
 import xyz.qweru.geo.client.module.player.ModuleFastUse
-import xyz.qweru.geo.client.module.player.ModuleMCA
+import xyz.qweru.geo.client.module.player.ModuleKeyAction
 import xyz.qweru.geo.client.module.visual.ModuleViewModel
 import xyz.qweru.geo.core.system.System
 
@@ -36,7 +36,7 @@ class Modules() : System("modules", Type.ROOT) {
         add(ModuleSafeWalk())
         add(ModuleAimAssist())
         add(ModuleSwap())
-        add(ModuleMCA())
+        add(ModuleKeyAction())
         add(ModuleNoPackFingerprint())
         add(ModuleAnchorMacro())
         add(ModuleAutoTotem())

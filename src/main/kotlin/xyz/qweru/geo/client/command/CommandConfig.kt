@@ -51,8 +51,7 @@ class CommandConfig : Command("config", "Save/load/export configs",
 
             when (action) {
                 "save" -> {
-                    configs.writeConfig(config)
-                    configs.saveConfig(config)
+                    configs.save(config.name, config.type)
                     Global.logger.info("saved ${config.name}")
                 }
                 "load" -> configs.loadConfig(config)

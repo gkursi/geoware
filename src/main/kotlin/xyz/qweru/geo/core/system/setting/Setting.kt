@@ -23,6 +23,7 @@ abstract class Setting<T : Setting<T, V>, V>(val name: String, val description: 
         set(value) {
             field = value
             changeListener.invoke(this as T)
+            Global.logger.info("$name changed value to $value")
         }
 
     fun onChange(listener: (T) -> Unit): T {

@@ -14,13 +14,16 @@ import xyz.qweru.geo.client.helper.player.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.multirender.api.API
 
-class ModuleMCA : Module("MCA", "Bind actions to your middle mouse button", Category.PLAYER) {
-    val sg = settings.group("General")
-    var groundAction by sg.enum("Ground", "Action to do when middle clicking the ground", Action.PEARL)
-    var airAction by sg.enum("Air", "Action to execute while middle clicking air", Action.PEARL)
-    var entityAction by sg.enum("Entity", "Action to execute while middle clicking an entity", Action.PEARL)
-    var elytraFirework by sg.boolean("Elytra Rocket", "Use rockets while flying with an elytra", true)
-    var delay by sg.longRange("Delay", "Delay between actions", 500L..550L, 0L..1000L)
+class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLAYER) {
+    val smc = settings.group("Middle Click")
+    var groundAction by smc.enum("Ground", "Action to do when middle clicking the ground", Action.PEARL)
+    var airAction by smc.enum("Air", "Action to execute while middle clicking air", Action.PEARL)
+    var entityAction by smc.enum("Entity", "Action to execute while middle clicking an entity", Action.PEARL)
+    var elytraFirework by smc.boolean("Elytra Rocket", "Use rockets while flying with an elytra", true)
+    var delay by smc.longRange("Delay", "Delay between actions", 500L..550L, 0L..1000L)
+
+//    val srsw = settings.group("RC Ground")
+//    val swordOnly by srsw.boolean("Sword Only")
 
     private val timer = TimerDelay()
     private var doAction = false // if scroll-swapping is enabled, this might take multiple ticks

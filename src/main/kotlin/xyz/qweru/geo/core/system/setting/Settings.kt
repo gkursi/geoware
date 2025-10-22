@@ -2,6 +2,7 @@ package xyz.qweru.geo.core.system.setting
 
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
+import xyz.qweru.geo.core.Global
 import xyz.qweru.geo.core.system.System
 import xyz.qweru.geo.core.system.helper.tree.SystemContext
 import xyz.qweru.geo.core.system.module.Module
@@ -18,7 +19,9 @@ class Settings(val module: Module) : System("settings") {
 
     override fun loadThis(json: JsonObject) {
         for (setting in allSettings)
-            json[setting.name]?.let { setting.load(it.asJsonObject) }
+            json[setting.name]?.let { setting.load(it.asJsonObject) } ?: {
+                Global.logger.info("$name has no value in $json")
+            }
     }
 
     override fun save(json: JsonObject, ctx: SystemContext) {
