@@ -22,7 +22,9 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
             val module = Systems.get(Modules::class).get(ModuleSprint::class)
             if (module.enabled) {
                 module.sprinting = sprinting
-                if (now) module.sprint(sprinting)
+                if (now) {
+                    module.sprint(sprinting)
+                }
             }
             else mc.options.sprintKey.isPressed = sprinting
         }
