@@ -12,7 +12,7 @@ import xyz.qweru.geo.client.module.combat.ModuleReach
 import xyz.qweru.geo.client.module.combat.ModuleTriggerBot
 import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.client.module.misc.ModuleNoPackFingerprint
-import xyz.qweru.geo.client.module.move.ModuleElytraFly
+import xyz.qweru.geo.client.module.move.ModuleVulcanElytra
 import xyz.qweru.geo.client.module.move.ModuleSpeed
 import xyz.qweru.geo.client.module.move.ModuleVelocity
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk
@@ -48,7 +48,7 @@ class Modules() : System("modules", Type.ROOT) {
         add(ModuleSpeed())
         add(ModuleBacktrack())
         add(ModuleAutoBlock())
-        add(ModuleElytraFly())
+        add(ModuleVulcanElytra())
         
         sorted.sortWith(Comparator.comparing(Module::name))
     }
