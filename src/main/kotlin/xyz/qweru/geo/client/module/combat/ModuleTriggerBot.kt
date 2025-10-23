@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.input.GameInput
 import xyz.qweru.geo.client.helper.player.AttackHelper
+import xyz.qweru.geo.client.helper.player.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.core.event.Handler
@@ -74,6 +75,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
             val en = (mc.crosshairTarget as EntityHitResult).entity
             if (en is PlayerEntity && checkPlayer(en)) return
             if (random.nextFloat() > miss) {
+                ModuleAutoBlock.unblock()
                 API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_1)
                 API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_1)
             }
@@ -83,6 +85,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
             val hit = mc.theWorld.target(mc.thePlayer.entityInteractionRange + failReach)
             if (hit !is EntityHitResult) return
 
+            ModuleAutoBlock.unblock()
             API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_1)
             API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_1)
             timer.reset(delay)
@@ -90,7 +93,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     }
 
     fun checkPlayer(en: PlayerEntity): Boolean {
-        if (!mc.thePlayer.activeItem.isEmpty) return true
+        if (!mc.thePlayer.activeItem.isEmpty && !InvHelper.isInMainhand { InvHelper.isSword(it.item) }) return true
         if (attackFirst && en != TargetTracker.target) return true
 
         if (TargetTracker.target == null) TargetTracker.target = en

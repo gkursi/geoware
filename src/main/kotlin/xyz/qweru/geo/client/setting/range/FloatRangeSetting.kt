@@ -29,6 +29,6 @@ class FloatRangeSetting(name: String, description: String, default: ClosedRange<
     }
 
     override fun load(jsonObject: JsonObject) {
-        value = RangeHelper.rangeOf(jsonObject.get("min").asFloat, jsonObject.get("max").asFloat)
+        value = RangeHelper.rangeOf(jsonObject.get("min")?.asFloat ?: minMax.start, jsonObject.get("max")?.asFloat ?: minMax.endInclusive)
     }
 }

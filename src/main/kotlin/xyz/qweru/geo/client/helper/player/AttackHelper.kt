@@ -1,5 +1,6 @@
 package xyz.qweru.geo.client.helper.player
 
+import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.decoration.EndCrystalEntity
@@ -28,7 +29,7 @@ object AttackHelper {
 
     fun willCrit(entity: PlayerEntity = mc.thePlayer, groundTicks: Int = 0, cooldown: Float = entity.getAttackCooldownProgress(0.5f)): Boolean =
         cooldown > 0.9f
-        && (!entity.isOnGround || entity.groundTicks < groundTicks)
+        && (!entity.isOnGround || (entity is ClientPlayerEntity && entity.groundTicks < groundTicks))
         && !entity.isClimbing && !entity.isTouchingWater
         && !entity.hasStatusEffect(StatusEffects.BLINDNESS)
         && !entity.hasVehicle()

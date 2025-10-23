@@ -19,11 +19,25 @@ object GameInput {
     var leftKey by wrap(options.leftKey)
     var rightKey by wrap(options.rightKey)
 
+    var jumpKey by wrap(options.jumpKey)
+    var sneakKey by wrap(options.sneakKey)
+
+    val moving: Boolean
+        get() = forwardKey || backKey || leftKey || rightKey
+
+    var useKey by wrap(options.useKey)
+    var attackKey by wrap(options.attackKey)
+
     private fun wrap(bind: KeyBinding): KeyBindingWrapper = KeyBindingWrapper(bind)
 
     private class KeyBindingWrapper(val bind: KeyBinding) {
         operator fun getValue(u: Any?, property: KProperty<*>) =
-            !bind.isUnbound && GLFW.glfwGetKey(mc.window.handle, (bind as KeyBindingAccessor).geo_getBound().code) == GLFW.GLFW_PRESS
+            !bind.isUnbound && (bind as KeyBindingAccessor).geo_getBound().code.let {
+                if (it <= GLFW.GLFW_MOUSE_BUTTON_LAST)
+                    return@let GLFW.glfwGetMouseButton(mc.window.handle, (bind as KeyBindingAccessor).geo_getBound().code) == GLFW.GLFW_PRESS
+                else
+                    return@let GLFW.glfwGetKey(mc.window.handle, (bind as KeyBindingAccessor).geo_getBound().code) == GLFW.GLFW_PRESS
+            }
         operator fun setValue(u: Any?, property: KProperty<*>, v: Boolean) {
             bind.isPressed = v
         }

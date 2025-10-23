@@ -6,61 +6,51 @@ import net.minecraft.block.entity.EnderChestBlockEntity
 import net.minecraft.block.entity.ShulkerBoxBlockEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.vehicle.BoatEntity
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket
-import xyz.qweru.geo.client.event.PacketSendEvent
-import xyz.qweru.geo.client.event.PostTickEvent
 import xyz.qweru.geo.client.event.VelocityTickEvent
+import xyz.qweru.geo.client.helper.world.WorldHelper
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.manager.movement.MovementState
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.extend.airTicks
 import xyz.qweru.geo.extend.thePlayer
 import xyz.qweru.geo.extend.theWorld
-import xyz.qweru.geo.client.helper.world.WorldHelper
 
-class ModuleGrimMovement : Module("GrimMovement", "grim bypass test", Category.MOVEMENT) {
+class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
+    private val sg = settings.group("General")
+    private val mode by sg.enum("Mode", "Speed mode", Mode.VULCAN)
 
-    val sg = settings.group("General")
-    private var extraCollide by sg.float("Extra Collide", ".", 0.5f, 0f, 1f)
-    private var ml by sg.float("Mul", "fixing my skill issue", 0.3f, 0.1f, 2f)
+    private val svulcan = settings.group("Vulcan").visible { mode == Mode.VULCAN }
+    private val downVel by svulcan.float("Velocity", "Downwards velocity", -0.125f, -0.5f, 0.5f)
+    private val airTick by svulcan.int("Air Tick", "Which air tick to use", 6, 1, 10)
+
+    private val sgrim = settings.group("Grim").visible { mode == Mode.GRIM }
+    private val extraCollide by sgrim.float("Extra Collide", ".", 0.5f, 0f, 1f)
+    private val ml by sgrim.float("Mul", "fixing my skill issue", 0.3f, 0.1f, 2f)
 
     private var hardCollisionTicks = 0
     private val maxHardCollisionTicks = 3
 
-    private var packet = 0
-    private var tick = 0
-
     @Handler
-    private fun postTick(e: PostTickEvent) {
-        if (!inGame) return
-        if (packet != ++tick) {
-            if (packet < tick) logger.warn("Skipped packet on tick $tick")
-            else logger.warn("Too many packets on tick $tick")
-            packet = tick
+    private fun onVelocity(e: VelocityTickEvent) {
+        when (mode) {
+            Mode.GRIM -> grimSpeed(e)
+            Mode.VULCAN -> vulcanSpeed(e)
         }
     }
 
-    @Handler
-    private fun onPacket(e: PacketSendEvent) {
-        if (e.packet is PlayerMoveC2SPacket) packet++
-    }
-
-    override fun enable() {
-        packet = 0
-        tick = 0
-    }
-
-    @Handler
-    private fun onVelocity(e: VelocityTickEvent) {
+    fun grimSpeed(e: VelocityTickEvent) {
         val mul = getMaxOffset(0.0)
         e.x += mul * ml * e.x
         e.y += mul * ml * e.y
         e.z += mul * ml * e.z
     }
 
-    fun getMaxOffset(base: Double): Double {
-        // This applies to input velocity, explosions and knockback
+    fun vulcanSpeed(e: VelocityTickEvent) {
+        if (mc.thePlayer.airTicks == airTick) e.y += downVel
+    }
 
+    fun getMaxOffset(base: Double): Double {
         var offset = base
 
         if (grimCollision()) {
@@ -117,4 +107,8 @@ class ModuleGrimMovement : Module("GrimMovement", "grim bypass test", Category.M
         }
     }
 
+    enum class Mode {
+        VULCAN,
+        GRIM
+    }
 }
