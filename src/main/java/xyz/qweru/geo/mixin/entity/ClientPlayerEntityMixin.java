@@ -12,6 +12,7 @@ import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,10 +25,11 @@ import xyz.qweru.geo.imixin.IClientPlayerEntity;
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityMixin implements IClientPlayerEntity {
     @Shadow @Final public ClientPlayNetworkHandler networkHandler;
-
     @Shadow protected abstract void sendSprintingPacket();
-
     @Shadow protected abstract void sendMovementPackets();
+
+    @Unique int groundTicks = 0;
+    @Unique int airTicks = 0;
 
     @Inject(method = "tickMovement", at = @At("HEAD"), cancellable = true)
     private void tickMovement(CallbackInfo ci) {
@@ -39,6 +41,14 @@ public abstract class ClientPlayerEntityMixin implements IClientPlayerEntity {
 
     @Inject(method = "tickMovement", at = @At("TAIL"))
     private void postMovement(CallbackInfo ci) {
+        if (((Entity)(Object) this).isOnGround()) {
+            groundTicks++;
+            airTicks = 0;
+        } else {
+            airTicks++;
+            groundTicks = 0;
+        }
+
         Vec3d vel = ((Entity)(Object) this).getVelocity();
         VelocityTickEvent.INSTANCE.setX(vel.x);
         VelocityTickEvent.INSTANCE.setY(vel.y);
@@ -70,5 +80,15 @@ public abstract class ClientPlayerEntityMixin implements IClientPlayerEntity {
         } else {
             this.sendMovementPackets();
         }
+    }
+
+    @Override
+    public int geo_getAirTicks() {
+        return airTicks;
+    }
+
+    @Override
+    public int geo_getGroundTicks() {
+        return groundTicks;
     }
 }

@@ -8,7 +8,6 @@
     "block.BerryBushBlockMixin",
     "block.CobwebBlockMixin",
     "block.SlimeBlockMixin",
-    "entity.EntityMixin",
     "entity.EntityTypeMixin",
     "entity.EntityVelocityUpdateS2CPacketAccessor",
     "entity.LivingEntityAccessor",
