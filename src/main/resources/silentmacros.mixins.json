@@ -31,6 +31,7 @@
     "render.GameRendererMixin",
     "render.HeldItemRendererMixin",
     "render.InGameHudMixin",
+    "render.WindowMixin",
     "screen.CreativeInventoryScreenAccessor",
     "screen.HandledScreenAccessor",
     "world.ClientWorldAccessor"

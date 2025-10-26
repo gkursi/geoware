@@ -7,6 +7,7 @@ import xyz.qweru.geo.core.manager.combat.TargetTracker
 import xyz.qweru.geo.core.manager.command.CommandManager
 import xyz.qweru.geo.core.manager.movement.MovementTicker
 import xyz.qweru.geo.client.helper.player.InvHelper
+import xyz.qweru.geo.core.render.skija.SkijaManager
 
 /**
  * Misc managing classes that don't implement the system class
@@ -21,6 +22,7 @@ object Managers {
         manage(CombatState.TARGET)
         manage(CombatEventHandler)
         manage(TargetTracker)
+        manage(SkijaManager)
     }
 
     private fun manage(o: Any) {

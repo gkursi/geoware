@@ -19,7 +19,11 @@ class SettingValueArgumentType(val settingArgName: String, val moduleArgName: St
 
     override fun <S> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
         val module = ModuleArgumentType.get(context, moduleArgName)
-        val setting = SettingArgumentType.get(context, settingArgName, module)
-        return setting.suggest<S>(builder)
+        try {
+            val setting = SettingArgumentType.get(context, settingArgName, module)
+            return setting.suggest<S>(builder)
+        } catch (_: Throwable) {
+            return builder.buildFuture()
+        }
     }
 }

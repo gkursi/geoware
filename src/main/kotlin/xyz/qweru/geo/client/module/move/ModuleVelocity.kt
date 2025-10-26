@@ -65,7 +65,8 @@ class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT)
 
     private fun onKB(vec: Vec3d) {
         when (mode) {
-            Mode.VANILLA -> {
+            Mode.VANILLA, Mode.VULCAN -> {
+                if (mode == Mode.VULCAN && !mc.thePlayer.isGliding) return
                 val accessor = vec as Vec3dAccesor
                 accessor.geo_setX(0.0)
                 accessor.geo_setY(0.0)
@@ -81,6 +82,6 @@ class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT)
         && !(pauseCombo > 0 && CombatState.TARGET.combo >= pauseCombo)
 
     enum class Mode {
-        VANILLA, JUMP_RESET,
+        VANILLA, JUMP_RESET, VULCAN
     }
 }

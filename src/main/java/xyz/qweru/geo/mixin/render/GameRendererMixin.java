@@ -19,7 +19,7 @@ import xyz.qweru.geo.core.system.module.Modules;
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
 
-    @Inject(method = "render", at = @At("TAIL"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;incrementFrame()V"))
     private void onFrame(RenderTickCounter tickCounter, boolean tick, CallbackInfo ci) {
         EventBus.INSTANCE.post(GameRenderEvent.INSTANCE);
     }

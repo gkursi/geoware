@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URI
 
 plugins {
     kotlin("jvm") version "2.2.20"
@@ -24,11 +25,9 @@ java {
 }
 
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
+    maven {
+        url = URI.create("https://packages.jetbrains.team/maven/p/skija/maven")
+    }
 }
 
 dependencies {
@@ -40,6 +39,8 @@ dependencies {
     implementation("xyz.qweru:multirender-api:1.0-SNAPSHOT")
     modImplementation("xyz.qweru:multirender-mc1.21.8:0.0.2")?.let { include(it) }
     modImplementation("com.ptsmods:devlogin:3.5")
+
+    api("org.jetbrains.skija:skija-linux:0.93.1")
 }
 
 tasks.processResources {

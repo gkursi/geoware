@@ -48,6 +48,7 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra rea
     private val receivedPacketQueue = ConcurrentLinkedQueue<StoredPacket>()
     private val packetsToProcess = ConcurrentLinkedQueue<StoredPacket>()
     private val bulkDelay = TimerDelay()
+    @Volatile
     private var trackedPosition: TrackedPosition? = null
 
     @Handler
@@ -122,7 +123,7 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra rea
             TargetTracker.target?.let {
                 if (trackedPosition != null) return
                 trackedPosition = TrackedPosition()
-                trackedPosition!!.pos = it.pos
+                trackedPosition?.pos = it.pos
             }
 
             when (packet) {
