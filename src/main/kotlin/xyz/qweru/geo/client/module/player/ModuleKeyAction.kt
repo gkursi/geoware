@@ -1,10 +1,12 @@
 package xyz.qweru.geo.client.module.player
 
 import net.minecraft.block.Blocks
+import net.minecraft.component.DataComponentTypes
 import net.minecraft.item.Item
 import net.minecraft.item.Items
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
+import net.minecraft.util.math.Direction
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
@@ -28,11 +30,14 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
     var delay by smc.longRange("Delay", "Delay between actions", 500L..550L, 0L..1000L)
 
     val src = settings.group("Ground RClick")
+    val swordOnly by src.boolean("Sword Only", "Sword only", true)
     val actionNearEnemy by src.enum("Near Enemy", "Action when near an enemy", Action.OBSIDIAN)
     val enemyRange by src.floatRange("Enemy Range", "Range the enemy has to be from you", 0f..10f, 0f..20f)
     val onlyTarget by src.boolean("Only Target", "Only check range for the current target", false)
     val otherAction by src.enum("Other", "Action when not near an enemy", Action.FIREBALL)
     val obsidianCrystal by src.boolean("Obsidian Crystal", "Crystal when right clicking obsidian", true)
+    val ignoreAnchor by src.boolean("Ignore Anchor", "Don't do the action when holding a respawn anchor", true) // TODO replace with an item filter
+    val ignoreObby by src.boolean("Ignore Obby", "Don't do the action when holding obsidian", true) // TODO replace with an item filter
 
 //    val srsw = settings.group("RC Ground")
 //    val swordOnly by srsw.boolean("Sword Only")
@@ -50,7 +55,7 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
             ?: rightClickAction().takeUnless { it == Action.NONE }
             ?: doAction.takeUnless { it == Action.NONE }
             ?: return
-        logger.info("Action: $action")
+
         if (!InvHelper.find({ it.isOf(action.item) }).found()) return
         InvHelper.swap(action.item, 0)
         if (!InvHelper.isInMainhand(action.item)) {
@@ -81,20 +86,28 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
 
     private fun rightClickAction(): Action {
         val hit = mc.crosshairTarget
-        if (!mc.mouse.wasRightButtonClicked() || hit !is BlockHitResult) return Action.NONE
+        var action = Action.NONE
+        if (!mc.mouse.wasRightButtonClicked() || hit !is BlockHitResult) return action
+        if (InvHelper.getMainhand().item.components.contains(DataComponentTypes.FOOD)
+            || ignoreAnchor && InvHelper.isHolding(Items.RESPAWN_ANCHOR)) return action
         val state = mc.theWorld.getBlockState(hit.blockPos)
-        if (state.isAir) return Action.NONE
 
-        if (obsidianCrystal && !mc.thePlayer.isSneaking && state.isOf(Blocks.OBSIDIAN))
-            return Action.CRYSTAL
-        return if (enemyNear()) actionNearEnemy else otherAction
+        action = if (obsidianCrystal && !mc.thePlayer.isSneaking && state.isOf(Blocks.OBSIDIAN))
+                    Action.CRYSTAL
+                else if (state.isAir || ignoreAnchor && state.isOf(Blocks.RESPAWN_ANCHOR) || ignoreObby && state.isOf(Blocks.OBSIDIAN))
+                    Action.NONE
+                else if (enemyNear())
+                    actionNearEnemy else otherAction
+        if (!InvHelper.isHolding { InvHelper.isSword(it.item) } && swordOnly && action.block)
+            action = Action.NONE
+        return action
     }
 
     private fun enemyNear(): Boolean =
         if (onlyTarget) TargetTracker.target?.inRange(enemyRange) ?: false
         else TargetHelper.findTarget(enemyRange, 360f, false) != null
 
-    enum class Action(val item: Item) {
+    enum class Action(val item: Item, val block: Boolean = false) {
         PEARL(Items.ENDER_PEARL),
         EXP(Items.EXPERIENCE_BOTTLE),
         POTION(Items.POTION),
@@ -102,10 +115,9 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
         FIREWORK(Items.FIREWORK_ROCKET),
         FIREBALL(Items.FIRE_CHARGE),
         FLINT_AND_STEEL(Items.FLINT_AND_STEEL),
-        OBSIDIAN(Items.OBSIDIAN),
-        WEB(Items.COBWEB),
+        OBSIDIAN(Items.OBSIDIAN, block = true),
+        WEB(Items.COBWEB, block = true),
         CRYSTAL(Items.END_CRYSTAL),
         NONE(Items.AIR);
-
     }
 }

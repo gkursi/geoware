@@ -9,17 +9,13 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.Window;
 import net.minecraft.network.packet.Packet;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.qweru.geo.client.event.HandleTaskEvent;
-import xyz.qweru.geo.client.event.PostInitEvent;
-import xyz.qweru.geo.client.event.PostTickEvent;
-import xyz.qweru.geo.client.event.PreTickEvent;
+import xyz.qweru.geo.client.event.*;
 import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.manager.movement.MovementTicker;
 
@@ -64,11 +60,16 @@ public class MinecraftClientMixin {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;runTasks()V", shift = At.Shift.BEFORE))
     private void preRunTasks(boolean tick, CallbackInfo ci) {
-        EventBus.INSTANCE.post(HandleTaskEvent.INSTANCE);
+        EventBus.INSTANCE.post(HandleTasksEvent.INSTANCE);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void postInit(RunArgs args, CallbackInfo ci) {
         EventBus.INSTANCE.post(PostInitEvent.INSTANCE);
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Mouse;tick()V", shift = At.Shift.AFTER))
+    private void gameRenderEvent(boolean tick, CallbackInfo ci) {
+        EventBus.INSTANCE.post(GameRenderEvent.INSTANCE);
     }
 }

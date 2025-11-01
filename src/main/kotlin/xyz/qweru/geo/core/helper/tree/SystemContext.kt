@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.system.helper.tree
+package xyz.qweru.geo.core.helper.tree
 
 import xyz.qweru.geo.core.system.config.ConfigType
 import java.util.Optional

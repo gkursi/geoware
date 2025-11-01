@@ -23,12 +23,12 @@ object WorldHelper {
         entity: Entity = mc.thePlayer,
         range: Double,
         ignoreBlocks: Boolean = false,
-        filter: Predicate<Entity> = Predicate<Entity> { true }
+        filter: Predicate<Entity> = Predicate<Entity> { true },
+        rotation: FloatArray
     ): HitResult? {
-        val camera: Camera = mc.gameRenderer.camera
-        val cameraPos = camera.pos
+        val cameraPos = entity.eyePos
 
-        val direction = Vec3d.fromPolar(camera.pitch, camera.yaw).multiply(range)
+        val direction = Vec3d.fromPolar(rotation[0], rotation[1]).multiply(range)
         val targetPos = cameraPos.add(direction)
 
         val entityHitResult = ProjectileUtil.raycast(
@@ -62,8 +62,8 @@ object WorldHelper {
         return null
     }
 
-    fun playerIntersects(validate: (BlockPos, BlockState, Box) -> Boolean): Boolean {
-        val bb = mc.thePlayer.boundingBox
+    fun playerIntersects(expand: Double = 0.0, validate: (BlockPos, BlockState, Box) -> Boolean): Boolean {
+        val bb = mc.thePlayer.boundingBox.expand(expand)
 
         val minX = floor(bb.minX).toInt()
         val maxX = floor(bb.maxX).toInt()
@@ -77,11 +77,11 @@ object WorldHelper {
                 for (z in minZ..maxZ) {
                     val pos = BlockPos(x, y, z)
                     val state = mc.theWorld.getBlockState(pos)
-                    if (state.block !is ShulkerBoxBlock) continue
                     val shape: VoxelShape = state.getCollisionShape(mc.theWorld, pos)
 
                     if (!shape.isEmpty) {
                         val shapeBox = shape.boundingBox.offset(x.toDouble(), y.toDouble(), z.toDouble())
+                        if (!validate.invoke(pos, state, shapeBox)) continue
                         if (bb.intersects(shapeBox)) {
                             return true
                         }

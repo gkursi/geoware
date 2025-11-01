@@ -2,6 +2,8 @@ package xyz.qweru.geo.client.module.move
 
 import net.minecraft.util.PlayerInput
 import xyz.qweru.geo.client.event.PostTickEvent
+import xyz.qweru.geo.client.event.PreTickEvent
+import xyz.qweru.geo.client.helper.input.GameInput
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
@@ -21,20 +23,15 @@ class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEM
     var timer = TimerDelay()
 
     @Handler
-    private fun preTick(e: PostTickEvent) {
-        if (inGame && sneak && mc.thePlayer.isOnGround) {
-            val input = mc.thePlayer.input.playerInput
+    private fun preTick(e: PreTickEvent) {
+        if (inGame && sneak && mc.thePlayer.isOnGround && !GameInput.jumpKey) {
             if (check()) {
-                mc.options.sneakKey.isPressed = true
-                mc.thePlayer.input.playerInput = PlayerInput(input.forward(), input.backward(), input.left(), input.right(), input.jump(), true, input.sprint())
+                GameInput.sneakKey = true
                 wasSneaking = true
                 timer.reset(standDelay)
-            } else if (wasSneaking) {
-                if (timer.hasPassed()) {
-                    mc.options.sneakKey.isPressed = false
-                    mc.thePlayer.input.playerInput = PlayerInput(input.forward(), input.backward(), input.left(), input.right(), input.jump(), true, input.sprint())
-                    wasSneaking = false
-                }
+            } else if (wasSneaking && timer.hasPassed()) {
+                mc.options.sneakKey.isPressed = GameInput.sneakKey
+                wasSneaking = false
             }
         }
     }

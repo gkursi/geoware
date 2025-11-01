@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot
 import net.minecraft.item.Items
 import net.minecraft.util.math.MathHelper
 import org.lwjgl.glfw.GLFW
-import xyz.qweru.geo.client.event.VelocityTickEvent
+import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.client.helper.input.GameInput
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
@@ -35,7 +35,7 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
     var onGround = false
 
     @Handler
-    private fun onVelocity(event: VelocityTickEvent) {
+    private fun onVelocity(event: PostMovementTickEvent) {
         mc.options.jumpKey.isPressed = GameInput.jumpKey
         if (!shouldFly(event)) return
 
@@ -48,7 +48,7 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
         if (shouldBounce()) mc.thePlayer.jump()
 
         if (gliding && !wasGliding) {
-            event.y += getBoost()
+            event.velY += getBoost()
             if (GameInput.moving) {
                 var yaw = MathHelper.wrapDegrees(mc.thePlayer.yaw)
                 if (hControl) {
@@ -57,8 +57,8 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
                     if (GameInput.rightKey) yaw += 90
                 }
                 val hvec = mc.thePlayer.getRotationVector(0f, yaw).multiply(hBoost.toDouble())
-                event.x += hvec.x
-                event.z += hvec.z
+                event.velX += hvec.x
+                event.velZ += hvec.z
             }
         }
 
@@ -68,25 +68,27 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
 
         if (gliding) {
             val mul = if (GameInput.moving) hMul else 1f
-            event.x = MathHelper.clamp(event.x.toFloat() * mul, -hBoostLimit, hBoostLimit).toDouble()
-            event.z = MathHelper.clamp(event.z.toFloat() * mul, -hBoostLimit, hBoostLimit).toDouble()
+            event.velX = event.velX * mul
+            event.velZ = event.velZ * mul
+            event.clampHorizontal(hBoostLimit.toDouble())
         }
 
         wasGliding = gliding
     }
 
-    private fun shouldStopGlide(e: VelocityTickEvent): Boolean =
-        ((e.y < 0 && canGlide) || (mode == Mode.HOP)) && gliding
+    private fun shouldStopGlide(e: PostMovementTickEvent): Boolean =
+        ((e.velY < 0 && canGlide) || (mode == Mode.HOP)) && gliding && mode != Mode.JUMP
 
     private fun shouldBounce(): Boolean =
         (bounce && onGround && gliding)
         || (onGround && !gliding && mode == Mode.HOP
             && mc.thePlayer.getEquippedStack(EquipmentSlot.CHEST).isOf(Items.ELYTRA))
     
-    private fun shouldFly(e: VelocityTickEvent): Boolean =
+    private fun shouldFly(e: PostMovementTickEvent): Boolean =
         when (mode) {
             Mode.CONTROL, Mode.HOP -> true
             Mode.KEEP_Y -> mc.thePlayer.y < yToKeep
+            Mode.JUMP -> true
         }
 
     private fun glide(b: Boolean) {
@@ -107,9 +109,10 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
                             else boostGlide
             Mode.KEEP_Y -> if (mc.thePlayer.y < yToKeep) boostUp else 0f
             Mode.HOP -> boostDown
+            Mode.JUMP -> boostUp
         }
 
     enum class Mode {
-        CONTROL, KEEP_Y, HOP
+        CONTROL, KEEP_Y, HOP, JUMP
     }
 }

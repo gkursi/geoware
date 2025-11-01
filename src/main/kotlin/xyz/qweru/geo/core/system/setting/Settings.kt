@@ -4,7 +4,7 @@ import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import xyz.qweru.geo.core.Global
 import xyz.qweru.geo.core.system.System
-import xyz.qweru.geo.core.system.helper.tree.SystemContext
+import xyz.qweru.geo.core.helper.tree.SystemContext
 import xyz.qweru.geo.core.system.module.Module
 
 class Settings(val module: Module) : System("settings") {

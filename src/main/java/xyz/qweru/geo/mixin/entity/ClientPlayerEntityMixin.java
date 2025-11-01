@@ -15,11 +15,15 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.qweru.geo.client.event.VelocityTickEvent;
+import xyz.qweru.geo.client.event.*;
+import xyz.qweru.geo.client.module.move.ModuleNoSlow;
 import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.manager.movement.MovementState;
 import xyz.qweru.geo.core.manager.movement.MovementTicker;
+import xyz.qweru.geo.core.system.Systems;
+import xyz.qweru.geo.core.system.module.Modules;
 import xyz.qweru.geo.imixin.IClientPlayerEntity;
 
 @Mixin(ClientPlayerEntity.class)
@@ -39,6 +43,12 @@ public abstract class ClientPlayerEntityMixin implements IClientPlayerEntity {
         MovementState.INSTANCE.setBounce(false);
     }
 
+
+    @Inject(method = "tickMovement", at = @At("HEAD"))
+    private void preMovement(CallbackInfo ci) {
+        EventBus.INSTANCE.post(PreMovementTickEvent.INSTANCE);
+    }
+
     @Inject(method = "tickMovement", at = @At("TAIL"))
     private void postMovement(CallbackInfo ci) {
         if (((Entity)(Object) this).isOnGround()) {
@@ -50,10 +60,27 @@ public abstract class ClientPlayerEntityMixin implements IClientPlayerEntity {
         }
 
         Vec3d vel = ((Entity)(Object) this).getVelocity();
-        VelocityTickEvent.INSTANCE.setX(vel.x);
-        VelocityTickEvent.INSTANCE.setY(vel.y);
-        VelocityTickEvent.INSTANCE.setZ(vel.z);
-        EventBus.INSTANCE.post(VelocityTickEvent.INSTANCE);
+        PostMovementTickEvent.INSTANCE.setVelX(vel.x);
+        PostMovementTickEvent.INSTANCE.setVelY(vel.y);
+        PostMovementTickEvent.INSTANCE.setVelZ(vel.z);
+        EventBus.INSTANCE.post(PostMovementTickEvent.INSTANCE);
+    }
+
+    @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/input/Input;tick()V", shift = At.Shift.AFTER))
+    private void postInputTick(CallbackInfo ci) {
+        EventBus.INSTANCE.post(PostInputTick.INSTANCE);
+    }
+
+    @ModifyExpressionValue(method = "canStartSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/input/Input;hasForwardMovement()Z"))
+    private boolean hasForwardMovement_startSprint(boolean original) {
+        ForwardMovementCheckEvent.INSTANCE.setHasForwardMovement(original);
+        return ForwardMovementCheckEvent.INSTANCE.getHasForwardMovement();
+    }
+
+    @ModifyExpressionValue(method = "shouldStopSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/input/Input;hasForwardMovement()Z"))
+    private boolean hasForwardMovement_stopSprint(boolean original) {
+        ForwardMovementCheckEvent.INSTANCE.setHasForwardMovement(original);
+        return ForwardMovementCheckEvent.INSTANCE.getHasForwardMovement();
     }
 
     @ModifyExpressionValue(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasVehicle()Z"))
@@ -82,6 +109,16 @@ public abstract class ClientPlayerEntityMixin implements IClientPlayerEntity {
         }
     }
 
+    @Inject(method = "sendMovementPackets", at = @At("HEAD"))
+    private void preSendMove(CallbackInfo ci) {
+        EventBus.INSTANCE.post(PreMoveSendEvent.INSTANCE);
+    }
+
+    @Inject(method = "sendMovementPackets", at = @At("TAIL"))
+    private void postSendMove(CallbackInfo ci) {
+        EventBus.INSTANCE.post(PostMoveSendEvent.INSTANCE);
+    }
+
     @Override
     public int geo_getAirTicks() {
         return airTicks;
@@ -90,5 +127,15 @@ public abstract class ClientPlayerEntityMixin implements IClientPlayerEntity {
     @Override
     public int geo_getGroundTicks() {
         return groundTicks;
+    }
+
+    @ModifyArg(method = "applyMovementSpeedFactors", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec2f;multiply(F)Lnet/minecraft/util/math/Vec2f;", ordinal = 1))
+    private float changeItemUseFactor(float factor) {
+        ModuleNoSlow noSlow = Systems.INSTANCE.get(Modules.class).get(ModuleNoSlow.class);
+        if (noSlow.getEnabled() && noSlow.getItems()) {
+            factor *= 5f;
+            factor *= 1 - noSlow.getItemSpeed();
+        }
+        return factor;
     }
 }

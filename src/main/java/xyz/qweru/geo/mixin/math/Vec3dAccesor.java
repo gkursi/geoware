@@ -1,4 +1,4 @@
-package xyz.qweru.geo.mixin.game;
+package xyz.qweru.geo.mixin.math;
 
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;

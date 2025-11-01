@@ -49,6 +49,7 @@ class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VI
     var swingRPYOff by swing.float("Swing RPY Off", "Swing progress-based rotation degree offset", 0f, -180f, 180f)
     var swingRAY by swing.float("Swing RAY", "Swing absolute rotation degrees", 0f, -180f, 180f)
     var swingRPZ by swing.float("Swing RPZ", "Swing progress-based rotation degrees", 0f, -180f, 180f)
+    val blockHit by swing.boolean("Block Hit", "Enables the block-hitting animation", true)
 
     @Usage(SettingUsage.VISUAL, SettingUsage.POSITION)
     val eat by settings.group("Eat")

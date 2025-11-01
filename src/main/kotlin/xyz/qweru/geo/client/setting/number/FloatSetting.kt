@@ -6,6 +6,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import xyz.qweru.geo.core.system.setting.Setting
 import xyz.qweru.geo.core.system.setting.SettingGroup
 import java.util.concurrent.CompletableFuture
+import kotlin.reflect.KProperty
 
 class FloatSetting(name: String, description: String, default: Float, group: SettingGroup,
                    val min: Float, val max: Float)
@@ -28,4 +29,5 @@ class FloatSetting(name: String, description: String, default: Float, group: Set
     override fun load(jsonObject: JsonObject) {
         value = jsonObject.get("value").asFloat
     }
+
 }

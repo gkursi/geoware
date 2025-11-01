@@ -33,18 +33,11 @@ public abstract class PlayerEntityMixin {
         cir.setReturnValue(!reach.getEnabled() || init > reach.getBlock() ? init : reach.getBlock());
     }
 
-    @Unique double moveX = 0d, moveZ = 0d;
-    @Inject(method = "adjustMovementForSneaking", at = @At("HEAD"))
-    private void getMovement(Vec3d movement, MovementType type, CallbackInfoReturnable<Vec3d> cir) {
-        moveX = movement.x;
-        moveZ = movement.z;
-    }
-
     @Inject(method = "clipAtLedge", at = @At("RETURN"), cancellable = true)
     private void setClipAtLedge(CallbackInfoReturnable<Boolean> cir) {
         ModuleSafeWalk safeWalk = Systems.INSTANCE.get(Modules.class).get(ModuleSafeWalk.class);
-        if (safeWalk.getEnabled()) {
-            if (!safeWalk.getSneak() && safeWalk.check()) cir.setReturnValue(true);
+        if (safeWalk.getEnabled() && !safeWalk.getSneak() && safeWalk.check()) {
+            cir.setReturnValue(true);
         }
     }
 

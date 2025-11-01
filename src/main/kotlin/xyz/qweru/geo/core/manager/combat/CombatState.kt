@@ -1,11 +1,13 @@
 package xyz.qweru.geo.core.manager.combat
 
+import net.minecraft.entity.Entity
 import net.minecraft.entity.player.PlayerEntity
-import xyz.qweru.geo.client.event.PlayerAttackPlayerEvent
+import net.minecraft.entity.projectile.ProjectileEntity
+import xyz.qweru.geo.client.event.EntityDamageEvent
+import xyz.qweru.geo.client.helper.player.AttackHelper
 import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.client.helper.player.AttackHelper
 
 class CombatState(private val playerProvider: (CombatState) -> PlayerEntity?) {
 
@@ -28,7 +30,7 @@ class CombatState(private val playerProvider: (CombatState) -> PlayerEntity?) {
         private set
 
     @Handler(priority = EventPriority.FIRST)
-    private fun onPacketReceive(e: PlayerAttackPlayerEvent) {
+    private fun onPacketReceive(e: EntityDamageEvent) {
         if (player == null) return
         val player = this.player!!
 
@@ -39,19 +41,20 @@ class CombatState(private val playerProvider: (CombatState) -> PlayerEntity?) {
             lastPlayer = player
         }
 
-        if (e.source == player) {
+        if (e.directSourceEntity == player) {
             set(lastAttack, player)
             combo++
-        } else if (e.player == player) {
-            set(lastDamage, e.source)
+        } else if (e.entity == player) {
+            set(lastDamage, e.directSourceEntity)
             combo = 0
         }
     }
 
-    private fun set(attack: Attack, source: PlayerEntity) {
-        attack.crit = AttackHelper.canCrit(source)
-        attack.critPossible = AttackHelper.willCrit(source)
-        attack.sprint = source.isSprinting
+    private fun set(attack: Attack, source: Entity?) {
+        attack.crit = source is PlayerEntity && AttackHelper.canCrit(source)
+        attack.critPossible = source is PlayerEntity && AttackHelper.willCrit(source)
+        attack.sprint = source?.isSprinting ?: false
+        attack.ranged = source is ProjectileEntity
     }
 
     fun predictNextAttack(): Attack =

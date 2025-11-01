@@ -16,7 +16,7 @@ import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
-import xyz.qweru.geo.client.event.HandleTaskEvent
+import xyz.qweru.geo.client.event.HandleTasksEvent
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
@@ -52,7 +52,7 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra rea
     private var trackedPosition: TrackedPosition? = null
 
     @Handler
-    private fun onPacketProcess(e: HandleTaskEvent) {
+    private fun onPacketProcess(e: HandleTasksEvent) {
         if (!inGame) {
             handleAll(false)
             packetsToProcess.clear()

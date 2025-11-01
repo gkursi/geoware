@@ -1,6 +1,6 @@
 package xyz.qweru.geo.extend
 
-import xyz.qweru.geo.core.system.helper.file.FileHelper
+import xyz.qweru.geo.core.helper.file.FileHelper
 import java.io.File
 import java.nio.file.Path
 

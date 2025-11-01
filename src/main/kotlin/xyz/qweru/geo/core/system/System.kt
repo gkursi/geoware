@@ -4,7 +4,7 @@ import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceCollection
 import xyz.qweru.geo.core.Global
-import xyz.qweru.geo.core.system.helper.tree.SystemContext
+import xyz.qweru.geo.core.helper.tree.SystemContext
 import kotlin.reflect.KClass
 
 /**

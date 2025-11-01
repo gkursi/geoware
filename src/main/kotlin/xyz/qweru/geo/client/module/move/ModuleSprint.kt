@@ -2,7 +2,9 @@ package xyz.qweru.geo.client.module.move
 
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket
 import xyz.qweru.geo.client.event.PacketSendEvent
-import xyz.qweru.geo.client.event.PreTickEvent
+import xyz.qweru.geo.client.event.PreMovementTickEvent
+import xyz.qweru.geo.client.helper.input.GameInput
+import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
@@ -11,9 +13,7 @@ import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.core.system.module.Modules
 import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.client.helper.input.GameInput
-import xyz.qweru.geo.client.helper.network.PacketHelper
-import xyz.qweru.geo.client.helper.timing.TimerDelay
+
 
 class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT) {
 
@@ -31,7 +31,7 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     }
 
     val sg = settings.group("General")
-    val mode by sg.enum("Mode", "Mode for applying sprint", Mode.NORMAL)
+    val mode by sg.enum("Mode", "Mode for applying sprint", Mode.LEGIT)
     val keyMode by sg.enum("Key", "Key to tap when resetting sprint", KeyMode.W)
     val resetTime by sg.longRange("Reset Time", "Delay between stopping and starting sprint", 50L..100L, 0L..1500L)
     val keyTime by sg.longRange("Key Time", "How long should we hold a key for", 10..40L, 0L..100L)
@@ -55,9 +55,9 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     private var resetKey = false
 
     @Handler(priority = EventPriority.LAST)
-    private fun onTick(e: PreTickEvent) {
+    private fun onTick(e: PreMovementTickEvent) {
         if (!inGame) return
-        if (GameInput.forwardKey && resetDelay.hasPassed() && !(waitForGround && !mc.thePlayer.isOnGround)) {
+        if (shouldSprint() && resetDelay.hasPassed()) {
             sprinting = true
             waitForGround = false
         }
@@ -66,6 +66,11 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
             tap(false)
             resetKey = false
         }
+    }
+
+    fun shouldSprint(): Boolean = !(waitForGround && !mc.thePlayer.isOnGround) && when (mode) {
+        Mode.LEGIT -> GameInput.forwardKey
+        Mode.OMNI -> GameInput.moving
     }
 
     @Handler
@@ -80,19 +85,7 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     }
 
     private fun sprint(enable: Boolean) {
-        when (mode) {
-            Mode.NORMAL -> mc.options.sprintKey.isPressed = enable
-            Mode.PACKET -> {
-                PacketHelper.sendPacket(
-                    ClientCommandC2SPacket(
-                        mc.player, if (enable) ClientCommandC2SPacket.Mode.START_SPRINTING
-                        else ClientCommandC2SPacket.Mode.STOP_SPRINTING
-                    )
-                )
-            }
-
-            Mode.CLIENT -> {}
-        }
+        mc.options.sprintKey.isPressed = enable
         mc.thePlayer.isSprinting = enable
         sprinting = enable
     }
@@ -115,7 +108,7 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     }
 
     enum class Mode {
-        NORMAL, PACKET, CLIENT
+        LEGIT, OMNI
     }
 
     enum class KeyMode {

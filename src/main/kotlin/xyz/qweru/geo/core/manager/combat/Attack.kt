@@ -8,7 +8,12 @@ package xyz.qweru.geo.core.manager.combat
  * @see xyz.qweru.geo.helper.player.AttackHelper.willCrit
  * @see xyz.qweru.geo.helper.player.AttackHelper.canCrit
  */
-data class Attack(@Volatile var sprint: Boolean = false, @Volatile var crit: Boolean = false, @Volatile var critPossible: Boolean = false) {
+data class Attack(
+    @Volatile var sprint: Boolean = false,
+    @Volatile var crit: Boolean = false,
+    @Volatile var critPossible: Boolean = false,
+    @Volatile var ranged: Boolean = false
+) {
     fun reset() {
         sprint = false
         crit = false

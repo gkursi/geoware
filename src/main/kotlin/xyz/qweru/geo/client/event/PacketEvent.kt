@@ -14,3 +14,5 @@ abstract class PacketEvent<T : PacketListener> : Cancellable() {
 
 object PacketSendEvent : PacketEvent<ServerPlayPacketListener>()
 object PacketReceiveEvent : PacketEvent<ClientPlayPacketListener>()
+object PreMoveSendEvent
+object PostMoveSendEvent

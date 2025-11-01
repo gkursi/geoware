@@ -4,11 +4,13 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.sugar.Local;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
@@ -17,20 +19,31 @@ import net.minecraft.util.math.RotationAxis;
 import org.joml.Quaternionf;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+import xyz.qweru.geo.client.helper.entity.EntityHelper;
 import xyz.qweru.geo.client.module.visual.ModuleViewModel;
 import xyz.qweru.geo.core.system.Systems;
 import xyz.qweru.geo.core.system.module.Modules;
 
 @Mixin(HeldItemRenderer.class)
-public class HeldItemRendererMixin {
+public abstract class HeldItemRendererMixin {
 
+    @Shadow @Final private MinecraftClient client;
+
+    @Shadow protected abstract void swingArm(float swingProgress, float equipProgress, MatrixStack matrices, int armX, Arm arm);
+
+    @Shadow private float lastEquipProgressMainHand;
+    @Shadow private float equipProgressMainHand;
+    @Shadow private float lastEquipProgressOffHand;
+    @Shadow private float equipProgressOffHand;
     @Unique
     ModuleViewModel viewModel = null;
 
@@ -93,6 +106,15 @@ public class HeldItemRendererMixin {
         args.set(0, x);
         args.set(1, y);
         args.set(2, z);
+    }
+
+    @Inject(method = "applyEatOrDrinkTransformation", at = @At("HEAD"))
+    private void onEat(MatrixStack matrices, float tickProgress, Arm arm, ItemStack stack, PlayerEntity player, CallbackInfo ci) {
+        if (viewModel.getEnabled() && viewModel.getBlockHit() && client.player.handSwinging)
+            swingArm(client.player.getHandSwingProgress(tickProgress), switch (EntityHelper.INSTANCE.getHand(client.player, arm)) {
+                case MAIN_HAND -> 1.0F - MathHelper.lerp(tickProgress, this.lastEquipProgressMainHand, this.equipProgressMainHand);
+                case OFF_HAND -> 1.0F - MathHelper.lerp(tickProgress, this.lastEquipProgressOffHand, this.equipProgressOffHand);
+            }, matrices, arm == Arm.RIGHT ? 1 : -1, arm);
     }
 
     @ModifyExpressionValue(method = "applyEatOrDrinkTransformation", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;abs(F)F", ordinal = 0))

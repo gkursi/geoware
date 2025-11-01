@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import xyz.qweru.geo.core.Global
 import xyz.qweru.geo.core.system.System
 import xyz.qweru.geo.core.system.Systems
-import xyz.qweru.geo.core.system.helper.tree.SystemContext
+import xyz.qweru.geo.core.helper.tree.SystemContext
 import xyz.qweru.geo.extend.findOrCreateDir
 import java.io.File
 import java.io.FileReader

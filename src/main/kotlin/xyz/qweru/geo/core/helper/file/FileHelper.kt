@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.system.helper.file
+package xyz.qweru.geo.core.helper.file
 
 import java.io.File
 import java.nio.file.Path

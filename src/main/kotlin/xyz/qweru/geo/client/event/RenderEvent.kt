@@ -17,3 +17,6 @@ object FramebufferSizeChangeEvent {
 object SwapBufferEvent
 object UIRenderEvent : SkijaEvent()
 object HudRenderEvent : SkijaEvent()
+
+object PreCrosshair
+object PostCrosshair

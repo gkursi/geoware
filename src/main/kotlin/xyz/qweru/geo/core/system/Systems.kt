@@ -1,12 +1,10 @@
 package xyz.qweru.geo.core.system
 
 import com.google.gson.JsonObject
-import it.unimi.dsi.fastutil.objects.ReferenceCollection
 import xyz.qweru.geo.core.system.config.Configs
 import xyz.qweru.geo.core.system.friend.Friends
 import xyz.qweru.geo.core.system.module.Modules
-import xyz.qweru.geo.core.system.helper.tree.Walker
-import kotlin.reflect.KClass
+import xyz.qweru.geo.core.helper.tree.Walker
 
 /**
  * Parent class for all systems

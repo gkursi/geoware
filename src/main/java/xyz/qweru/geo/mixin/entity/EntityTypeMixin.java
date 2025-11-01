@@ -10,9 +10,4 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EntityType.class)
 public class EntityTypeMixin {
 
-    @Inject(method = "getDimensions", at = @At("RETURN"), cancellable = true)
-    private void changeHitbox(CallbackInfoReturnable<EntityDimensions> cir) {
-
-    }
-
 }

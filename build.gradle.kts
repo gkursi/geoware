@@ -39,6 +39,7 @@ dependencies {
     implementation("xyz.qweru:multirender-api:1.0-SNAPSHOT")
     modImplementation("xyz.qweru:multirender-mc1.21.8:0.0.2")?.let { include(it) }
     modImplementation("com.ptsmods:devlogin:3.5")
+    implementation("org.apache.commons:commons-math3:3.6.1")
 
     api("org.jetbrains.skija:skija-linux:0.93.1")
 }

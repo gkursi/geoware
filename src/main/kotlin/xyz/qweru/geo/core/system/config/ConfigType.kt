@@ -3,8 +3,8 @@ package xyz.qweru.geo.core.system.config
 import com.google.gson.JsonObject
 import xyz.qweru.geo.core.system.System
 import xyz.qweru.geo.core.system.friend.Friends
-import xyz.qweru.geo.core.system.helper.tree.SettingFilter
-import xyz.qweru.geo.core.system.helper.tree.SystemFilter
+import xyz.qweru.geo.core.helper.tree.SettingFilter
+import xyz.qweru.geo.core.helper.tree.SystemFilter
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.core.system.module.Modules
 import xyz.qweru.geo.core.system.setting.SettingUsage
