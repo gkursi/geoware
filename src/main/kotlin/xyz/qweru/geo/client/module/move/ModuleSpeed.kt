@@ -40,8 +40,8 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
     private val extraCollide by sgrimA.float("Extra Collide", ".", 0.5f, 0f, 1f)
     private val ml by sgrimA.float("Mul", "fixing my skill issue", 0.3f, 0.1f, 2f)
 
-    private val a by sg.int("a", "a", 1, 0, 5)
-    private val eq by sg.enum("eq", "a", Compare.LARGE)
+    private val a by sg.int("a", ".", 1, 0, 5)
+    private val eq by sg.enum("eq", ".", Compare.EQ)
 
     private var hardCollisionTicks = 0
     private val maxHardCollisionTicks = 3
