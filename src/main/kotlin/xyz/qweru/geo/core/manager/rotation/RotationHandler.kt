@@ -17,6 +17,7 @@ import xyz.qweru.geo.extend.getRotation
 import xyz.qweru.geo.extend.setRotation
 import xyz.qweru.geo.extend.hit
 import xyz.qweru.geo.extend.thePlayer
+import xyz.qweru.multirender.api.API
 import java.lang.Math.clamp
 
 object RotationHandler : ProposalHandler<Rotation>() {
@@ -56,7 +57,10 @@ object RotationHandler : ProposalHandler<Rotation>() {
         if (mc.player == null) return
 
         clientRot.getRotation(mc.thePlayer)
-        current?.set(rot) ?: rot.copy2(clientRot)
+        if (current == null) {
+            // propose(Rotation(clientRot), -10)
+            rot.copy2(clientRot)
+        }
         interpolateRot()
         crosshairTarget = hit(mc.thePlayer.entityInteractionRange, rot)
 
@@ -81,7 +85,9 @@ object RotationHandler : ProposalHandler<Rotation>() {
 
     private fun interpolateRot() {
         val rotation = current ?: return
+        val init = rot[0]
         rot[0] = interpolate(initialRot[0], rot[0], rotation.yaw)
+        println("Previous: $init, current: ${rot[0]}, target: ${rotation.yaw}")
         rot[1] = interpolate(initialRot[1], rot[1], rotation.pitch)
 
         if (module.gcdFix) {
@@ -93,7 +99,7 @@ object RotationHandler : ProposalHandler<Rotation>() {
     }
 
     private fun interpolate(start: Float, current: Float, end: Float): Float {
-        val mod = random.double(0.0, 1.0) * module.speed
+        val mod = random.double(0.0, 1.0) * module.speed * API.base.getDeltaTime()
         val min = MathHelper.wrapDegrees(if (module.linear) start else current)
         return clamp(
             current + (MathHelper.wrapDegrees(end) - min) * mod.toFloat(),

@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import xyz.qweru.geo.client.helper.entity.EntityHelper;
+import xyz.qweru.geo.client.helper.player.PlayerHelper;
 import xyz.qweru.geo.client.module.visual.ModuleViewModel;
 import xyz.qweru.geo.core.system.Systems;
 import xyz.qweru.geo.core.system.module.Modules;
@@ -108,13 +109,12 @@ public abstract class HeldItemRendererMixin {
         args.set(2, z);
     }
 
-    @Inject(method = "applyEatOrDrinkTransformation", at = @At("HEAD"))
-    private void onEat(MatrixStack matrices, float tickProgress, Arm arm, ItemStack stack, PlayerEntity player, CallbackInfo ci) {
-        if (viewModel.getEnabled() && viewModel.getBlockHit() && client.player.handSwinging)
-            swingArm(client.player.getHandSwingProgress(tickProgress), switch (EntityHelper.INSTANCE.getHand(client.player, arm)) {
-                case MAIN_HAND -> 1.0F - MathHelper.lerp(tickProgress, this.lastEquipProgressMainHand, this.equipProgressMainHand);
-                case OFF_HAND -> 1.0F - MathHelper.lerp(tickProgress, this.lastEquipProgressOffHand, this.equipProgressOffHand);
-            }, matrices, arm == Arm.RIGHT ? 1 : -1, arm);
+    @Inject(method = "renderFirstPersonItem", at = @At(value = "INVOKE", shift = At.Shift.AFTER,
+            target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEatOrDrinkTransformation(Lnet/minecraft/client/util/math/MatrixStack;FLnet/minecraft/util/Arm;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;)V"))
+    private void onEat(AbstractClientPlayerEntity player, float tickProgress, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+        Arm arm = EntityHelper.INSTANCE.getArm(client.player, hand);
+        if (viewModel.getEnabled() && viewModel.getBlockHit())
+            swingArm(swingProgress, equipProgress, matrices, arm == Arm.RIGHT ? 1 : -1, arm);
     }
 
     @ModifyExpressionValue(method = "applyEatOrDrinkTransformation", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;abs(F)F", ordinal = 0))

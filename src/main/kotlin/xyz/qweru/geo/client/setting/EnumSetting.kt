@@ -38,7 +38,7 @@ class EnumSetting<T : Enum<*>>(name: String, description: String, default: T, gr
     }
 
     override fun <S> suggest(builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
-        val input = builder.remaining
+        val input = builder.remaining.lowercase()
         for (name in displayNames.values) {
             if (name.lowercase().startsWith(input)) builder.suggest(name)
         }
