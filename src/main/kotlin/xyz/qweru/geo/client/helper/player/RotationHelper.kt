@@ -3,6 +3,7 @@ package xyz.qweru.geo.client.helper.player
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
+import xyz.qweru.geo.client.helper.entity.Target
 import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.manager.rotation.Rotation
 import xyz.qweru.geo.extend.thePlayer
@@ -20,7 +21,9 @@ object RotationHelper {
         return Rotation(yaw, pitch)
     }
 
-    fun get(target: Entity) = get(target.pos.add(0.0, target.height * (if (target.y < mc.thePlayer.y) 0.45 else 0.65), 0.0))
+    fun get(target: Entity) = get(optimalPoint(target))
+
+    fun get(target: Target) = get(target.visiblePoint ?: optimalPoint(target.player))
 
     fun getAngle(target: Entity): Float {
         val current = floatArrayOf(MathHelper.wrapDegrees(mc.thePlayer.yaw), mc.thePlayer.pitch)
@@ -42,5 +45,7 @@ object RotationHelper {
         val f = (mc.options.mouseSensitivity.getValue() * 0.6f + 0.2f).toFloat()
         return f * f * f * 1.2f
     }
+
+    private fun optimalPoint(target: Entity) = target.pos.add(0.0, target.height * (if (target.y < mc.thePlayer.y) 0.45 else 0.65), 0.0)
 
 }

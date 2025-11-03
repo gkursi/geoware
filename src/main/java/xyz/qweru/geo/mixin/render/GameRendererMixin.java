@@ -29,6 +29,11 @@ public class GameRendererMixin {
         EventBus.INSTANCE.post(WorldRenderEvent.INSTANCE);
     }
 
+    @Inject(method = "render", at = @At("TAIL"))
+    private void render(RenderTickCounter tickCounter, boolean tick, CallbackInfo ci) {
+        EventBus.INSTANCE.post(GameRenderEvent.INSTANCE);
+    }
+
     @Unique
     ModuleViewModel viewModel = null;
 

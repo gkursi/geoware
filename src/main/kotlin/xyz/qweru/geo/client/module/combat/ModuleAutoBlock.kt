@@ -4,10 +4,10 @@ import net.minecraft.util.hit.HitResult
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.client.helper.input.GameInput
+import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.client.helper.player.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.helper.world.WorldHelper
-import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.Systems
@@ -60,7 +60,7 @@ class ModuleAutoBlock : Module("AutoBlock", "Automatically block", Category.COMB
     }
 
     private fun shouldBlock(): Boolean {
-        val target = TargetHelper.findTarget(distance, fov) ?: return false
+        val target = TargetHelper.findTarget(distance, RangeHelper.from(0f, 0f), fov)?.player ?: return false
         return if (raycast) (WorldHelper.getCrosshairTarget(target, assumeReach.toDouble(), rotation = target.rotation)
             ?.type == HitResult.Type.ENTITY) else true
     }

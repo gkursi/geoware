@@ -6,10 +6,10 @@ import net.minecraft.item.Item
 import net.minecraft.item.Items
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
-import net.minecraft.util.math.Direction
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
+import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
@@ -33,6 +33,7 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
     val swordOnly by src.boolean("Sword Only", "Sword only", true)
     val actionNearEnemy by src.enum("Near Enemy", "Action when near an enemy", Action.OBSIDIAN)
     val enemyRange by src.floatRange("Enemy Range", "Range the enemy has to be from you", 0f..10f, 0f..20f)
+    val enemyWallRange by src.floatRange("Wall Range", "Range the enemy has to be from you trough walls", 0f..0f, 0f..20f)
     val onlyTarget by src.boolean("Only Target", "Only check range for the current target", false)
     val otherAction by src.enum("Other", "Action when not near an enemy", Action.FIREBALL)
     val obsidianCrystal by src.boolean("Obsidian Crystal", "Crystal when right clicking obsidian", true)
@@ -105,7 +106,7 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
 
     private fun enemyNear(): Boolean =
         if (onlyTarget) TargetTracker.target?.inRange(enemyRange) ?: false
-        else TargetHelper.findTarget(enemyRange, 360f, false) != null
+        else TargetHelper.findTarget(enemyRange, RangeHelper.from(0f, 0f), 360f, false) != null
 
     enum class Action(val item: Item, val block: Boolean = false) {
         PEARL(Items.ENDER_PEARL),

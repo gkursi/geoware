@@ -25,8 +25,14 @@ java {
 }
 
 repositories {
-    maven {
-        url = URI.create("https://packages.jetbrains.team/maven/p/skija/maven")
+    maven("https://packages.jetbrains.team/maven/p/skija/maven")
+    maven("https://repo.viaversion.com")
+    maven("https://maven.lenni0451.net/everything")
+    maven("https://repo.opencollab.dev/maven-snapshots")
+    maven("https://jitpack.io") {
+        content {
+            includeGroup("com.github.Oryxel")
+        }
     }
 }
 
@@ -36,11 +42,14 @@ dependencies {
     mappings("net.fabricmc:yarn:${project.property("yarn_mappings")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
-    implementation("xyz.qweru:multirender-api:1.0-SNAPSHOT")
-    modImplementation("xyz.qweru:multirender-mc1.21.8:0.0.2")?.let { include(it) }
+
     modImplementation("com.ptsmods:devlogin:3.5")
     implementation("org.apache.commons:commons-math3:3.6.1")
+    modImplementation("com.viaversion:viafabricplus-api:4.2.4")
 
+    // render
+    implementation("xyz.qweru:multirender-api:1.0-SNAPSHOT")
+    modImplementation("xyz.qweru:multirender-mc1.21.8:0.0.2")?.let { include(it) }
     api("org.jetbrains.skija:skija-linux:0.93.1")
 }
 

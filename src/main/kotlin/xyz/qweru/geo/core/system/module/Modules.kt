@@ -8,6 +8,7 @@ import xyz.qweru.geo.client.module.combat.ModuleAutoBlock
 import xyz.qweru.geo.client.module.combat.ModuleAutoTotem
 import xyz.qweru.geo.client.module.combat.ModuleBacktrack
 import xyz.qweru.geo.client.module.combat.ModuleHitbox
+import xyz.qweru.geo.client.module.combat.ModuleKillAura
 import xyz.qweru.geo.client.module.combat.ModuleReach
 import xyz.qweru.geo.client.module.combat.ModuleTriggerBot
 import xyz.qweru.geo.client.module.config.ModuleRotation
@@ -55,6 +56,7 @@ class Modules() : System("modules", Type.ROOT) {
         add(ModuleTeams())
         add(ModuleNoSlow())
         add(ModuleRotation())
+        add(ModuleKillAura())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }

@@ -67,9 +67,4 @@ public class MinecraftClientMixin {
     private void postInit(RunArgs args, CallbackInfo ci) {
         EventBus.INSTANCE.post(PostInitEvent.INSTANCE);
     }
-
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Mouse;tick()V", shift = At.Shift.AFTER))
-    private void gameRenderEvent(boolean tick, CallbackInfo ci) {
-        EventBus.INSTANCE.post(GameRenderEvent.INSTANCE);
-    }
 }

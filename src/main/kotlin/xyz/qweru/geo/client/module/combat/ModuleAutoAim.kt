@@ -21,15 +21,19 @@ import java.util.*
 
 class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
     val sg = settings.group("General")
-    var fov by sg.float("FOV", "Field of view", 25f, 0f, 180f)
-    var range by sg.floatRange("Range", "Range of target players", 1.5f..6f, 1f..15f)
+    val st = settings.group("Target")
+
     val silent by sg.boolean("Silent", "Silently aim", false)
     val hSpeed by sg.int("H Speed", "Horizontal camera speed", 30, 0, 360).visible { !silent }
     val vSpeed by sg.int("V Speed", "Horizontal camera speed", 0, 0, 360).visible { !silent }
     val random by sg.longRange("Random", "Randomization", -40L..40L, -100L..100L).visible { !silent }
     val weaponOnly by sg.boolean("Weapon Only", "Only aim when holding a weapon", true)
-    val lock by sg.boolean("Lock Target", "Don't switch targets as long as the current target is in range", true)
-    val invisible by sg.boolean("Invisible", "Allow targeting of completely invisible players (no armor & held item)", false)
+
+    var range by st.floatRange("Range", "Range of target players", 1.5f..6f, 1f..15f)
+    var wallRange by st.floatRange("Wall Range", "Range of target players", 0f..0f, 1f..15f)
+    var fov by st.float("FOV", "Field of view", 25f, 0f, 180f)
+    val lock by st.boolean("Lock Target", "Don't switch targets as long as the current target is in range", true)
+    val invisible by st.boolean("Invisible", "Allow targeting of completely invisible players (no armor & held item)", false)
 
     val rng = Random()
     var target: PlayerEntity? = null
@@ -64,7 +68,7 @@ class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
     fun canTarget(): Boolean {
         if (weaponOnly && !InvHelper.isInMainhand { InvHelper.isSword(it.item) || it.item is AxeItem || it.isOf(Items.MACE) }) return false
         if (target == null || !lock || !target!!.inRange(range) || !target!!.isAlive || target!!.world != mc.theWorld) {
-            target = TargetHelper.findTarget(range, fov, invisible)
+            target = TargetHelper.findTarget(range, wallRange, fov, invisible)?.player
         }
         return (target != null && target!!.inFov(fov))
     }

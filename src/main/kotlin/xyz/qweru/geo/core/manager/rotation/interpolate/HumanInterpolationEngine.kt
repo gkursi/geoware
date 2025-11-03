@@ -1,0 +1,48 @@
+package xyz.qweru.geo.core.manager.rotation.interpolate
+
+import net.minecraft.util.math.MathHelper
+import xyz.qweru.geo.core.manager.rotation.InterpolationEngine
+import xyz.qweru.geo.core.manager.rotation.RotationHandler.config
+import xyz.qweru.geo.core.manager.rotation.RotationHandler.random
+import xyz.qweru.geo.extend.inRange
+import xyz.qweru.multirender.api.API
+import java.lang.Math.clamp
+import kotlin.math.abs
+
+object HumanInterpolationEngine : InterpolationEngine {
+    private var yawMoved = 0f
+    private var yawPenalty = 1f
+
+    override fun step(start: Float, end: Float): Float {
+        val min = MathHelper.wrapDegrees(start)
+        val dist = MathHelper.wrapDegrees(end) - min
+        val speed = getSpeed(dist)
+        val mod = random.double(0.1, 1.0) * speed
+        return dist * mod.toFloat()
+    }
+
+    override fun onYawDelta(delta: Float) {
+        yawMoved += delta
+
+        if (abs(yawMoved) > config.mousePadSize) {
+            yawPenalty -= config.mousePadPenalty * API.base.getDeltaTime()
+        }
+
+        if (yawPenalty < config.mousePadPenaltyMax) {
+            yawPenalty = 1f
+            yawMoved = 0f
+        }
+    }
+
+    private fun getSpeed(dist: Float): Float {
+        var speed = config.speed
+        if (config.micro && config.microRange.inRange(dist))
+            speed *= 10f
+        if (config.flick && config.flickRange.inRange(dist))
+            speed *= config.flickBoost
+        if (config.mousePad)
+            speed *= yawPenalty
+        return speed
+    }
+
+}
