@@ -1,25 +1,25 @@
 package xyz.qweru.geo.core.manager.combat
 
-import net.minecraft.entity.Entity
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.entity.projectile.ProjectileEntity
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.Projectile
 import xyz.qweru.geo.client.event.EntityDamageEvent
 import xyz.qweru.geo.client.helper.player.AttackHelper
 import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 
-class CombatState(private val playerProvider: (CombatState) -> PlayerEntity?) {
+class CombatState(private val playerProvider: (CombatState) -> Player?) {
 
     companion object {
         val SELF = CombatState { mc.player }
         val TARGET = CombatState { TargetTracker.target }
     }
 
-    val player: PlayerEntity?
+    val player: Player?
         get() = playerProvider.invoke(this)
     @Volatile
-    private var lastPlayer: PlayerEntity? = player
+    private var lastPlayer: Player? = player
 
     /// Last attack by the tracked player
     val lastAttack = Attack()
@@ -51,10 +51,10 @@ class CombatState(private val playerProvider: (CombatState) -> PlayerEntity?) {
     }
 
     private fun set(attack: Attack, source: Entity?) {
-        attack.crit = source is PlayerEntity && AttackHelper.canCrit(source)
-        attack.critPossible = source is PlayerEntity && AttackHelper.willCrit(source)
+        attack.crit = source is Player && AttackHelper.canCrit(source)
+        attack.critPossible = source is Player && AttackHelper.willCrit(source)
         attack.sprint = source?.isSprinting ?: false
-        attack.ranged = source is ProjectileEntity
+        attack.ranged = source is Projectile
     }
 
     fun predictNextAttack(): Attack =

@@ -1,24 +1,25 @@
 package xyz.qweru.geo.client.module.combat
 
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.util.hit.EntityHitResult
-import net.minecraft.util.hit.HitResult
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.phys.EntityHitResult
+import net.minecraft.world.phys.HitResult
 import org.lwjgl.glfw.GLFW
+import xyz.qweru.geo.abstraction.game.GOptions
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.player.AttackHelper
-import xyz.qweru.geo.client.helper.player.InvHelper
+import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.manager.combat.Attack
 import xyz.qweru.geo.core.manager.combat.CombatState
 import xyz.qweru.geo.core.manager.combat.TargetTracker
-import xyz.qweru.geo.core.manager.rotation.RotationHandler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.hit
-import xyz.qweru.geo.extend.thePlayer
+import xyz.qweru.geo.extend.minecraft.world.hit
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.multirender.api.API
+import xyz.qweru.multirender.api.input.Input
 import java.util.*
 
 class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when hovering them", Category.COMBAT) {
@@ -47,34 +48,32 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     @Handler
     private fun onTick(e: PreTickEvent) {
         if (!inGame) return
-        if (mc.currentScreen != null || !timer.hasPassed()) return
+        if (mc.screen != null || !timer.hasPassed()) return
 
         nextDamage = Attack()
-        val crosshair = mc.crosshairTarget ?: return
+        val crosshair = mc.hitResult ?: return
 
         if (crosshair is EntityHitResult) {
             val en = crosshair.entity
-            if (en is PlayerEntity && checkPlayer(en)) return
+            if (en is Player && checkPlayer(en)) return
             if (random.nextFloat() > miss) {
                 ModuleAutoBlock.unblock()
-                API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_1)
-                API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_1)
+                API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_1, Input.CLICK)
             }
             timer.reset(delay)
         } else if (failAttack && crosshair.type == HitResult.Type.MISS) {
             if (random.nextFloat() > failChance) return
-            val hit = hit(mc.thePlayer.entityInteractionRange + failReach)
+            val hit = hit(mc.thePlayer.entityInteractionRange() + failReach)
             if (hit !is EntityHitResult) return
 
             ModuleAutoBlock.unblock()
-            API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_1)
-            API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_1)
+            API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_1, Input.CLICK)
             timer.reset(delay)
         }
     }
 
-    fun checkPlayer(en: PlayerEntity): Boolean {
-        if (!mc.thePlayer.activeItem.isEmpty && !InvHelper.isInMainhand { InvHelper.isSword(it.item) }) return true
+    fun checkPlayer(en: Player): Boolean {
+        if (!mc.thePlayer.useItem.isEmpty && !InvHelper.isInMainhand { InvHelper.isSword(it.item) }) return true
         if (attackFirst && en != TargetTracker.target) return true
         if (!TargetTracker.canTarget(en)) return true
 
@@ -86,8 +85,9 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         if (awaitCrit && AttackHelper.willCrit(groundTicks = groundTicks) && !nextAttack.crit) return true
 
         if (nextAttack.crit && mc.thePlayer.isSprinting) {
+            GOptions.forwardKey = false
             ModuleSprint.sprint(false, now = true)
-            if (sprintCrit) ModuleSprint.sprint(true) // start sprinting post-tick
+            return true
         } else if (sprintReset) {
             // this takes effect post tick
             ModuleSprint.sprint(false)

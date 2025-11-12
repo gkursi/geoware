@@ -1,11 +1,11 @@
 package xyz.qweru.geo.mixin.math;
 
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.world.phys.Vec2;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(Vec2f.class)
+@Mixin(Vec2.class)
 public interface Vec2fAccessor {
     @Mutable
     @Accessor("x")

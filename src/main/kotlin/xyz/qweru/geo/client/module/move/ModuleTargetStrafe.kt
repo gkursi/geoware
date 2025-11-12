@@ -1,6 +1,6 @@
 package xyz.qweru.geo.client.module.move
 
-import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.world.entity.player.Player
 import xyz.qweru.geo.client.event.AttackPlayerEvent
 import xyz.qweru.geo.client.event.PlayerAttackPlayerEvent
 import xyz.qweru.geo.client.event.PreTickEvent
@@ -9,10 +9,11 @@ import xyz.qweru.geo.core.manager.combat.CombatState
 import xyz.qweru.geo.core.manager.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.inFov
-import xyz.qweru.geo.extend.inRange
-import xyz.qweru.geo.client.helper.input.GameInput
+import xyz.qweru.geo.extend.minecraft.entity.inFov
+import xyz.qweru.geo.extend.kotlin.math.inRange
+import xyz.qweru.geo.abstraction.game.GOptions
 import xyz.qweru.geo.client.helper.timing.TimerDelay
+import xyz.qweru.geo.extend.minecraft.entity.inRange
 
 class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around the target", Category.MOVEMENT) {
     val sg = settings.group("General")
@@ -32,7 +33,7 @@ class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around t
     @Handler
     private fun onTick(e: PreTickEvent) {
         if (!inGame) return
-        if (TargetTracker.target == null || CombatState.SELF.combo < minCombo || !validTarget(TargetTracker.target!!) || (pauseScreen && mc.currentScreen != null)) {
+        if (TargetTracker.target == null || CombatState.SELF.combo < minCombo || !validTarget(TargetTracker.target!!) || (pauseScreen && mc.screen != null)) {
             checkReset()
             return
         }
@@ -41,12 +42,12 @@ class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around t
         }
     }
 
-    private fun validTarget(target: PlayerEntity) = target.inRange(minDistance) && target.inFov(fov)
+    private fun validTarget(target: Player) = target.inRange(minDistance) && target.inFov(fov)
 
     private fun checkReset() {
         if (!reset) return
-        mc.options.leftKey.isPressed = GameInput.leftKey
-        mc.options.rightKey.isPressed = GameInput.rightKey
+        GOptions.syncBind(GOptions::leftKey)
+        GOptions.syncBind(GOptions::rightKey)
         holdTime.reset(time)
         reset = false
     }
@@ -65,14 +66,14 @@ class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around t
         holdTime.reset(time)
         key = when (key) {
             Key.LEFT -> {
-                GameInput.leftKey = false
-                GameInput.rightKey = true
+                GOptions.leftKey = false
+                GOptions.rightKey = true
                 Key.RIGHT
             }
 
             Key.RIGHT -> {
-                GameInput.leftKey = true
-                GameInput.rightKey = false
+                GOptions.leftKey = true
+                GOptions.rightKey = false
                 Key.LEFT
             }
         }

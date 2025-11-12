@@ -1,17 +1,19 @@
 package xyz.qweru.geo.client.module.move
 
-import net.minecraft.entity.EquipmentSlot
-import net.minecraft.item.Items
-import net.minecraft.util.math.MathHelper
+import net.minecraft.util.Mth
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.item.Items
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PostMovementTickEvent
-import xyz.qweru.geo.client.helper.input.GameInput
+import xyz.qweru.geo.abstraction.game.GOptions
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.canGlide
-import xyz.qweru.geo.extend.thePlayer
+import xyz.qweru.geo.extend.minecraft.entity.canGlide
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.item.isOf
 import xyz.qweru.multirender.api.API
+import xyz.qweru.multirender.api.input.Input
 
 class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category.MOVEMENT) {
     val sg = settings.group("General")
@@ -36,27 +38,27 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
 
     @Handler
     private fun onVelocity(event: PostMovementTickEvent) {
-        mc.options.jumpKey.isPressed = GameInput.jumpKey
+        GOptions.syncBind(GOptions::jumpKey)
         if (!shouldFly(event)) return
 
-        gliding = mc.thePlayer.isGliding
+        gliding = mc.thePlayer.isFallFlying
         canGlide = mc.thePlayer.canGlide
-        onGround = mc.thePlayer.isOnGround
+        onGround = mc.thePlayer.onGround()
 
-        if (canGlide) GameInput.jumpKey = false
+        if (canGlide) GOptions.jumpKey = false
 
-        if (shouldBounce()) mc.thePlayer.jump()
+        if (shouldBounce()) mc.thePlayer.jumpFromGround()
 
         if (gliding && !wasGliding) {
             event.velY += getBoost()
-            if (GameInput.moving) {
-                var yaw = MathHelper.wrapDegrees(mc.thePlayer.yaw)
+            if (GOptions.moving) {
+                var yaw = Mth.wrapDegrees(mc.thePlayer.yRot)
                 if (hControl) {
-                    if (GameInput.backKey) yaw -= 180
-                    if (GameInput.leftKey) yaw -= 90
-                    if (GameInput.rightKey) yaw += 90
+                    if (GOptions.backKey) yaw -= 180
+                    if (GOptions.leftKey) yaw -= 90
+                    if (GOptions.rightKey) yaw += 90
                 }
-                val hvec = mc.thePlayer.getRotationVector(0f, yaw).multiply(hBoost.toDouble())
+                val hvec = mc.thePlayer.calculateViewVector(0f, yaw).scale(hBoost.toDouble())
                 event.velX += hvec.x
                 event.velZ += hvec.z
             }
@@ -67,7 +69,7 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
         else if (shouldStopGlide(event)) glide(false)
 
         if (gliding) {
-            val mul = if (GameInput.moving) hMul else 1f
+            val mul = if (GOptions.moving) hMul else 1f
             event.velX = event.velX * mul
             event.velZ = event.velZ * mul
             event.clampHorizontal(hBoostLimit.toDouble())
@@ -82,7 +84,7 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
     private fun shouldBounce(): Boolean =
         (bounce && onGround && gliding)
         || (onGround && !gliding && mode == Mode.HOP
-            && mc.thePlayer.getEquippedStack(EquipmentSlot.CHEST).isOf(Items.ELYTRA))
+            && mc.thePlayer.getItemBySlot(EquipmentSlot.CHEST).isOf(Items.ELYTRA))
     
     private fun shouldFly(e: PostMovementTickEvent): Boolean =
         when (mode) {
@@ -94,18 +96,17 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
     private fun glide(b: Boolean) {
         if (b) {
             // TODO the fuck is this
-            API.keyboardHandler.press(GLFW.GLFW_KEY_SPACE)
-            API.keyboardHandler.release(GLFW.GLFW_KEY_SPACE)
-            GameInput.jumpKey = true
+            API.keyboardHandler.input(GLFW.GLFW_KEY_SPACE, Input.CLICK)
+            GOptions.jumpKey = true
         } else {
-            mc.thePlayer.stopGliding()
+            mc.thePlayer.stopFallFlying()
         }
     }
 
     private fun getBoost() =
         when (mode) {
-            Mode.CONTROL -> if (GameInput.jumpKey) boostUp
-                            else if (GameInput.sneakKey) boostDown
+            Mode.CONTROL -> if (GOptions.jumpKey) boostUp
+                            else if (GOptions.sneakKey) boostDown
                             else boostGlide
             Mode.KEEP_Y -> if (mc.thePlayer.y < yToKeep) boostUp else 0f
             Mode.HOP -> boostDown

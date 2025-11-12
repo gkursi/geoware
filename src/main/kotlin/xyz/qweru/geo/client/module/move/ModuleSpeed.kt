@@ -1,30 +1,27 @@
 package xyz.qweru.geo.client.module.move
 
-import net.minecraft.block.Blocks
-import net.minecraft.block.entity.ChestBlockEntity
-import net.minecraft.block.entity.EnderChestBlockEntity
-import net.minecraft.block.entity.ShulkerBoxBlockEntity
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.entity.vehicle.BoatEntity
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket
-import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket
-import net.minecraft.util.PlayerInput
+import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.vehicle.Boat
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.entity.ChestBlockEntity
+import net.minecraft.world.level.block.entity.EnderChestBlockEntity
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity
+import net.minecraft.world.phys.Vec3
+import xyz.qweru.geo.abstraction.game.GOptions
 import xyz.qweru.geo.client.event.PostMoveSendEvent
 import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.client.event.PreMoveSendEvent
-import xyz.qweru.geo.client.event.PreMovementTickEvent
-import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.client.helper.input.GameInput
 import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.client.helper.world.WorldHelper
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.manager.movement.MovementState
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.airTicks
-import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.extend.theWorld
-import xyz.qweru.geo.extend.withJump
+import xyz.qweru.geo.extend.minecraft.entity.airTicks
+import xyz.qweru.geo.extend.minecraft.game.theLevel
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.world.isOf
 
 
 class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
@@ -58,14 +55,14 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
     @Handler
     fun preMoveSend(e: PreMoveSendEvent) {
         if (!inGame || mode != Mode.GRIM) return
-        GameInput.jumpKey = mc.thePlayer.isOnGround && GameInput.moving
+        GOptions.jumpKey = mc.thePlayer.onGround() && GOptions.moving
     }
     @Handler
     fun postMoveSend(e: PostMoveSendEvent) {
         if (mode != Mode.GRIM) return
-        if (mc.thePlayer.isOnGround || eq.act.invoke(mc.thePlayer.airTicks, a)) {
+        if (mc.thePlayer.onGround() || eq.act.invoke(mc.thePlayer.airTicks, a)) {
             PacketHelper.sendPacket(
-                ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING)
+                ServerboundPlayerCommandPacket(mc.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING)
             )
         }
     }
@@ -80,7 +77,7 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
     fun vulcanSpeed(e: PostMovementTickEvent) {
         if (mc.thePlayer.airTicks == airTick) {
             e.velY += downVel
-            val vec = mc.thePlayer.rotationVector
+            val vec: Vec3 = mc.thePlayer.lookAngle
             e.velX += vec.x * hVel
             e.velZ += vec.z * hVel
         }
@@ -109,10 +106,10 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
     }
 
     fun grimCollision(): Boolean {
-        val box = mc.thePlayer.boundingBox.expand(extraCollide.toDouble())
+        val box = mc.thePlayer.boundingBox.inflate(extraCollide.toDouble())
         val riding = mc.thePlayer.vehicle
-        for (entity in mc.theWorld.entities) {
-            if (entity == mc.player || entity == riding || entity !is BoatEntity) continue
+        for (entity in mc.theLevel.entitiesForRendering()) {
+            if (entity == mc.player || entity == riding || entity !is Boat) continue
             if (entity.boundingBox.intersects(box)) {
                 hardCollisionTicks = 0
                 return true
@@ -128,8 +125,8 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
         return hardCollisionTicks < maxHardCollisionTicks
     }
 
-    fun shulkerCollision(player: PlayerEntity): Boolean {
-        return WorldHelper.playerIntersects(expand = extraCollide.toDouble()) { pos, state, box -> mc.theWorld.getBlockEntity(pos) is ShulkerBoxBlockEntity}
+    fun shulkerCollision(player: Player): Boolean {
+        return WorldHelper.playerIntersects(expand = extraCollide.toDouble()) { pos, state, box -> mc.theLevel.getBlockEntity(pos) is ShulkerBoxBlockEntity }
     }
 
     // TODO
@@ -138,7 +135,7 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
      */
     fun isNearGlitchyBlock(): Boolean {
         return WorldHelper.playerIntersects(expand = extraCollide.toDouble()) { pos, state, box ->
-            val entity = mc.theWorld.getBlockEntity(pos)
+            val entity = mc.theLevel.getBlockEntity(pos)
             entity is EnderChestBlockEntity || entity is ChestBlockEntity || state.isOf(Blocks.ANVIL)
         }
     }

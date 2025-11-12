@@ -1,19 +1,19 @@
 package xyz.qweru.geo.mixin.entity;
 
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(EntityVelocityUpdateS2CPacket.class)
+@Mixin(ClientboundSetEntityMotionPacket.class)
 public interface EntityVelocityUpdateS2CPacketAccessor {
     @Mutable
-    @Accessor("velocityX")
+    @Accessor("xa")
     void geo_setVelocityX(int x);
     @Mutable
-    @Accessor("velocityY")
+    @Accessor("ya")
     void geo_setVelocityY(int x);
     @Mutable
-    @Accessor("velocityZ")
+    @Accessor("za")
     void geo_setVelocityZ(int x);
 }

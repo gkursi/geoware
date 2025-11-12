@@ -1,11 +1,11 @@
 package xyz.qweru.geo.mixin.block;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SweetBerryBushBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCollisionHandler;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SweetBerryBushBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,8 +17,8 @@ import static xyz.qweru.geo.core.Global.mc;
 @Mixin(SweetBerryBushBlock.class)
 public class BerryBushBlockMixin {
 
-    @Inject(method = "onEntityCollision", at = @At("HEAD"))
-    private void onSlow(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler, CallbackInfo ci) {
+    @Inject(method = "entityInside", at = @At("HEAD"))
+    private void onSlow(BlockState blockState, Level level, BlockPos blockPos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier, CallbackInfo ci) {
         if (entity != mc.player) return;
         MovementState.INSTANCE.setSlowedByBlock(true);
     }

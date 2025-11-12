@@ -1,6 +1,6 @@
 package xyz.qweru.geo.client.module.visual
 
-import net.minecraft.util.Hand
+import net.minecraft.world.InteractionHand
 import org.joml.Vector3f
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
@@ -61,16 +61,16 @@ class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VI
     var eatRY by eat.float("Eat RY", "Eat degrees", 90f, -180f, 180f)
     var eatRZ by eat.float("Eat RZ", "Eat degrees", 30f, -180f, 180f)
 
-    fun getScale(hand: Hand): Vector3f =
-        if (hand == Hand.MAIN_HAND) vec(mainSX, mainSY, mainSZ)
+    fun getScale(hand: InteractionHand): Vector3f =
+        if (hand == InteractionHand.MAIN_HAND) vec(mainSX, mainSY, mainSZ)
         else vec(offSX, offSY, offSZ)
 
-    fun getOffset(hand: Hand): Vector3f =
-        if (hand == Hand.MAIN_HAND) vec(mainX, mainY, mainZ)
+    fun getOffset(hand: InteractionHand): Vector3f =
+        if (hand == InteractionHand.MAIN_HAND) vec(mainX, mainY, mainZ)
         else vec(offX, offY, offZ)
 
-    fun getRot(hand: Hand): Vector3f =
-        if (hand == Hand.MAIN_HAND) vec(mainRX, mainRY, mainRZ)
+    fun getRot(hand: InteractionHand): Vector3f =
+        if (hand == InteractionHand.MAIN_HAND) vec(mainRX, mainRY, mainRZ)
         else vec(offRX, offRY, offRZ)
 
     private fun vec(x: Float, y: Float, z: Float): Vector3f = Vector3f(x, y, z)

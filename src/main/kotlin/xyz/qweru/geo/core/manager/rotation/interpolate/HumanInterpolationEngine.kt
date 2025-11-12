@@ -1,12 +1,11 @@
 package xyz.qweru.geo.core.manager.rotation.interpolate
 
-import net.minecraft.util.math.MathHelper
+import net.minecraft.util.Mth
 import xyz.qweru.geo.core.manager.rotation.InterpolationEngine
 import xyz.qweru.geo.core.manager.rotation.RotationHandler.config
 import xyz.qweru.geo.core.manager.rotation.RotationHandler.random
-import xyz.qweru.geo.extend.inRange
+import xyz.qweru.geo.extend.kotlin.math.inRange
 import xyz.qweru.multirender.api.API
-import java.lang.Math.clamp
 import kotlin.math.abs
 
 object HumanInterpolationEngine : InterpolationEngine {
@@ -14,8 +13,8 @@ object HumanInterpolationEngine : InterpolationEngine {
     private var yawPenalty = 1f
 
     override fun step(start: Float, end: Float): Float {
-        val min = MathHelper.wrapDegrees(start)
-        val dist = MathHelper.wrapDegrees(end) - min
+        val min = Mth.wrapDegrees(start)
+        val dist = Mth.wrapDegrees(end) - min
         val speed = getSpeed(dist)
         val mod = random.double(0.1, 1.0) * speed
         return dist * mod.toFloat()

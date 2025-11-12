@@ -1,19 +1,17 @@
 package xyz.qweru.geo.client.module.move
 
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket
+import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket
+import xyz.qweru.geo.abstraction.game.GOptions
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.event.PreMovementTickEvent
-import xyz.qweru.geo.client.helper.input.GameInput
 import xyz.qweru.geo.client.helper.timing.TimerDelay
-import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.core.system.module.Modules
-import xyz.qweru.geo.extend.thePlayer
-
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT) {
 
@@ -26,7 +24,7 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
                     module.sprint(sprinting)
                 }
             }
-            else mc.options.sprintKey.isPressed = sprinting
+            else GOptions.sprintKey = sprinting
         }
     }
 
@@ -61,31 +59,31 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
             sprinting = true
             waitForGround = false
         }
-        if (mc.currentScreen == null && sprinting != mc.thePlayer.isSprinting && !onlyKey) sprint(sprinting)
+        if (mc.screen == null && sprinting != mc.thePlayer.isSprinting && !onlyKey) sprint(sprinting)
         if (resetKey && keyDelay.hasPassed()) {
             tap(false)
             resetKey = false
         }
     }
 
-    fun shouldSprint(): Boolean = !(waitForGround && !mc.thePlayer.isOnGround) && when (mode) {
-        Mode.LEGIT -> GameInput.forwardKey
-        Mode.OMNI -> GameInput.moving
+    fun shouldSprint(): Boolean = !(waitForGround && !mc.thePlayer.onGround()) && when (mode) {
+        Mode.LEGIT -> GOptions.forwardKey
+        Mode.OMNI -> GOptions.moving
     }
 
     @Handler
     private fun onPacketSend(e: PacketSendEvent) {
         val packet = e.packet
-        if (packet !is ClientCommandC2SPacket) return
-        when (packet.mode) {
-            ClientCommandC2SPacket.Mode.START_SPRINTING -> sprinting = true
-            ClientCommandC2SPacket.Mode.STOP_SPRINTING -> sprinting = false
+        if (packet !is ServerboundPlayerCommandPacket) return
+        when (packet.action) {
+            ServerboundPlayerCommandPacket.Action.START_SPRINTING -> sprinting = true
+            ServerboundPlayerCommandPacket.Action.STOP_SPRINTING -> sprinting = false
             else -> {}
         }
     }
 
     private fun sprint(enable: Boolean) {
-        mc.options.sprintKey.isPressed = enable
+        GOptions.sprintKey = enable
         mc.thePlayer.isSprinting = enable
         sprinting = enable
     }
@@ -93,13 +91,13 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     private fun tap(press: Boolean = true) {
         when (keyMode) {
             KeyMode.S -> {
-                if (mc.options.backKey.isPressed != press) {
-                    mc.options.backKey.isPressed = press
+                if (mc.options.keyDown.isDown != press) {
+                    mc.options.keyDown.isDown = press
                 }
             }
             KeyMode.W -> {
-                if (mc.options.forwardKey.isPressed == press) {
-                    mc.options.forwardKey.isPressed = !press && GameInput.forwardKey
+                if (mc.options.keyUp.isDown == press) {
+                    mc.options.keyUp.isDown = !press && GOptions.forwardKey
                 }
             }
             KeyMode.NONE -> {}

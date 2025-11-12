@@ -1,10 +1,10 @@
 package xyz.qweru.geo.mixin.render;
 
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.hit.HitResult;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.HitResult;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,35 +24,35 @@ import xyz.qweru.geo.core.system.module.Modules;
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
 
-    @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;shouldRenderCrosshair()Z"))
-    private void onWorldRender(RenderTickCounter renderTickCounter, CallbackInfo ci) {
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;shouldRenderDebugCrosshair()Z"))
+    private void onWorldRender(DeltaTracker deltaTracker, CallbackInfo ci) {
         EventBus.INSTANCE.post(WorldRenderEvent.INSTANCE);
     }
 
     @Inject(method = "render", at = @At("TAIL"))
-    private void render(RenderTickCounter tickCounter, boolean tick, CallbackInfo ci) {
+    private void render(DeltaTracker deltaTracker, boolean bl, CallbackInfo ci) {
         EventBus.INSTANCE.post(GameRenderEvent.INSTANCE);
     }
 
     @Unique
     ModuleViewModel viewModel = null;
 
-    @Inject(method = "renderHand", at = @At("HEAD"))
+    @Inject(method = "renderItemInHand", at = @At("HEAD"))
     private void renderHand(float tickProgress, boolean sleeping, Matrix4f positionMatrix, CallbackInfo ci) {
         viewModel = Systems.INSTANCE.get(Modules.class).get(ModuleViewModel.class);
     }
 
     @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
-    private void bobView(MatrixStack matrices, float tickProgress, CallbackInfo ci) {
+    private void bobView(PoseStack poseStack, float f, CallbackInfo ci) {
         if (viewModel.getEnabled() && !viewModel.getHandSway()) ci.cancel();
     }
 
-    @Inject(method = "findCrosshairTarget", at = @At("HEAD"))
-    private void preUpdate(Entity camera, double blockInteractionRange, double entityInteractionRange, float tickProgress, CallbackInfoReturnable<HitResult> cir) {
+    @Inject(method = "pick(Lnet/minecraft/world/entity/Entity;DDF)Lnet/minecraft/world/phys/HitResult;", at = @At("HEAD"))
+    private void preUpdate(Entity entity, double d, double e, float f, CallbackInfoReturnable<HitResult> cir) {
         EventBus.INSTANCE.post(PreCrosshair.INSTANCE);
     }
 
-    @Inject(method = "findCrosshairTarget", at = @At("RETURN"))
+    @Inject(method = "pick(Lnet/minecraft/world/entity/Entity;DDF)Lnet/minecraft/world/phys/HitResult;", at = @At("RETURN"))
     private void postUpdate(Entity camera, double blockInteractionRange, double entityInteractionRange, float tickProgress, CallbackInfoReturnable<HitResult> cir) {
         EventBus.INSTANCE.post(PostCrosshair.INSTANCE);
     }

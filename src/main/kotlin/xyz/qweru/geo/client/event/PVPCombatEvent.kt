@@ -1,12 +1,12 @@
 package xyz.qweru.geo.client.event
 
-import net.minecraft.entity.Entity
-import net.minecraft.entity.damage.DamageSource
-import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player
 
 abstract class PVPCombatEvent {
-    lateinit var source: PlayerEntity
-    lateinit var player: PlayerEntity
+    lateinit var source: Player
+    lateinit var player: Player
 }
 
 object AttackPlayerEvent : PVPCombatEvent()
@@ -21,6 +21,6 @@ object EntityDamageEvent {
 }
 
 object AttackEntityEvent {
-    lateinit var player: PlayerEntity
+    lateinit var player: Player
     lateinit var entity: Entity
 }

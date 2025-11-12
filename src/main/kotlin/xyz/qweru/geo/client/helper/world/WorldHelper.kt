@@ -1,21 +1,19 @@
 package xyz.qweru.geo.client.helper.world
 
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec
-import net.minecraft.block.BlockState
-import net.minecraft.entity.Entity
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.entity.projectile.ProjectileUtil
-import net.minecraft.util.hit.BlockHitResult
-import net.minecraft.util.hit.HitResult
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
-import net.minecraft.util.math.Vec3d
-import net.minecraft.util.shape.VoxelShape
-import net.minecraft.world.RaycastContext
-import net.minecraft.world.World
+import net.minecraft.core.BlockPos
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.projectile.ProjectileUtil
+import net.minecraft.world.level.ClipContext
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.HitResult
+import net.minecraft.world.phys.Vec3
+import net.minecraft.world.phys.shapes.VoxelShape
 import xyz.qweru.geo.core.Global.mc
-import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.extend.theWorld
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.game.theLevel
 import java.util.function.Predicate
 import kotlin.math.floor
 
@@ -29,16 +27,16 @@ object WorldHelper {
         filter: Predicate<Entity> = Predicate<Entity> { true },
         rotation: FloatArray
     ): HitResult? {
-        val cameraPos = entity.eyePos
+        val cameraPos = entity.eyePosition
 
-        val direction = Vec3d.fromPolar(rotation[0], rotation[1]).multiply(range)
+        val direction = Vec3.directionFromRotation(rotation[0], rotation[1]).scale(range)
         val targetPos = cameraPos.add(direction)
 
-        val entityHitResult = ProjectileUtil.raycast(
+        val entityHitResult = ProjectileUtil.getEntityHitResult(
             entity,
             cameraPos,
             targetPos,
-            entity.boundingBox.stretch(direction).expand(1.0),
+            entity.boundingBox.expandTowards(direction).inflate(1.0),
             filter.and { targetEntity -> !targetEntity.isSpectator },
             range * range
         )
@@ -48,15 +46,15 @@ object WorldHelper {
         }
 
         if (!ignoreBlocks) {
-            val context = RaycastContext(
+            val context = ClipContext(
                 cameraPos,
                 targetPos,
-                RaycastContext.ShapeType.OUTLINE,
-                RaycastContext.FluidHandling.NONE,
+                ClipContext.Block.OUTLINE,
+                ClipContext.Fluid.NONE,
                 entity
             )
 
-            val hitResult: HitResult? = mc.theWorld.raycast(context)
+            val hitResult: HitResult? = mc.theLevel.clip(context)
             if (hitResult != null && hitResult.type != HitResult.Type.MISS) {
                 return hitResult
             }
@@ -65,8 +63,8 @@ object WorldHelper {
         return null
     }
 
-    fun playerIntersects(expand: Double = 0.0, validate: (BlockPos, BlockState, Box) -> Boolean): Boolean {
-        val bb = mc.thePlayer.boundingBox.expand(expand)
+    fun playerIntersects(expand: Double = 0.0, validate: (BlockPos, BlockState, AABB) -> Boolean): Boolean {
+        val bb = mc.thePlayer.boundingBox.inflate(expand)
 
         val minX = floor(bb.minX).toInt()
         val maxX = floor(bb.maxX).toInt()
@@ -79,11 +77,11 @@ object WorldHelper {
             for (y in minY..maxY) {
                 for (z in minZ..maxZ) {
                     val pos = BlockPos(x, y, z)
-                    val state = mc.theWorld.getBlockState(pos)
-                    val shape: VoxelShape = state.getCollisionShape(mc.theWorld, pos)
+                    val state = mc.theLevel.getBlockState(pos)
+                    val shape: VoxelShape = state.getCollisionShape(mc.theLevel, pos)
 
                     if (!shape.isEmpty) {
-                        val shapeBox = shape.boundingBox.offset(x.toDouble(), y.toDouble(), z.toDouble())
+                        val shapeBox = shape.bounds().move(x.toDouble(), y.toDouble(), z.toDouble())
                         if (!validate.invoke(pos, state, shapeBox)) continue
                         if (bb.intersects(shapeBox)) {
                             return true
@@ -95,21 +93,21 @@ object WorldHelper {
         return false
     }
 
-    fun blockCollision(world: World, start: Vec3d?, end: Vec3d?): Boolean {
-        val result: BlockHitResult = world.raycast(
-            RaycastContext(
+    fun blockCollision(world: Level, start: Vec3, end: Vec3): Boolean {
+        val result: BlockHitResult = world.clip(
+            ClipContext(
                 start,
                 end,
-                RaycastContext.ShapeType.COLLIDER,
-                RaycastContext.FluidHandling.NONE,
-                mc.player
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.NONE,
+                mc.thePlayer
             )
         )
 
         return result.type != HitResult.Type.MISS
     }
 
-    fun blockCollision(world: World, start: Vec3d?, vararg end: Vec3d?): Vec3d? {
+    fun blockCollision(world: Level, start: Vec3, vararg end: Vec3): Vec3? {
         for (v in end) {
             if (!blockCollision(world, start, v)) return v
         }
@@ -117,16 +115,16 @@ object WorldHelper {
         return null
     }
 
-    fun blockCollision(world: World, start: Vec3d?, box: Box) =
+    fun blockCollision(world: Level, start: Vec3, box: AABB) =
         blockCollision(world, start,
             box.center,
-            Vec3d(box.minX, box.minY, box.minZ),
-            Vec3d(box.maxX, box.minY, box.minZ),
-            Vec3d(box.minX, box.minY, box.maxZ),
-            Vec3d(box.maxX, box.minY, box.maxZ),
-            Vec3d(box.minX, box.maxY, box.minZ),
-            Vec3d(box.maxX, box.maxY, box.minZ),
-            Vec3d(box.minX, box.maxY, box.maxZ),
-            Vec3d(box.maxY, box.maxY, box.maxZ),
+            Vec3(box.minX, box.minY, box.minZ),
+            Vec3(box.maxX, box.minY, box.minZ),
+            Vec3(box.minX, box.minY, box.maxZ),
+            Vec3(box.maxX, box.minY, box.maxZ),
+            Vec3(box.minX, box.maxY, box.minZ),
+            Vec3(box.maxX, box.maxY, box.minZ),
+            Vec3(box.minX, box.maxY, box.maxZ),
+            Vec3(box.maxY, box.maxY, box.maxZ),
         )
 }

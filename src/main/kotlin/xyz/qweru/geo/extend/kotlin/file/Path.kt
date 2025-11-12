@@ -1,4 +1,4 @@
-package xyz.qweru.geo.extend
+package xyz.qweru.geo.extend.kotlin.file
 
 import xyz.qweru.geo.core.helper.file.FileHelper
 import java.io.File

@@ -32,8 +32,8 @@ object SkijaManager {
 
     @Handler
     private fun createContext(e: PostInitEvent) {
-        val width = mc.window.framebufferWidth
-        val height = mc.window.framebufferHeight
+        val width = mc.window.width
+        val height = mc.window.height
 
         context = DirectContext.makeGL()
         updateTarget(width, height)
@@ -50,7 +50,7 @@ object SkijaManager {
         UIRenderEvent.canvas = canvas
         HudRenderEvent.canvas = canvas
 //        EventBus.post(UIRenderEvent)
-//        if (mc.currentScreen == null)
+//        if (mc.screen == null)
 //            EventBus.post(HudRenderEvent)
         context.flush()
         States.pop()
@@ -60,7 +60,6 @@ object SkijaManager {
         surface?.close()
         renderTarget?.close()
 
-        val fbId = mc.framebuffer
         renderTarget = BackendRenderTarget.makeGL(
             width,
             height,  /*samples*/

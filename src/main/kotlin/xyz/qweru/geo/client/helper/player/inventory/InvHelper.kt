@@ -1,17 +1,18 @@
-package xyz.qweru.geo.client.helper.player
+package xyz.qweru.geo.client.helper.player.inventory
 
-import net.minecraft.entity.EquipmentSlot
-import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
-import net.minecraft.item.Items
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import xyz.qweru.geo.client.event.PostTickEvent
+import xyz.qweru.geo.client.helper.player.SlotHelper
 import xyz.qweru.geo.client.module.config.ModuleSwap
-import xyz.qweru.geo.core.Global.mc
+import xyz.qweru.geo.core.Global
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.system.module.Modules
 import xyz.qweru.geo.core.system.Systems
-import xyz.qweru.geo.extend.thePlayer
+import xyz.qweru.geo.core.system.module.Modules
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import java.util.function.Predicate
 
 object InvHelper {
@@ -31,8 +32,8 @@ object InvHelper {
             inventory.selectedSlot = value
         }
 
-    val inventory: PlayerInventory
-        get() = mc.thePlayer.getInventory()
+    val inventory: Inventory
+        get() = Global.mc.thePlayer.getInventory()
 
     @Handler
     private fun postTick(e: PostTickEvent) {
@@ -40,28 +41,28 @@ object InvHelper {
         module = Systems.get(Modules::class).get(ModuleSwap::class)
     }
 
-    fun isHolding(item: Predicate<ItemStack>): Boolean = isInMainhand(item) || isInOffhand(item)
+    fun isHolding(item: (ItemStack) -> Boolean): Boolean = isInMainhand(item) || isInOffhand(item)
 
-    fun isHolding(item: Item): Boolean = isHolding { it.isOf(item) }
+    fun isHolding(item: Item): Boolean = isHolding { it.`is`(item) }
 
-    fun isInMainhand(item: Predicate<ItemStack>): Boolean = item.test(getMainhand())
+    fun isInMainhand(item: (ItemStack) -> Boolean): Boolean = item.invoke(getMainhand())
 
-    fun isInMainhand(item: Item): Boolean = isInMainhand { it.isOf(item) }
+    fun isInMainhand(item: Item): Boolean = isInMainhand { it.`is`(item) }
 
-    fun isInOffhand(item: Predicate<ItemStack>): Boolean = item.test(getOffhand())
+    fun isInOffhand(item: (ItemStack) -> Boolean): Boolean = item.invoke(getOffhand())
 
-    fun isInOffhand(item: Item): Boolean = isInOffhand { it.isOf(item) }
+    fun isInOffhand(item: Item): Boolean = isInOffhand { it.`is`(item) }
 
-    fun getMainhand(): ItemStack = inventory.getStack(selectedSlot)
+    fun getMainhand(): ItemStack = inventory.getItem(selectedSlot)
 
-    fun getOffhand(): ItemStack = mc.thePlayer.getEquippedStack(EquipmentSlot.OFFHAND)
+    fun getOffhand(): ItemStack = Global.mc.thePlayer.getItemBySlot(EquipmentSlot.OFFHAND)
 
     fun isSword(item: Item): Boolean =
         item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD
 
-    fun swap(item: Item, priority: Int = 0): Boolean = swap({ it.isOf(item) }, priority)
+    fun swap(item: Item, priority: Int = 0): Boolean = swap({ it.`is`(item) }, priority)
 
-    fun swap(item: Predicate<ItemStack>, priority: Int = 0): Boolean {
+    fun swap(item: (ItemStack) -> Boolean, priority: Int = 0): Boolean {
         val res = find(item)
         return res.found().also { if (it) res.swap(priority) }
     }
@@ -72,14 +73,16 @@ object InvHelper {
         else swap0(slot, priority)
     }
 
-    fun find(item: Predicate<ItemStack>, start: Int = 0, end: Int = 9): FindResult {
+    fun find(item: (ItemStack) -> Boolean, start: Int = 0, end: Int = 9): FindResult {
         for (i in start..end - 1) {
-            if (item.test(inventory.getStack(i))) {
+            if (item.invoke(inventory.getItem(i))) {
                 return FindResult(i)
             }
         }
         return FindResult.NONE
     }
+
+    fun move(): InvAction = InvAction(InvAction.Type.MOVE)
 
     private fun swap0(slot: Int, priority: Int) {
         if (priority <= lastSwapPriority) return
@@ -111,4 +114,5 @@ object InvHelper {
 
         fun toId(): Int = SlotHelper.indexToId(slot)
     }
+
 }

@@ -1,14 +1,14 @@
 package xyz.qweru.geo.mixin.screen;
 
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(HandledScreen.class)
+@Mixin(AbstractContainerScreen.class)
 public interface HandledScreenAccessor {
 
-    @Accessor("focusedSlot")
+    @Accessor("hoveredSlot")
     Slot geo_getFocusedSlot();
 
 }

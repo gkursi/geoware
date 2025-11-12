@@ -1,25 +1,29 @@
 package xyz.qweru.geo.client.module.player
 
-import net.minecraft.block.Blocks
-import net.minecraft.component.DataComponentTypes
-import net.minecraft.item.Item
-import net.minecraft.item.Items
-import net.minecraft.util.hit.BlockHitResult
-import net.minecraft.util.hit.EntityHitResult
+import net.minecraft.core.component.DataComponents
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.Items
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.EntityHitResult
 import org.lwjgl.glfw.GLFW
+import xyz.qweru.geo.abstraction.game.GOptions
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.client.helper.math.RangeHelper
+import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.manager.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.client.helper.player.InvHelper
-import xyz.qweru.geo.client.helper.timing.TimerDelay
-import xyz.qweru.geo.core.manager.combat.TargetTracker
-import xyz.qweru.geo.extend.inRange
-import xyz.qweru.geo.extend.theWorld
+import xyz.qweru.geo.extend.minecraft.entity.inRange
+import xyz.qweru.geo.extend.minecraft.game.theLevel
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.item.isOf
+import xyz.qweru.geo.extend.minecraft.world.isOf
 import xyz.qweru.multirender.api.API
+import xyz.qweru.multirender.api.input.Input
 
 class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLAYER) {
     val smc = settings.group("Middle Click")
@@ -64,12 +68,11 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
             return
         }
 
-        if (mc.options.useKey.isPressed) {
-            API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_2)
-            API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_2)
+        if (GOptions.useKey) {
+            API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_2, Input.RELEASE)
+            API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_2, Input.PRESS)
         } else {
-            API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_2)
-            API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_2)
+            API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_2, Input.CLICK)
         }
 
         doAction = Action.NONE
@@ -77,8 +80,8 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
     }
 
     private fun middleClickAction(): Action {
-        if (!mc.mouse.wasMiddleButtonClicked()) return Action.NONE
-        return if (elytraFirework && mc.thePlayer.isGliding) Action.FIREWORK else when (mc.crosshairTarget) {
+        if (!mc.mouseHandler.isMiddlePressed) return Action.NONE
+        return if (elytraFirework && mc.thePlayer.isFallFlying) Action.FIREWORK else when (mc.hitResult) {
             is BlockHitResult -> groundAction
             is EntityHitResult -> entityAction
             else -> airAction
@@ -86,14 +89,14 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
     }
 
     private fun rightClickAction(): Action {
-        val hit = mc.crosshairTarget
+        val hit = mc.hitResult
         var action = Action.NONE
-        if (!mc.mouse.wasRightButtonClicked() || hit !is BlockHitResult) return action
-        if (InvHelper.getMainhand().item.components.contains(DataComponentTypes.FOOD)
+        if (!mc.mouseHandler.isRightPressed || hit !is BlockHitResult) return action
+        if (InvHelper.getMainhand().item.components().has(DataComponents.FOOD)
             || ignoreAnchor && InvHelper.isHolding(Items.RESPAWN_ANCHOR)) return action
-        val state = mc.theWorld.getBlockState(hit.blockPos)
+        val state = mc.theLevel.getBlockState(hit.blockPos)
 
-        action = if (obsidianCrystal && !mc.thePlayer.isSneaking && state.isOf(Blocks.OBSIDIAN))
+        action = if (obsidianCrystal && !mc.thePlayer.isCrouching && state.isOf(Blocks.OBSIDIAN))
                     Action.CRYSTAL
                 else if (state.isAir || ignoreAnchor && state.isOf(Blocks.RESPAWN_ANCHOR) || ignoreObby && state.isOf(Blocks.OBSIDIAN))
                     Action.NONE

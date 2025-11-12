@@ -1,13 +1,13 @@
 package xyz.qweru.geo.client.module.combat
 
 import it.unimi.dsi.fastutil.objects.ObjectArraySet
-import net.minecraft.block.Blocks
-import net.minecraft.block.RespawnAnchorBlock
-import net.minecraft.item.Item
-import net.minecraft.item.Items
-import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket
-import net.minecraft.util.hit.BlockHitResult
-import net.minecraft.util.math.BlockPos
+import net.minecraft.core.BlockPos
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.Items
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.RespawnAnchorBlock
+import net.minecraft.world.phys.BlockHitResult
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PlaceBlockEvent
@@ -15,10 +15,13 @@ import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.theWorld
-import xyz.qweru.geo.client.helper.player.InvHelper
+import xyz.qweru.geo.extend.minecraft.game.theLevel
+import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
+import xyz.qweru.geo.extend.minecraft.item.isOf
+import xyz.qweru.geo.extend.minecraft.world.isOf
 import xyz.qweru.multirender.api.API
+import xyz.qweru.multirender.api.input.Input
 
 class ModuleAnchorMacro : Module("AnchorMacro", "Automatically place and break anchors", Category.COMBAT) {
     val sa = settings.group("Actions")
@@ -39,13 +42,13 @@ class ModuleAnchorMacro : Module("AnchorMacro", "Automatically place and break a
     private fun preTick(e: PreTickEvent) {
         if (!inGame) return
 
-        val hit = mc.crosshairTarget
+        val hit = mc.hitResult
         if (hit !is BlockHitResult) return
-        val state = mc.theWorld.getBlockState(hit.blockPos)
+        val state = mc.theLevel.getBlockState(hit.blockPos)
         if (!state.isOf(Blocks.RESPAWN_ANCHOR)) return
         if (onlyOwn && !placedAnchors.contains(hit.blockPos)) return
 
-        val charges = state.get(RespawnAnchorBlock.CHARGES)
+        val charges = state.getValue(RespawnAnchorBlock.CHARGE)
         if (charges == 0) place(Items.GLOWSTONE, fillTimer, fillDelay)
         else breakPos(hit)
     }
@@ -55,16 +58,16 @@ class ModuleAnchorMacro : Module("AnchorMacro", "Automatically place and break a
         if (!InvHelper.isHolding(Items.RESPAWN_ANCHOR)) return
         val hit = e.hit
         var pos = hit.blockPos
-        val state = mc.theWorld.getBlockState(pos)
-        if (!state.isReplaceable && !state.isOf(Blocks.RESPAWN_ANCHOR)) pos = pos.offset(hit.side)
+        val state = mc.theLevel.getBlockState(pos)
+        if (!state.canBeReplaced() && !state.isOf(Blocks.RESPAWN_ANCHOR)) pos = pos.relative(hit.direction)
         placedAnchors.add(pos)
     }
 
     @Handler
     private fun onPacket(e: PacketReceiveEvent) {
         val packet = e.packet
-        if (packet !is BlockUpdateS2CPacket) return
-        if (packet.state.isOf(Blocks.RESPAWN_ANCHOR)) return
+        if (packet !is ClientboundBlockUpdatePacket) return
+        if (packet.blockState.isOf(Blocks.RESPAWN_ANCHOR)) return
         placedAnchors.remove(packet.pos)
         brokenAnchors.remove(packet.pos)
     }
@@ -78,8 +81,7 @@ class ModuleAnchorMacro : Module("AnchorMacro", "Automatically place and break a
             return
         }
         if (!timer.hasPassed()) return
-        API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_2)
-        API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_2)
+        API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_2, Input.CLICK)
     }
 
     private fun breakPos(hit: BlockHitResult) {
@@ -93,8 +95,7 @@ class ModuleAnchorMacro : Module("AnchorMacro", "Automatically place and break a
             return
         }
         if (!breakTimer.hasPassed()) return
-        API.mouseHandler.press(GLFW.GLFW_MOUSE_BUTTON_2)
-        API.mouseHandler.release(GLFW.GLFW_MOUSE_BUTTON_2)
+        API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_2, Input.CLICK)
         brokenAnchors.add(hit.blockPos)
     }
 

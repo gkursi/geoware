@@ -1,12 +1,13 @@
 package xyz.qweru.geo.mixin.world;
 
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.world.EntityList;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.level.entity.EntityTickList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ClientWorld.class)
+@Mixin(ClientLevel.class)
 public interface ClientWorldAccessor {
-    @Accessor("entityList")
-    EntityList geo_getEntityList();
+    @Accessor("tickingEntities")
+    EntityTickList geo_getEntityList();
 }

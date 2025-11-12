@@ -6,7 +6,7 @@ import xyz.qweru.geo.core.manager.combat.CombatState
 import xyz.qweru.geo.core.manager.combat.TargetTracker
 import xyz.qweru.geo.core.manager.command.CommandManager
 import xyz.qweru.geo.core.manager.movement.MovementTicker
-import xyz.qweru.geo.client.helper.player.InvHelper
+import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.core.manager.rotation.RotationHandler
 import xyz.qweru.geo.core.render.skija.SkijaManager
 

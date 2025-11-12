@@ -1,14 +1,12 @@
 package xyz.qweru.geo.client.module.move
 
-import net.minecraft.util.PlayerInput
-import xyz.qweru.geo.client.event.PostTickEvent
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.client.helper.input.GameInput
+import xyz.qweru.geo.abstraction.game.GOptions
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.extend.theWorld
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 
 class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEMENT) {
@@ -24,24 +22,24 @@ class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEM
 
     @Handler
     private fun preTick(e: PreTickEvent) {
-        if (inGame && sneak && mc.thePlayer.isOnGround && !GameInput.jumpKey) {
+        if (inGame && sneak && mc.thePlayer.onGround() && !GOptions.jumpKey) {
             if (check()) {
-                GameInput.sneakKey = true
+                GOptions.sneakKey = true
                 wasSneaking = true
                 timer.reset(standDelay)
             } else if (wasSneaking && timer.hasPassed()) {
-                mc.options.sneakKey.isPressed = GameInput.sneakKey
+                GOptions.syncBind(GOptions::sneakKey)
                 wasSneaking = false
             }
         }
     }
 
     fun check(): Boolean {
-        if (mc.thePlayer.pitch < minPitch) return false
-        var pos = mc.thePlayer.blockPos
+        if (mc.thePlayer.xRot < minPitch) return false
+        var pos = mc.thePlayer.blockPosition()
         (0..minFall).forEach { _ ->
-            if (!mc.theWorld.getBlockState(pos).isReplaceable) return false
-            pos = pos.down()
+            if (!mc.theLevel.getBlockState(pos).canBeReplaced()) return false
+            pos = pos.below()
         }
         return true
     }

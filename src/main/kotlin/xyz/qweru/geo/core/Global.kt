@@ -1,10 +1,10 @@
 package xyz.qweru.geo.core
 
 import net.fabricmc.loader.impl.FabricLoaderImpl
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import xyz.qweru.geo.extend.findOrCreateDir
+import xyz.qweru.geo.extend.kotlin.file.findOrCreateDir
 
 object Global {
     const val MOD = "GeoWare"
@@ -12,6 +12,6 @@ object Global {
     // temp global config
     const val PREFIX = "::"
 
-    @JvmField val mc: MinecraftClient = MinecraftClient.getInstance()
+    @JvmField val mc: Minecraft = Minecraft.getInstance()
     @JvmField val logger: Logger = LoggerFactory.getLogger(MOD)
 }

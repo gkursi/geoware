@@ -1,0 +1,24 @@
+package xyz.qweru.geo.extend.minecraft.entity
+
+import net.minecraft.util.Mth
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Items
+import net.minecraft.world.phys.Vec3
+import xyz.qweru.geo.core.Global.mc
+import xyz.qweru.geo.client.helper.player.PlayerHelper
+import xyz.qweru.geo.client.helper.player.RotationHelper
+import xyz.qweru.geo.client.helper.world.WorldHelper
+
+fun Player.getRelativeVelocity() = PlayerHelper.getRelativeVelocity(this)
+fun Player.inRange(range: Float) = this.distanceToSqr(mc.player?.eyePosition ?: Vec3.ZERO) <= Mth.square(range)
+fun Player.inRange(range: ClosedRange<Float>) = this.distanceToSqr(mc.player).let {
+    it >= Mth.square(range.start) && it <= Mth.square(range.endInclusive)
+}
+fun Player.inFov(fov: Float) = RotationHelper.getAngle(this) <= fov
+fun Player.visiblePoint() = WorldHelper.blockCollision(this.level(), mc.player?.eyePosition ?: Vec3.ZERO, this.boundingBox)
+
+val Player.canGlide: Boolean
+    get() = !this.onGround() && this.getItemBySlot(EquipmentSlot.CHEST).`is`(Items.ELYTRA)
+val Player.rotation: FloatArray
+    get() = floatArrayOf(yRot, xRot)

@@ -1,14 +1,14 @@
 package xyz.qweru.geo.mixin.screen;
 
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.screen.HorseScreenHandler;
+import net.minecraft.client.gui.screens.inventory.HorseInventoryScreen;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(HorseScreenHandler.class)
+@Mixin(HorseInventoryScreen.class)
 public interface HorseScreenHandlerAccessor {
 
-    @Accessor("entity")
-    AbstractHorseEntity geo_getEntity();
+    @Accessor("horse")
+    AbstractHorse geo_getEntity();
 
 }

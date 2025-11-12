@@ -2,10 +2,10 @@ package xyz.qweru.geo.mixin.entity;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,15 +20,15 @@ import xyz.qweru.geo.core.system.Systems;
 public class LivingEntityMixin {
 
     @Inject(method = "getDimensions", at = @At("RETURN"), cancellable = true)
-    private void setPlayerHitbox(EntityPose pose, CallbackInfoReturnable<EntityDimensions> cir) {
+    private void setPlayerHitbox(Pose pose, CallbackInfoReturnable<EntityDimensions> cir) {
         ModuleHitbox hitbox = Systems.INSTANCE.get(Modules.class).get(ModuleHitbox.class);
-        if (hitbox.getEnabled() && hitbox.getSize() > 0f && ((Object) this) instanceof PlayerEntity && !this.equals(Global.mc.player)) {
+        if (hitbox.getEnabled() && hitbox.getSize() > 0f && ((Object) this) instanceof Player && !this.equals(Global.mc.player)) {
             EntityDimensions init = cir.getReturnValue();
-            cir.setReturnValue(init.scaled(1f + hitbox.getSize(), 1f));
+            cir.setReturnValue(init.scale(1f + hitbox.getSize(), 1f));
         }
     }
 
-    @WrapMethod(method = "getHandSwingDuration")
+    @WrapMethod(method = "getCurrentSwingDuration")
     private int getHandSwingDuration(Operation<Integer> original) {
         ModuleViewModel vm = Systems.INSTANCE.get(Modules.class).get(ModuleViewModel.class);
         return (int) (original.call() * (vm.getEnabled() ? 1f / vm.getSwingSpeed() : 1f));

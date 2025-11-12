@@ -28,7 +28,7 @@ abstract class Module(name: String, val description: String = "${name.lowercase(
                 }
             }
         }
-    val inGame: Boolean get() = mc.world != null && mc.player != null
+    val inGame: Boolean get() = mc.level != null && mc.player != null
 
     protected open fun enable() {}
     protected open fun disable() {}

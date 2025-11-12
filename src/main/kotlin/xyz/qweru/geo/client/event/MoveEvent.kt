@@ -1,8 +1,8 @@
 package xyz.qweru.geo.client.event
 
 import xyz.qweru.geo.core.Global.mc
-import xyz.qweru.geo.extend.thePlayer
-import xyz.qweru.geo.mixin.math.Vec3dAccesor
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.mixin.math.Vec3Accessor
 import kotlin.math.sqrt
 
 object PreMovementTickEvent
@@ -10,17 +10,17 @@ object PostMovementTickEvent {
     var velX = 0.0
         set(value) {
             field = value
-            (mc.thePlayer.velocity as Vec3dAccesor).geo_setX(value)
+            (mc.thePlayer.deltaMovement as Vec3Accessor).geo_setX(value)
         }
     var velY = 0.0
         set(value) {
             field = value
-            (mc.thePlayer.velocity as Vec3dAccesor).geo_setY(value)
+            (mc.thePlayer.deltaMovement as Vec3Accessor).geo_setY(value)
         }
     var velZ = 0.0
         set(value) {
             field = value
-            (mc.thePlayer.velocity as Vec3dAccesor).geo_setZ(value)
+            (mc.thePlayer.deltaMovement as Vec3Accessor).geo_setZ(value)
         }
 
     fun clampHorizontal(maxMag: Double) {

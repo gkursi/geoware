@@ -1,7 +1,7 @@
 package xyz.qweru.geo.client.module.combat
 
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.Items
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Items
 import xyz.qweru.geo.client.event.PreCrosshair
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.Target
@@ -9,12 +9,15 @@ import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
+import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.manager.rotation.Rotation
 import xyz.qweru.geo.core.manager.rotation.RotationHandler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.thePlayer
+import xyz.qweru.geo.extend.minecraft.entity.attackCharge
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.item.isOf
 
 class ModuleKillAura : Module("KillAura", "Automatically attack players in range", Category.COMBAT) {
     private val sg = settings.group("General")
@@ -22,6 +25,7 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
     private val sc = settings.group("Conditions")
 
     private val rotation by sg.enum("Rotation", "When should we rotate", RotationMode.FRAME)
+    private val sprintReset by sg.boolean("Sprint Reset", "Reset sprint after hit", true)
 
     private val delay by st.longRange("Delay", "Hit delay", 90L..105L, 0L..200L)
     private val charge by st.float("Charge", "Item charge", 1f, 0f, 1f)
@@ -54,18 +58,19 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
         rotate()
     }
 
-    private fun attack(player: PlayerEntity) {
+    private fun attack(player: Player) {
         PacketHelper.attackAndSwing(player)
         mc.thePlayer.attack(player)
+        if (sprintReset) ModuleSprint.sprint(false)
         timer.reset(delay)
     }
 
     private fun canAttack(): Boolean {
         if (!timer.hasPassed()) return false
         val targetCharge =
-            if (fastShieldDisable && target?.player?.activeItem?.isOf(Items.SHIELD) ?: false) 0f
+            if (fastShieldDisable && target?.player?.useItem?.isOf(Items.SHIELD) ?: false) 0f
             else charge
-        return mc.thePlayer.getAttackCooldownProgress(0.5f) >= targetCharge
+        return mc.thePlayer.attackCharge >= targetCharge
     }
 
     private fun rotate() {

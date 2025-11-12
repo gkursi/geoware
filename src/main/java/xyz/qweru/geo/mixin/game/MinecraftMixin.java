@@ -2,12 +2,12 @@ package xyz.qweru.geo.mixin.game;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.RunArgs;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.util.Window;
-import net.minecraft.network.packet.Packet;
+import com.mojang.blaze3d.platform.Window;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.main.GameConfig;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.protocol.Packet;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,14 +19,12 @@ import xyz.qweru.geo.client.event.*;
 import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.manager.movement.MovementTicker;
 
-@Mixin(MinecraftClient.class)
-public class MinecraftClientMixin {
+@Mixin(Minecraft.class)
+public class MinecraftMixin {
 
     @Shadow
     @Nullable
-    public ClientPlayerEntity player;
-
-    @Shadow @Final private Window window;
+    public LocalPlayer player;
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
@@ -39,10 +37,10 @@ public class MinecraftClientMixin {
     }
 
     @Inject(
-            method = "render",
+            method = "runTick",
             at = @At(
                 value = "INVOKE",
-                target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V",
+                target = "Lnet/minecraft/util/profiling/ProfilerFiller;push(Ljava/lang/String;)V",
                 ordinal = 0,
                 shift = At.Shift.AFTER
             )
@@ -53,18 +51,18 @@ public class MinecraftClientMixin {
         }
     }
 
-    @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V"))
-    private void cancelEndPacket(ClientPlayNetworkHandler instance, Packet<?> packet, Operation<Void> original) {
+    @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V"))
+    private void cancelEndPacket(ClientPacketListener instance, Packet<?> packet, Operation<Void> original) {
         if (MovementTicker.INSTANCE.getTickSpeed() == 20) original.call(instance, packet);
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;runTasks()V", shift = At.Shift.BEFORE))
+    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;runAllTasks()V", shift = At.Shift.BEFORE))
     private void preRunTasks(boolean tick, CallbackInfo ci) {
         EventBus.INSTANCE.post(HandleTasksEvent.INSTANCE);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void postInit(RunArgs args, CallbackInfo ci) {
+    private void postInit(GameConfig gameConfig, CallbackInfo ci) {
         EventBus.INSTANCE.post(PostInitEvent.INSTANCE);
     }
 }

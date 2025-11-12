@@ -1,14 +1,41 @@
 package xyz.qweru.geo.client.helper.player
 
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen
-import net.minecraft.client.network.ClientPlayerInteractionManager
-import net.minecraft.entity.mob.SkeletonHorseEntity
-import net.minecraft.entity.mob.ZombieHorseEntity
-import net.minecraft.entity.passive.*
-import net.minecraft.registry.Registries
-import net.minecraft.screen.*
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
+import net.minecraft.client.gui.screens.inventory.HorseInventoryScreen
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
+import net.minecraft.world.entity.animal.camel.Camel
+import net.minecraft.world.entity.animal.horse.AbstractHorse
+import net.minecraft.world.entity.animal.horse.Donkey
+import net.minecraft.world.entity.animal.horse.Horse
+import net.minecraft.world.entity.animal.horse.Llama
+import net.minecraft.world.entity.animal.horse.SkeletonHorse
+import net.minecraft.world.entity.animal.horse.ZombieHorse
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.AnvilMenu
+import net.minecraft.world.inventory.BeaconMenu
+import net.minecraft.world.inventory.BlastFurnaceMenu
+import net.minecraft.world.inventory.BrewingStandMenu
+import net.minecraft.world.inventory.CartographyTableMenu
+import net.minecraft.world.inventory.ChestMenu
+import net.minecraft.world.inventory.CrafterMenu
+import net.minecraft.world.inventory.CraftingMenu
+import net.minecraft.world.inventory.DispenserMenu
+import net.minecraft.world.inventory.EnchantmentMenu
+import net.minecraft.world.inventory.FurnaceMenu
+import net.minecraft.world.inventory.GrindstoneMenu
+import net.minecraft.world.inventory.HopperMenu
+import net.minecraft.world.inventory.HorseInventoryMenu
+import net.minecraft.world.inventory.InventoryMenu
+import net.minecraft.world.inventory.LecternMenu
+import net.minecraft.world.inventory.LoomMenu
+import net.minecraft.world.inventory.MerchantMenu
+import net.minecraft.world.inventory.ShulkerBoxMenu
+import net.minecraft.world.inventory.SmithingMenu
+import net.minecraft.world.inventory.SmokerMenu
+import net.minecraft.world.inventory.StonecutterMenu
 import xyz.qweru.geo.core.Global.mc
-import xyz.qweru.geo.extend.thePlayer
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.mixin.screen.CreativeInventoryScreenAccessor
 import xyz.qweru.geo.mixin.screen.HorseScreenHandlerAccessor
 import xyz.qweru.geo.mixin.screen.ItemGroupsAccessor
@@ -45,31 +72,31 @@ object SlotHelper {
      */
     fun indexToId(i: Int): Int {
         if (mc.player == null) return -1
-        val handler: ScreenHandler? = mc.thePlayer.currentScreenHandler
+        val handler: AbstractContainerMenu? = mc.thePlayer.containerMenu
 
-        if (handler is PlayerScreenHandler) return survivalInventory(i)
-        if (handler is CreativeInventoryScreen.CreativeScreenHandler) return creativeInventory(i)
-        if (handler is GenericContainerScreenHandler) return genericContainer(i, handler.getRows())
-        if (handler is CraftingScreenHandler) return craftingTable(i)
-        if (handler is FurnaceScreenHandler) return furnace(i)
-        if (handler is BlastFurnaceScreenHandler) return furnace(i)
-        if (handler is SmokerScreenHandler) return furnace(i)
-        if (handler is Generic3x3ContainerScreenHandler) return generic3x3(i)
-        if (handler is EnchantmentScreenHandler) return enchantmentTable(i)
-        if (handler is BrewingStandScreenHandler) return brewingStand(i)
-        if (handler is MerchantScreenHandler) return villager(i)
-        if (handler is BeaconScreenHandler) return beacon(i)
-        if (handler is AnvilScreenHandler) return anvil(i)
-        if (handler is HopperScreenHandler) return hopper(i)
-        if (handler is ShulkerBoxScreenHandler) return genericContainer(i, 3)
-        if (handler is HorseScreenHandler) return horse(handler, i)
-        if (handler is CartographyTableScreenHandler) return cartographyTable(i)
-        if (handler is GrindstoneScreenHandler) return grindstone(i)
-        if (handler is LecternScreenHandler) return lectern()
-        if (handler is LoomScreenHandler) return loom(i)
-        if (handler is StonecutterScreenHandler) return stonecutter(i)
-        if (handler is CrafterScreenHandler) return crafter(i)
-        if (handler is SmithingScreenHandler) return smithingTable(i)
+        if (handler is InventoryMenu) return survivalInventory(i)
+        if (handler is CreativeModeInventoryScreen.ItemPickerMenu) return creativeInventory(i)
+        if (handler is ChestMenu) return genericContainer(i, handler.rowCount)
+        if (handler is CraftingMenu) return craftingTable(i)
+        if (handler is FurnaceMenu) return furnace(i)
+        if (handler is BlastFurnaceMenu) return furnace(i)
+        if (handler is SmokerMenu) return furnace(i)
+        if (handler is DispenserMenu) return generic3x3(i)
+        if (handler is EnchantmentMenu) return enchantmentTable(i)
+        if (handler is BrewingStandMenu) return brewingStand(i)
+        if (handler is MerchantMenu) return villager(i)
+        if (handler is BeaconMenu) return beacon(i)
+        if (handler is AnvilMenu) return anvil(i)
+        if (handler is HopperMenu) return hopper(i)
+        if (handler is ShulkerBoxMenu) return genericContainer(i, 3)
+        if (handler is HorseInventoryMenu) return horse(handler, i)
+        if (handler is CartographyTableMenu) return cartographyTable(i)
+        if (handler is GrindstoneMenu) return grindstone(i)
+        if (handler is LecternMenu) return lectern()
+        if (handler is LoomMenu) return loom(i)
+        if (handler is StonecutterMenu) return stonecutter(i)
+        if (handler is CrafterMenu) return crafter(i)
+        if (handler is SmithingMenu) return smithingTable(i)
 
         return -1
     }
@@ -82,7 +109,7 @@ object SlotHelper {
     }
 
     private fun creativeInventory(i: Int): Int {
-        if (CreativeInventoryScreenAccessor.geo_getTab() !== Registries.ITEM_GROUP.get(ItemGroupsAccessor.geo_getInventory())) return -1
+        if (CreativeInventoryScreenAccessor.geo_getTab() !== BuiltInRegistries.CREATIVE_MODE_TAB.get(ItemGroupsAccessor.geo_getInventory())) return -1
         return survivalInventory(i)
     }
 
@@ -146,19 +173,19 @@ object SlotHelper {
         return -1
     }
 
-    private fun horse(handler: ScreenHandler, i: Int): Int {
-        val entity: AbstractHorseEntity? = (handler as HorseScreenHandlerAccessor).geo_getEntity()
+    private fun horse(handler: AbstractContainerMenu, i: Int): Int {
+        val entity: AbstractHorse? = (handler as HorseScreenHandlerAccessor).geo_getEntity()
 
-        if (entity is LlamaEntity) {
-            val strength = entity.getStrength()
+        if (entity is Llama) {
+            val strength = entity.strength
             if (isHotbar(i)) return (2 + 3 * strength) + 28 + i
             if (isMain(i)) return (2 + 3 * strength) + 1 + (i - 9)
-        } else if (entity is HorseEntity || entity is SkeletonHorseEntity
-            || entity is ZombieHorseEntity || entity is CamelEntity
+        } else if (entity is Horse || entity is SkeletonHorse
+            || entity is ZombieHorse || entity is Camel
         ) {
             if (isHotbar(i)) return 29 + i
             if (isMain(i)) return 2 + (i - 9)
-        } else if (entity is AbstractDonkeyEntity) {
+        } else if (entity is Donkey) {
             val chest = entity.hasChest()
             if (isHotbar(i)) return (if (chest) 44 else 29) + i
             if (isMain(i)) return (if (chest) 17 else 2) + (i - 9)

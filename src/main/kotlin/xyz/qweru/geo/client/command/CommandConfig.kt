@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.CommandSyntaxException
-import net.minecraft.client.network.ClientCommandSource
+import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import xyz.qweru.geo.client.command.argument.ConfigArgumentType
 import xyz.qweru.geo.client.command.argument.ConfigTypeArgumentType
 import xyz.qweru.geo.client.command.argument.NewConfigArgumentType
@@ -18,24 +18,24 @@ import xyz.qweru.geo.core.system.config.Configs
 
 class CommandConfig : Command("config", "Save/load/export configs",
     "config <save|load> <config name>", "config export <config name> <export type>") {
-    override fun build(builder: LiteralArgumentBuilder<ClientCommandSource>) {
+    override fun build(builder: LiteralArgumentBuilder<ClientSuggestionProvider>) {
         builder.then(
-            RequiredArgumentBuilder.argument<ClientCommandSource, String>("action", StringArgumentType.word())
+            RequiredArgumentBuilder.argument<ClientSuggestionProvider, String>("action", StringArgumentType.word())
                 .suggests { _, builder ->
                     builder.suggest("save")
                     builder.suggest("load")
                     builder.buildFuture()
                 }
                 .then(
-                    RequiredArgumentBuilder.argument<ClientCommandSource, Config>("config", ConfigArgumentType())
+                    RequiredArgumentBuilder.argument<ClientSuggestionProvider, Config>("config", ConfigArgumentType())
                         .executes(this::saveOrLoad)
                 )
         ).then(
-            LiteralArgumentBuilder.literal<ClientCommandSource>("export")
+            LiteralArgumentBuilder.literal<ClientSuggestionProvider>("export")
                 .then(
-                    RequiredArgumentBuilder.argument<ClientCommandSource, String>("config", NewConfigArgumentType())
+                    RequiredArgumentBuilder.argument<ClientSuggestionProvider, String>("config", NewConfigArgumentType())
                         .then(
-                            RequiredArgumentBuilder.argument<ClientCommandSource, ConfigType>("type", ConfigTypeArgumentType())
+                            RequiredArgumentBuilder.argument<ClientSuggestionProvider, ConfigType>("type", ConfigTypeArgumentType())
                                 .executes(this::export)
                         )
 
@@ -43,7 +43,7 @@ class CommandConfig : Command("config", "Save/load/export configs",
         )
     }
 
-    private fun saveOrLoad(ctx: CommandContext<ClientCommandSource>): Int {
+    private fun saveOrLoad(ctx: CommandContext<ClientSuggestionProvider>): Int {
         try {
             val action = StringArgumentType.getString(ctx, "action")
             val config = ctx.getArgument("config", Config::class.java)
@@ -66,7 +66,7 @@ class CommandConfig : Command("config", "Save/load/export configs",
         }
     }
 
-    private fun export(ctx: CommandContext<ClientCommandSource>): Int {
+    private fun export(ctx: CommandContext<ClientSuggestionProvider>): Int {
         val config = StringArgumentType.getString(ctx, "config")
         val type = ctx.getArgument("type", ConfigType::class.java)
         Systems.get(Configs::class).save(config, type)

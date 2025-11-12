@@ -1,11 +1,12 @@
 package xyz.qweru.geo.core.manager.movement
 
-import net.minecraft.client.network.ClientPlayerEntity
-import net.minecraft.network.packet.c2s.play.ClientTickEndC2SPacket
+import net.minecraft.client.player.LocalPlayer
+import net.minecraft.network.protocol.game.ServerboundClientTickEndPacket
+import xyz.qweru.geo.abstraction.network.GConnection
 import xyz.qweru.geo.core.Global.mc
-import xyz.qweru.geo.extend.thePlayer
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.client.helper.timing.Timer
-import xyz.qweru.geo.imixin.IClientPlayerEntity
+import xyz.qweru.geo.imixin.ILocalPlayer
 
 /**
  * Change the clients movement tick speed and nothing else.
@@ -28,16 +29,16 @@ object MovementTicker {
         tickingMovement = true
 
         tickPlayer(mc.thePlayer)
-        mc.networkHandler!!.sendPacket(ClientTickEndC2SPacket.INSTANCE)
+        GConnection.sendPacket(ServerboundClientTickEndPacket.INSTANCE)
 
         canSendPackets = false
         tickingMovement = false
         tickTimer.reset()
     }
 
-    private fun tickPlayer(p: ClientPlayerEntity) {
-        p.tickMovement()
-        (p as IClientPlayerEntity).geo_tickMovementPackets()
+    private fun tickPlayer(p: LocalPlayer) {
+        p.aiStep()
+        (p as ILocalPlayer).geo_tickMovementPackets()
     }
 
 }

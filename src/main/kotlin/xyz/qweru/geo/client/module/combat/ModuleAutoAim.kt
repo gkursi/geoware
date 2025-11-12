@@ -1,22 +1,22 @@
 package xyz.qweru.geo.client.module.combat
 
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.AxeItem
-import net.minecraft.item.Items
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.AxeItem
+import net.minecraft.world.item.Items
 import xyz.qweru.geo.client.event.GameRenderEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
-import xyz.qweru.geo.client.helper.player.InvHelper
+import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.manager.rotation.RotationHandler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.inFov
-import xyz.qweru.geo.extend.inRange
-import xyz.qweru.geo.extend.theWorld
+import xyz.qweru.geo.extend.minecraft.entity.inFov
+import xyz.qweru.geo.extend.minecraft.entity.inRange
+import xyz.qweru.geo.extend.minecraft.game.theLevel
+import xyz.qweru.geo.extend.minecraft.item.isOf
 import xyz.qweru.multirender.api.API
-import xyz.qweru.multirender.impl.mixin.mixininterface.MouseInvoker
 import java.util.*
 
 class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
@@ -36,11 +36,11 @@ class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
     val invisible by st.boolean("Invisible", "Allow targeting of completely invisible players (no armor & held item)", false)
 
     val rng = Random()
-    var target: PlayerEntity? = null
+    var target: Player? = null
 
     @Handler
     private fun onFrame(e: GameRenderEvent) {
-        if (!inGame || mc.currentScreen != null || silent || !canTarget()) return
+        if (!inGame || mc.screen != null || silent || !canTarget()) return
 
         val mod = rng.nextLong(random.start, random.endInclusive + 1) / 100
         val delta = RotationHelper.getDelta(target!!)
@@ -53,21 +53,19 @@ class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
         deltaY = deltaY + (mod * deltaY)
         deltaY = deltaY - (deltaY % gcd)
 
-        val mouse = mc.mouse as MouseInvoker
-        mouse.setDeltaX(deltaX)
-        mouse.setDeltaY(deltaY)
+        API.mouseHandler.move(deltaX, deltaY)
     }
 
     @Handler
     private fun onTick(e: PreTickEvent) {
-        if (!inGame || mc.currentScreen != null || !silent || !canTarget()) return
+        if (!inGame || mc.screen != null || !silent || !canTarget()) return
         val target = this.target ?: return
         RotationHandler.propose(RotationHelper.get(target), priority = 10)
     }
 
     fun canTarget(): Boolean {
         if (weaponOnly && !InvHelper.isInMainhand { InvHelper.isSword(it.item) || it.item is AxeItem || it.isOf(Items.MACE) }) return false
-        if (target == null || !lock || !target!!.inRange(range) || !target!!.isAlive || target!!.world != mc.theWorld) {
+        if (target == null || !lock || !target!!.inRange(range) || !target!!.isAlive || target!!.level() != mc.theLevel) {
             target = TargetHelper.findTarget(range, wallRange, fov, invisible)?.player
         }
         return (target != null && target!!.inFov(fov))

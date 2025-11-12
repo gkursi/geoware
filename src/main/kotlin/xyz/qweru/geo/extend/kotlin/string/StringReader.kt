@@ -1,4 +1,4 @@
-package xyz.qweru.geo.extend
+package xyz.qweru.geo.extend.kotlin.string
 
 import com.mojang.brigadier.StringReader
 

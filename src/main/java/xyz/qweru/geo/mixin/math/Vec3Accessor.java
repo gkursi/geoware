@@ -1,12 +1,12 @@
 package xyz.qweru.geo.mixin.math;
 
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(Vec3d.class)
-public interface Vec3dAccesor {
+@Mixin(Vec3.class)
+public interface Vec3Accessor {
     @Mutable
     @Accessor("x")
     void geo_setX(double x);

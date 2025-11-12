@@ -1,10 +1,10 @@
 package xyz.qweru.geo.client.module.misc
 
-import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.world.entity.player.Player
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.stripMinecraftColorCodes
-import xyz.qweru.geo.extend.thePlayer
+import xyz.qweru.geo.extend.kotlin.string.stripMinecraftColorCodes
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 /**
  * Partial credit to liquidbounce
@@ -14,9 +14,9 @@ class ModuleTeams : Module("Teams", "Don't target players in your team", Categor
     val color by sg.boolean("Color", "Don't target if your color matches", true)
     val prefix by sg.boolean("Prefix", "Don't target if your prefix matches", true)
 
-    fun isExempt(player: PlayerEntity): Boolean = colorMatches(player) || prefixMatches(player)
+    fun isExempt(player: Player): Boolean = colorMatches(player) || prefixMatches(player)
 
-    fun colorMatches(player: PlayerEntity): Boolean {
+    fun colorMatches(player: Player): Boolean {
         if (!color) return false
         val self = mc.thePlayer.displayName?.style?.color
         val target = player.displayName?.style?.color
@@ -24,7 +24,7 @@ class ModuleTeams : Module("Teams", "Don't target players in your team", Categor
         return target != null && self?.equals(target) ?: false
     }
 
-    fun prefixMatches(player: PlayerEntity): Boolean {
+    fun prefixMatches(player: Player): Boolean {
         if (!prefix) return false
         val targetSplit = player.displayName
             ?.string

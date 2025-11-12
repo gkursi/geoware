@@ -1,17 +1,17 @@
 package xyz.qweru.geo.client.helper.player
 
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.util.math.Vec3d
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.phys.Vec3
 import kotlin.math.cos
 import kotlin.math.sin
 
 object PlayerHelper {
     /** get the players velocity relative to their rotation */
-    fun getRelativeVelocity(player: PlayerEntity): Vec3d {
-        val vel = player.velocity
+    fun getRelativeVelocity(player: Player): Vec3 {
+        val vel = player.deltaMovement
 
-        val yaw = Math.toRadians(-player.yaw.toDouble())
-        val pitch = Math.toRadians(-player.pitch.toDouble())
+        val yaw = Math.toRadians(-player.yRot.toDouble())
+        val pitch = Math.toRadians(-player.xRot.toDouble())
         val cosYaw = cos(yaw)
         val sinYaw = sin(yaw)
         val cosPitch = cos(pitch)
@@ -24,6 +24,6 @@ object PlayerHelper {
         val y2 = vel.y * cosPitch - z1 * sinPitch
         val z2 = vel.y * sinPitch + z1 * cosPitch
 
-        return Vec3d(x1, y2, z2)
+        return Vec3(x1, y2, z2)
     }
 }

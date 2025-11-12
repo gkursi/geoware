@@ -1,37 +1,40 @@
 package xyz.qweru.geo.client.helper.player
 
-import net.minecraft.client.network.ClientPlayerEntity
-import net.minecraft.entity.Entity
-import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.decoration.EndCrystalEntity
-import net.minecraft.entity.effect.StatusEffects
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.AxeItem
-import net.minecraft.item.Items
+import net.minecraft.client.player.LocalPlayer
+import net.minecraft.world.effect.MobEffects
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.AxeItem
+import net.minecraft.world.item.Items
+import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.core.Global.mc
-import xyz.qweru.geo.extend.groundTicks
-import xyz.qweru.geo.extend.thePlayer
+import xyz.qweru.geo.extend.minecraft.entity.attackCharge
+import xyz.qweru.geo.extend.minecraft.entity.groundTicks
+import xyz.qweru.geo.extend.minecraft.item.isOf
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 object AttackHelper {
     fun canAttack(target: Entity, playerWeaponOnly: Boolean = false, cooldown: Float = 1f): Boolean {
-        if (target is EndCrystalEntity) return target.isAlive
-        if (InvHelper.isInMainhand { st -> st.item is AxeItem } && target is LivingEntity && target.activeItem.isOf(Items.SHIELD))
+        if (target is EndCrystal) return target.isAlive
+        if (InvHelper.isInMainhand { st -> st.item is AxeItem } && target is LivingEntity && target.useItem.isOf(Items.SHIELD))
             return true
-        if (!InvHelper.isInMainhand { st -> InvHelper.isSword(st.item) || st.item is AxeItem } && target is PlayerEntity && playerWeaponOnly)
+        if (!InvHelper.isInMainhand { st -> InvHelper.isSword(st.item) || st.item is AxeItem } && target is Player && playerWeaponOnly)
             return false
 
-        return mc.thePlayer.getAttackCooldownProgress(0.5f) >= cooldown
+        return mc.thePlayer.attackCharge >= cooldown
     }
 
-    fun canCrit(entity: PlayerEntity = mc.thePlayer, cooldown: Float = entity.getAttackCooldownProgress(0.5f)): Boolean =
+    fun canCrit(entity: Player = mc.thePlayer, attackCharge: Float = entity.attackCharge): Boolean =
         entity.fallDistance > 0.1f
-        && willCrit(entity, cooldown = cooldown)
+        && willCrit(entity, attackCharge = attackCharge)
 
-    fun willCrit(entity: PlayerEntity = mc.thePlayer, groundTicks: Int = 0, cooldown: Float = entity.getAttackCooldownProgress(0.5f)): Boolean =
-        cooldown > 0.9f
-        && (!entity.isOnGround || (entity is ClientPlayerEntity && entity.groundTicks < groundTicks))
-        && !entity.isClimbing && !entity.isTouchingWater
-        && !entity.hasStatusEffect(StatusEffects.BLINDNESS)
-        && !entity.hasVehicle()
+    fun willCrit(entity: Player = mc.thePlayer, groundTicks: Int = 0, attackCharge: Float = entity.attackCharge): Boolean =
+        attackCharge > 0.9f
+        && (!entity.onGround() || (entity is LocalPlayer && entity.groundTicks < groundTicks))
+        && !entity.onClimbable() && !entity.isInWater
+        && !entity.hasEffect(MobEffects.BLINDNESS)
+        && entity.vehicle != null
 
 }

@@ -4,7 +4,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.world.entity.player.Player
 import xyz.qweru.geo.core.system.System
 import java.util.*
 
@@ -13,7 +13,7 @@ class Friends : System("friends", Type.ROOT) {
 
     fun add(uuid: UUID) = friends.add(uuid)
     fun isFriend(uuid: UUID) = friends.contains(uuid)
-    fun isFriend(playerEntity: PlayerEntity) = friends.contains(playerEntity.gameProfile.id)
+    fun isFriend(player: Player) = friends.contains(player.gameProfile.id)
 
     override fun initThis() {}
 
