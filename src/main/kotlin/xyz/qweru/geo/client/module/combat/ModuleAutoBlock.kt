@@ -23,7 +23,7 @@ class ModuleAutoBlock : Module("AutoBlock", "Automatically block", Category.COMB
             val module = Systems.get(Modules::class).get(ModuleAutoBlock::class)
             if (!module.enabled || !module.timer.hasPassed()) return
             module.blocking = false
-            module.timer.reset(module.blockDisable)
+            module.timer.reset(0, 1)
             GOptions.useKey = module.blocking
         }
     }
@@ -34,9 +34,6 @@ class ModuleAutoBlock : Module("AutoBlock", "Automatically block", Category.COMB
     val raycast by sc.boolean("Raycast", "Raycast from the player to check if they can hit you", true)
     val assumeReach by sc.float("Assume Reach", "Raycast distance", 3.2f, 3f, 7f)
         .visible { raycast }
-
-    val st = settings.group("Timing")
-    val blockDisable by st.longRange("Unblock", "Speed at which to stop blocking", 50L..75L, 0L..500L)
 
     val timer = TimerDelay()
     var blocking = false

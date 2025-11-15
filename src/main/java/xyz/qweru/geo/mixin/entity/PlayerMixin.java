@@ -10,9 +10,12 @@ import xyz.qweru.geo.client.module.combat.ModuleReach;
 import xyz.qweru.geo.client.module.move.ModuleSafeWalk;
 import xyz.qweru.geo.core.system.module.Modules;
 import xyz.qweru.geo.core.system.Systems;
+import xyz.qweru.geo.imixin.IPlayer;
 
 @Mixin(Player.class)
-public abstract class PlayerMixin {
+public abstract class PlayerMixin implements IPlayer {
+
+    @Shadow protected int jumpTriggerTime;
 
     @Inject(method = "entityInteractionRange", at = @At("RETURN"), cancellable = true)
     private void setEntityReach(CallbackInfoReturnable<Double> cir) {
@@ -36,4 +39,8 @@ public abstract class PlayerMixin {
         }
     }
 
+    @Override
+    public void geo_setJumpDelay(int i) {
+        jumpTriggerTime = i;
+    }
 }

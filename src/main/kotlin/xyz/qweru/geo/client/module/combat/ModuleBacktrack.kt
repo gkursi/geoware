@@ -25,7 +25,7 @@ import xyz.qweru.geo.core.manager.combat.CombatState
 import xyz.qweru.geo.core.manager.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.minecraft.entity.getRelativeVelocity
+import xyz.qweru.geo.extend.minecraft.entity.relativeMotion
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.extend.minecraft.entity.inRange
@@ -149,7 +149,7 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra rea
     private fun shouldBacktrack(): Boolean {
         if (requireTarget && TargetTracker.target == null) return false
         return always || (CombatState.SELF.combo >= combo && combo > 0) || TargetTracker.target?.let { target ->
-            target.getRelativeVelocity().x < 0 && backwards || target.inRange(range) && inRange
+            target.relativeMotion.x < 0 && backwards || target.inRange(range) && inRange
         } ?: false
     }
 

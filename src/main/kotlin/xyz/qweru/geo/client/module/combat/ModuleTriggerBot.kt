@@ -5,7 +5,7 @@ import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.abstraction.game.GOptions
-import xyz.qweru.geo.client.event.PreTickEvent
+import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.client.helper.player.AttackHelper
 import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
@@ -16,6 +16,8 @@ import xyz.qweru.geo.core.manager.combat.CombatState
 import xyz.qweru.geo.core.manager.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.extend.minecraft.entity.attackCharge
+import xyz.qweru.geo.extend.minecraft.entity.relativeMotion
 import xyz.qweru.geo.extend.minecraft.world.hit
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.multirender.api.API
@@ -25,15 +27,14 @@ import java.util.*
 class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when hovering them", Category.COMBAT) {
     val sGeneral = settings.group("General")
     val sFailAttack = settings.group("Fail Attack")
+    val sCrit = settings.group("Crits")
 
     val playerWeaponOnly by sGeneral.boolean("Player Weapon Only", "Only attack players with a weapon", true)
     val attackFirst by sGeneral.boolean("Require Target", "Requires you to attack the player manually before tbotting", false)
     val delay by sGeneral.longRange("Delay", "Attack delay", 0L..1L, 0L..500L)
     val miss by sGeneral.float("Miss%", "Chance of missing an attack", 0f, 0f, 0.9f)
-    val awaitCrit by sGeneral.boolean("Await Crit", "Don't attack if a crit will be possible", true)
     val groundTicks by sGeneral.int("Ground Ticks", "Time to wait for crits after landing", 5, 0, 20)
         .visible { awaitCrit }
-    val sprintCrit by sGeneral.boolean("Sprint Crit", "Don't reset on crit", false)
     val itemCooldown by sGeneral.float("Cooldown", "Vanilla item cooldown required to attack", 1f, 0f, 1f)
     val sprintReset by sGeneral.boolean("Sprint Reset", "Automatically resets sprint on hit", true)
 
@@ -41,12 +42,17 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val failReach by sFailAttack.float("Fail Reach", "Extra reach for failing", 0.25f, 0.01f, 1f)
     val failChance by sFailAttack.float("Fail%", "Chance of failing an out-of-reach attack", 0.1f, 0f, 1f)
 
+    val awaitCrit by sCrit.boolean("Await Crit", "Don't attack if a crit will be possible", true)
+    val autoCrit by sCrit.boolean("Auto Crit", "Automatically stop sprinting pre-crit", true)
+    val requireFall by sCrit.boolean("Require Fall", "Requires falling", true)
+    val exceptPunish by sCrit.boolean("Except Punish", "Ignore falling when moving backwards", true)
+
     val timer = TimerDelay()
     val random = Random()
     var nextDamage = Attack()
 
     @Handler
-    private fun onTick(e: PreTickEvent) {
+    private fun onTick(e: PostMovementTickEvent) {
         if (!inGame) return
         if (mc.screen != null || !timer.hasPassed()) return
 
@@ -82,17 +88,24 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         val nextAttack = CombatState.SELF.predictNextAttack()
 
         if (!AttackHelper.canAttack(en, playerWeaponOnly, cooldown = itemCooldown)) return true
-        if (awaitCrit && AttackHelper.willCrit(groundTicks = groundTicks) && !nextAttack.crit) return true
+        if (waitForCrit(nextAttack)) return true
 
-        if (nextAttack.crit && mc.thePlayer.isSprinting) {
+        if (nextAttack.crit && nextAttack.sprint && autoCrit) {
             GOptions.forwardKey = false
-            ModuleSprint.sprint(false, now = true)
             return true
         } else if (sprintReset) {
             // this takes effect post tick
             ModuleSprint.sprint(false)
         }
 
+        println("next: $nextAttack, sprint: ${mc.thePlayer.isSprinting}")
+        val entity = mc.thePlayer
+        println("conditions: fall: ${entity.fallDistance} > 0.075f && ground:${!entity.onGround()} && charge:${entity.attackCharge} > 0.9f && climb:${!entity.onClimbable()} && water:${!entity.isInWater} && vehicle:${!entity.isPassenger}")
         return false
     }
+
+    fun waitForCrit(nextAttack: Attack): Boolean =
+        awaitCrit && AttackHelper.willCrit(groundTicks = groundTicks) && awaitPartialCrit() && !nextAttack.crit
+
+    fun awaitPartialCrit(): Boolean = !requireFall || exceptPunish && mc.thePlayer.relativeMotion.x < 0
 }

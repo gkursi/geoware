@@ -29,7 +29,6 @@ object RotationHandler : ProposalHandler<Rotation>() {
     // prevents us from assuming a rotation too early
     val lastSentRot: FloatArray = floatArrayOf(0f, 0f)
     var engine: InterpolationEngine = HumanInterpolationEngine
-    var rotatedBack = false
 
     val random = LayeredRandom.DEFAULT
     var config: ModuleRotation = Systems.get(Modules::class).get(ModuleRotation::class)
@@ -123,8 +122,6 @@ object RotationHandler : ProposalHandler<Rotation>() {
             rot[0] = rot[0] - rot[0] % gcd
             rot[1] = rot[1] - rot[1] % gcd
         }
-
-        println("Previous: ${init.joinToString(", ")}, current: ${rot.joinToString(",")}, target: $rotation")
 
         engine.onYawDelta(rot[0] - init[0])
         engine.onPitchDelta(rot[1] - init[1])

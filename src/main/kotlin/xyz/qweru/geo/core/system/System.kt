@@ -33,7 +33,7 @@ abstract class System(open val name: String, val type: Type = Type.INTERNAL) {
     open fun load(json: JsonObject, ctx: SystemContext = SystemContext()) {
         loadThis(json)
         for (system in sub.values) {
-            if (ctx.systemFilter.isPresent && !ctx.systemFilter.get().invoke(this, system)) continue
+            if (!(ctx.systemFilter?.invoke(this, system) ?: false)) continue
             json[system.name]?.let { system.load(it as JsonObject, ctx) }
         }
     }
@@ -45,7 +45,7 @@ abstract class System(open val name: String, val type: Type = Type.INTERNAL) {
         saveThis(json)
         for (system in sub.values) {
             if (system == null) throw IllegalStateException("System is null!")
-            if (ctx.systemFilter.isPresent && !ctx.systemFilter.get().invoke(this, system)) continue
+            if (!(ctx.systemFilter?.invoke(this, system) ?: false)) continue
             val obj = JsonObject()
             system.save(obj, ctx)
             json.add(system.name, obj)

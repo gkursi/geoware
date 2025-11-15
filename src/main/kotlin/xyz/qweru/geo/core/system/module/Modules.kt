@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import xyz.qweru.geo.client.module.combat.*
 import xyz.qweru.geo.client.module.config.ModuleRotation
 import xyz.qweru.geo.client.module.config.ModuleSwap
+import xyz.qweru.geo.client.module.misc.ModuleScaffold
 import xyz.qweru.geo.client.module.misc.ModuleTeams
 import xyz.qweru.geo.client.module.move.*
 import xyz.qweru.geo.client.module.player.ModuleFastUse
@@ -41,6 +42,7 @@ class Modules() : System("modules", Type.ROOT) {
         add(ModuleNoSlow())
         add(ModuleRotation())
         add(ModuleKillAura())
+        add(ModuleScaffold())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }
@@ -54,7 +56,5 @@ class Modules() : System("modules", Type.ROOT) {
     }
 
     override fun loadThis(json: JsonObject) {}
-    override fun saveThis(json: JsonObject) {
-
-    }
+    override fun saveThis(json: JsonObject) {}
 }

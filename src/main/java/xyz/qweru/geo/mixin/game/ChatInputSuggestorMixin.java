@@ -32,6 +32,8 @@ public abstract class ChatInputSuggestorMixin {
 
     @Shadow protected abstract void updateUsageInfo();
 
+    @Shadow private boolean keepSuggestions;
+
     @Inject(method = "updateCommandInfo", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/StringReader;canRead()Z"), cancellable = true)
     public void refresh(CallbackInfo ci, @Local StringReader reader) {
 
@@ -46,7 +48,7 @@ public abstract class ChatInputSuggestorMixin {
             }
 
             int cursor = input.getCursorPosition();
-            if (pendingSuggestions == null && cursor >= 1) {
+            if (!keepSuggestions && cursor >= 1) {
                 pendingSuggestions = CommandManager.INSTANCE.getDispatcher().getCompletionSuggestions(currentParse, cursor);
                 pendingSuggestions.thenRun(() -> {
                     if (pendingSuggestions.isDone()) {

@@ -10,7 +10,6 @@ import xyz.qweru.geo.client.helper.player.PlayerHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.client.helper.world.WorldHelper
 
-fun Player.getRelativeVelocity() = PlayerHelper.getRelativeVelocity(this)
 fun Player.inRange(range: Float) = this.distanceToSqr(mc.player?.eyePosition ?: Vec3.ZERO) <= Mth.square(range)
 fun Player.inRange(range: ClosedRange<Float>) = this.distanceToSqr(mc.player).let {
     it >= Mth.square(range.start) && it <= Mth.square(range.endInclusive)
@@ -22,3 +21,5 @@ val Player.canGlide: Boolean
     get() = !this.onGround() && this.getItemBySlot(EquipmentSlot.CHEST).`is`(Items.ELYTRA)
 val Player.rotation: FloatArray
     get() = floatArrayOf(yRot, xRot)
+val Player.relativeMotion
+    get() = PlayerHelper.getRelativeVelocity(this)

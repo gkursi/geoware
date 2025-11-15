@@ -12,6 +12,7 @@ import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.extend.minecraft.entity.attackCharge
 import xyz.qweru.geo.extend.minecraft.entity.groundTicks
+import xyz.qweru.geo.extend.minecraft.entity.isOnGround
 import xyz.qweru.geo.extend.minecraft.item.isOf
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
@@ -27,14 +28,14 @@ object AttackHelper {
     }
 
     fun canCrit(entity: Player = mc.thePlayer, attackCharge: Float = entity.attackCharge): Boolean =
-        entity.fallDistance > 0.1f
+        entity.fallDistance > 0.075f
         && willCrit(entity, attackCharge = attackCharge)
 
     fun willCrit(entity: Player = mc.thePlayer, groundTicks: Int = 0, attackCharge: Float = entity.attackCharge): Boolean =
-        attackCharge > 0.9f
+        (attackCharge > 0.9f
         && (!entity.onGround() || (entity is LocalPlayer && entity.groundTicks < groundTicks))
         && !entity.onClimbable() && !entity.isInWater
         && !entity.hasEffect(MobEffects.BLINDNESS)
-        && entity.vehicle != null
+        && !entity.isPassenger)
 
 }

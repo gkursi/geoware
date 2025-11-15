@@ -26,7 +26,7 @@ class Settings(val module: Module) : System("settings") {
 
     override fun save(json: JsonObject, ctx: SystemContext) {
         for (setting in allSettings) {
-            if (ctx.settingFilter.isPresent && !ctx.settingFilter.get().invoke(module, setting))
+            if (!(ctx.settingFilter?.invoke(module, setting) ?: false))
                 continue
             val obj = JsonObject()
             setting.save(obj)
