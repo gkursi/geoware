@@ -6,7 +6,7 @@ import net.minecraft.network.protocol.game.ServerPacketListener
 import xyz.qweru.geo.core.Global
 import xyz.qweru.geo.imixin.IConnection
 
-object GConnection {
+object ClientConnection {
     private val connection: Connection?
         get() = Global.mc.connection?.connection
 

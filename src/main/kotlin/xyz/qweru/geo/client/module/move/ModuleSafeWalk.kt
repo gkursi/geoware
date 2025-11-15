@@ -1,7 +1,7 @@
 package xyz.qweru.geo.client.module.move
 
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.abstraction.game.GOptions
+import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
@@ -22,13 +22,13 @@ class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEM
 
     @Handler
     private fun preTick(e: PreTickEvent) {
-        if (inGame && sneak && mc.thePlayer.onGround() && !GOptions.jumpKey) {
+        if (inGame && sneak && mc.thePlayer.onGround() && !GameOptions.jumpKey) {
             if (check()) {
-                GOptions.sneakKey = true
+                GameOptions.sneakKey = true
                 wasSneaking = true
                 timer.reset(standDelay)
             } else if (wasSneaking && timer.hasPassed()) {
-                GOptions.syncBind(GOptions::sneakKey)
+                GameOptions.syncBind(GameOptions::sneakKey)
                 wasSneaking = false
             }
         }

@@ -13,7 +13,7 @@ class Friends : System("friends", Type.ROOT) {
 
     fun add(uuid: UUID) = friends.add(uuid)
     fun isFriend(uuid: UUID) = friends.contains(uuid)
-    fun isFriend(player: Player) = friends.contains(player.gameProfile.id)
+    fun isFriend(player: Player) = isFriend(player.gameProfile.id)
 
     override fun initThis() {}
 

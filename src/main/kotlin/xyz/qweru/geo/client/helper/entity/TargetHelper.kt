@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player
 import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.manager.combat.TargetTracker
+import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.core.system.friend.Friends
 import xyz.qweru.geo.extend.minecraft.entity.inFov
@@ -15,6 +16,8 @@ import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.entity.visiblePoint
 
 object TargetHelper {
+    val friends: Friends by SystemCache.get()
+
     fun findTarget(
         range: ClosedRange<Float>, wallRange: ClosedRange<Float> = RangeHelper.from(0f, 0f),
         fov: Float = 360f, invisible: Boolean = true
@@ -37,7 +40,7 @@ object TargetHelper {
     }
 
     fun isFriendly(player: Player): Boolean =
-        player == mc.thePlayer || Systems.get(Friends::class).isFriend(player) || !TargetTracker.canTarget(player)
+        player == mc.thePlayer || friends.isFriend(player) || !TargetTracker.canTarget(player)
 
     fun isDead(player: Player): Boolean = !player.isAlive
 

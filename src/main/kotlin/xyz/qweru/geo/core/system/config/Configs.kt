@@ -20,8 +20,11 @@ import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchKey
 import kotlin.concurrent.thread
 
-// TODO: fix previous config not being saved properly, config scanning (rescan might not get called when listing suggestions)
 class Configs : System("configs", type = Type.INTERNAL) {
+
+    companion object {
+        var changes: Long = 0
+    }
 
     val configFile = Global.DIRECTORY.resolve("$name.json")
     val configDir = Global.DIRECTORY.findOrCreateDir("config")
@@ -29,7 +32,6 @@ class Configs : System("configs", type = Type.INTERNAL) {
     val gson: Gson = GsonBuilder().setPrettyPrinting().create()
     val emptyJson = JsonObject()
 
-    var sources = ObjectArrayList<Config>(3)
     // last loaded module/friend sources
     var friendSource = Config.EMPTY
     var moduleSource = Config.EMPTY
@@ -51,6 +53,7 @@ class Configs : System("configs", type = Type.INTERNAL) {
             do {
                 watchKey = watchService.take()
                 configsChanged = true
+                changes++
             } while (watchKey.reset())
         }
 

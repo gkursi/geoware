@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity
 import net.minecraft.world.phys.Vec3
-import xyz.qweru.geo.abstraction.game.GOptions
+import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.client.event.PostMoveSendEvent
 import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.client.event.PreMoveSendEvent
@@ -55,7 +55,7 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
     @Handler
     fun preMoveSend(e: PreMoveSendEvent) {
         if (!inGame || mode != Mode.GRIM) return
-        GOptions.jumpKey = mc.thePlayer.onGround() && GOptions.moving
+        GameOptions.jumpKey = mc.thePlayer.onGround() && GameOptions.moving
     }
     @Handler
     fun postMoveSend(e: PostMoveSendEvent) {

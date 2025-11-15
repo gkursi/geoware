@@ -4,7 +4,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import org.lwjgl.glfw.GLFW
-import xyz.qweru.geo.abstraction.game.GOptions
+import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.client.helper.player.AttackHelper
 import xyz.qweru.geo.client.helper.player.inventory.InvHelper
@@ -91,7 +91,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         if (waitForCrit(nextAttack)) return true
 
         if (nextAttack.crit && nextAttack.sprint && autoCrit) {
-            GOptions.forwardKey = false
+            GameOptions.forwardKey = false
             return true
         } else if (sprintReset) {
             // this takes effect post tick

@@ -10,8 +10,7 @@ import xyz.qweru.geo.core.manager.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.inFov
-import xyz.qweru.geo.extend.kotlin.math.inRange
-import xyz.qweru.geo.abstraction.game.GOptions
+import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.extend.minecraft.entity.inRange
 
@@ -46,8 +45,8 @@ class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around t
 
     private fun checkReset() {
         if (!reset) return
-        GOptions.syncBind(GOptions::leftKey)
-        GOptions.syncBind(GOptions::rightKey)
+        GameOptions.syncBind(GameOptions::leftKey)
+        GameOptions.syncBind(GameOptions::rightKey)
         holdTime.reset(time)
         reset = false
     }
@@ -66,14 +65,14 @@ class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around t
         holdTime.reset(time)
         key = when (key) {
             Key.LEFT -> {
-                GOptions.leftKey = false
-                GOptions.rightKey = true
+                GameOptions.leftKey = false
+                GameOptions.rightKey = true
                 Key.RIGHT
             }
 
             Key.RIGHT -> {
-                GOptions.leftKey = true
-                GOptions.rightKey = false
+                GameOptions.leftKey = true
+                GameOptions.rightKey = false
                 Key.LEFT
             }
         }

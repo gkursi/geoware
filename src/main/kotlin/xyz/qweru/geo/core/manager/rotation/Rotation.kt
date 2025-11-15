@@ -1,24 +1,19 @@
 package xyz.qweru.geo.core.manager.rotation
 
 import net.minecraft.util.Mth
-import xyz.qweru.geo.client.event.WorldRenderEvent
 import xyz.qweru.geo.client.helper.math.RangeHelper
-import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.helper.manage.Proposal
-import xyz.qweru.geo.core.manager.rotation.RotationHandler.config
 import xyz.qweru.geo.core.manager.rotation.RotationHandler.inRange
-import xyz.qweru.geo.core.manager.rotation.RotationHandler.lastSentRot
+import xyz.qweru.geo.core.manager.rotation.RotationHandler.rotationConfig
 
-data class Rotation(private val wrappedYaw: Float, val pitch: Float, val isSync: Boolean = false) : Proposal {
+data class Rotation(private val wrappedYaw: Float, val pitch: Float, val config: RotationConfig = RotationConfig.DEFAULT) : Proposal {
 
     val yaw = unwrapYaw(wrappedYaw, RotationHandler.rot[0])
 
     var applied = false
         internal set
 
-    constructor(array: FloatArray, isSync: Boolean = false) : this(array[0], array[1], isSync)
-
-    override fun isComplete(): Boolean = applied || isSync
+    override fun isComplete(): Boolean = applied || config.isSync
 
     fun set(array: FloatArray) {
         array[0] = yaw
@@ -34,23 +29,20 @@ data class Rotation(private val wrappedYaw: Float, val pitch: Float, val isSync:
 
     override fun equals(other: Any?): Boolean {
         if (other is Rotation
-            && inRange(Mth.wrapDegrees(this.yaw), RangeHelper.fromRotationPoint(Mth.wrapDegrees(other.yaw), config.diff))
-            && inRange(this.pitch, RangeHelper.fromRotationPoint(other.pitch, config.diff))) {
+            && inRange(Mth.wrapDegrees(this.yaw), RangeHelper.fromRotationPoint(Mth.wrapDegrees(other.yaw), rotationConfig.diff))
+            && inRange(this.pitch, RangeHelper.fromRotationPoint(other.pitch, rotationConfig.diff))) {
             return true
         } else if (other is FloatArray && other.size == 2
-            && inRange(Mth.wrapDegrees(this.yaw), RangeHelper.fromRotationPoint(Mth.wrapDegrees(other[0]), config.diff))
-            && inRange(this.pitch, RangeHelper.fromRotationPoint(other[1], config.diff))) {
+            && inRange(Mth.wrapDegrees(this.yaw), RangeHelper.fromRotationPoint(Mth.wrapDegrees(other[0]), rotationConfig.diff))
+            && inRange(this.pitch, RangeHelper.fromRotationPoint(other[1], rotationConfig.diff))) {
             return true
         }
         return super.equals(other)
     }
 
     override fun hashCode(): Int {
-        var result = wrappedYaw.hashCode()
-        result = 31 * result + pitch.hashCode()
-        result = 31 * result + isSync.hashCode()
+        var result = pitch.hashCode()
         result = 31 * result + yaw.hashCode()
-        result = 31 * result + applied.hashCode()
         return result
     }
 }

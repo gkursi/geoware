@@ -1,12 +1,13 @@
 package xyz.qweru.geo.client.module.move
 
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket
-import xyz.qweru.geo.abstraction.game.GOptions
+import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.event.PreMovementTickEvent
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
@@ -16,15 +17,16 @@ import xyz.qweru.geo.extend.minecraft.game.thePlayer
 class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT) {
 
     companion object {
+        val module: ModuleSprint by SystemCache.getModule()
+
         fun sprint(sprinting: Boolean, now: Boolean = false) {
-            val module = Systems.get(Modules::class).get(ModuleSprint::class)
             if (module.enabled) {
                 module.sprinting = sprinting
                 if (now) {
                     module.sprint(sprinting)
                 }
             }
-            else GOptions.sprintKey = sprinting
+            else GameOptions.sprintKey = sprinting
         }
     }
 
@@ -67,8 +69,8 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     }
 
     fun shouldSprint(): Boolean = !(waitForGround && !mc.thePlayer.onGround()) && when (mode) {
-        Mode.LEGIT -> GOptions.forwardKey
-        Mode.OMNI -> GOptions.moving
+        Mode.LEGIT -> GameOptions.forwardKey
+        Mode.OMNI -> GameOptions.moving
     }
 
     @Handler
@@ -83,7 +85,7 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
     }
 
     private fun sprint(enable: Boolean) {
-        GOptions.sprintKey = enable
+        GameOptions.sprintKey = enable
         mc.thePlayer.isSprinting = enable
         sprinting = enable
     }
@@ -97,7 +99,7 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
             }
             KeyMode.W -> {
                 if (mc.options.keyUp.isDown == press) {
-                    mc.options.keyUp.isDown = !press && GOptions.forwardKey
+                    mc.options.keyUp.isDown = !press && GameOptions.forwardKey
                 }
             }
             KeyMode.NONE -> {}

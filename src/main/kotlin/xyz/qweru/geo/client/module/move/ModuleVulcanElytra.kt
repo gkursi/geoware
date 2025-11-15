@@ -5,7 +5,7 @@ import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.Items
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PostMovementTickEvent
-import xyz.qweru.geo.abstraction.game.GOptions
+import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
@@ -38,25 +38,25 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
 
     @Handler
     private fun onVelocity(event: PostMovementTickEvent) {
-        GOptions.syncBind(GOptions::jumpKey)
+        GameOptions.syncBind(GameOptions::jumpKey)
         if (!shouldFly(event)) return
 
         gliding = mc.thePlayer.isFallFlying
         canGlide = mc.thePlayer.canGlide
         onGround = mc.thePlayer.onGround()
 
-        if (canGlide) GOptions.jumpKey = false
+        if (canGlide) GameOptions.jumpKey = false
 
         if (shouldBounce()) mc.thePlayer.jumpFromGround()
 
         if (gliding && !wasGliding) {
             event.velY += getBoost()
-            if (GOptions.moving) {
+            if (GameOptions.moving) {
                 var yaw = Mth.wrapDegrees(mc.thePlayer.yRot)
                 if (hControl) {
-                    if (GOptions.backKey) yaw -= 180
-                    if (GOptions.leftKey) yaw -= 90
-                    if (GOptions.rightKey) yaw += 90
+                    if (GameOptions.backKey) yaw -= 180
+                    if (GameOptions.leftKey) yaw -= 90
+                    if (GameOptions.rightKey) yaw += 90
                 }
                 val hvec = mc.thePlayer.calculateViewVector(0f, yaw).scale(hBoost.toDouble())
                 event.velX += hvec.x
@@ -69,7 +69,7 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
         else if (shouldStopGlide(event)) glide(false)
 
         if (gliding) {
-            val mul = if (GOptions.moving) hMul else 1f
+            val mul = if (GameOptions.moving) hMul else 1f
             event.velX = event.velX * mul
             event.velZ = event.velZ * mul
             event.clampHorizontal(hBoostLimit.toDouble())
@@ -97,7 +97,7 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
         if (b) {
             // TODO the fuck is this
             API.keyboardHandler.input(GLFW.GLFW_KEY_SPACE, Input.CLICK)
-            GOptions.jumpKey = true
+            GameOptions.jumpKey = true
         } else {
             mc.thePlayer.stopFallFlying()
         }
@@ -105,8 +105,8 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
 
     private fun getBoost() =
         when (mode) {
-            Mode.CONTROL -> if (GOptions.jumpKey) boostUp
-                            else if (GOptions.sneakKey) boostDown
+            Mode.CONTROL -> if (GameOptions.jumpKey) boostUp
+                            else if (GameOptions.sneakKey) boostDown
                             else boostGlide
             Mode.KEEP_Y -> if (mc.thePlayer.y < yToKeep) boostUp else 0f
             Mode.HOP -> boostDown

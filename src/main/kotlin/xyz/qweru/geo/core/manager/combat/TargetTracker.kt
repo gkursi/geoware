@@ -8,8 +8,7 @@ import xyz.qweru.geo.client.module.misc.ModuleTeams
 import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.system.Systems
-import xyz.qweru.geo.core.system.module.Modules
+import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.extend.minecraft.entity.inRange
 
 /**
@@ -18,7 +17,7 @@ import xyz.qweru.geo.extend.minecraft.entity.inRange
 object TargetTracker {
     @Volatile
     var target: Player? = null
-    lateinit var teams: ModuleTeams
+    val teams: ModuleTeams by SystemCache.getModule()
 
     @Handler(priority = EventPriority.FIRST)
     private fun onAttackPlayer(e: AttackPlayerEvent) {
@@ -33,7 +32,6 @@ object TargetTracker {
 
     @Handler(priority = EventPriority.FIRST)
     private fun onTick(e: PreTickEvent) {
-        teams = Systems.get(Modules::class).get(ModuleTeams::class)
         if (target == null) return
         if (mc.level == null || mc.player == null || !target!!.inRange(64f))
             target = null

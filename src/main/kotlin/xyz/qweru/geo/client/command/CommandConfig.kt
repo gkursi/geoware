@@ -11,6 +11,7 @@ import xyz.qweru.geo.client.command.argument.ConfigTypeArgumentType
 import xyz.qweru.geo.client.command.argument.NewConfigArgumentType
 import xyz.qweru.geo.core.Global
 import xyz.qweru.geo.core.manager.command.Command
+import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.core.system.config.Config
 import xyz.qweru.geo.core.system.config.ConfigType
@@ -18,6 +19,11 @@ import xyz.qweru.geo.core.system.config.Configs
 
 class CommandConfig : Command("config", "Save/load/export configs",
     "config <save|load> <config name>", "config export <config name> <export type>") {
+
+    companion object {
+        val configs: Configs by SystemCache.get()
+    }
+
     override fun build(builder: LiteralArgumentBuilder<ClientSuggestionProvider>) {
         builder.then(
             RequiredArgumentBuilder.argument<ClientSuggestionProvider, String>("action", StringArgumentType.word())
@@ -47,7 +53,6 @@ class CommandConfig : Command("config", "Save/load/export configs",
         try {
             val action = StringArgumentType.getString(ctx, "action")
             val config = ctx.getArgument("config", Config::class.java)
-            val configs = Systems.get(Configs::class)
 
             when (action) {
                 "save" -> {

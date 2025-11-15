@@ -11,8 +11,7 @@ import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.helper.manage.ProposalHandler
 import xyz.qweru.geo.core.manager.rotation.interpolate.HumanInterpolationEngine
-import xyz.qweru.geo.core.system.Systems
-import xyz.qweru.geo.core.system.module.Modules
+import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.extend.kotlin.math.copy2
 import xyz.qweru.geo.extend.kotlin.math.getRotation
 import xyz.qweru.geo.extend.kotlin.math.setRotation
@@ -31,9 +30,14 @@ object RotationHandler : ProposalHandler<Rotation>() {
     var engine: InterpolationEngine = HumanInterpolationEngine
 
     val random = LayeredRandom.DEFAULT
-    var config: ModuleRotation = Systems.get(Modules::class).get(ModuleRotation::class)
+    val rotationConfig: ModuleRotation by SystemCache.getModule()
     var crosshairTarget: HitResult? = null
         private set
+
+    private val fixMouse
+        get() = rotationConfig.mouseFix || current?.config?.mouseFix == true
+    private val fixMovement
+        get() = rotationConfig.moveFix || current?.config?.moveFix == true
 
     @Handler(priority = EventPriority.FIRST)
     private fun preTick(e: PreTickEvent) = handleProposal()
@@ -48,17 +52,16 @@ object RotationHandler : ProposalHandler<Rotation>() {
 
     @Handler(priority = EventPriority.LAST)
     private fun preMove(e: PreMovementTickEvent) {
-        if (config.moveFix) rot.setRotation(mc.thePlayer)
+        if (fixMovement) rot.setRotation(mc.thePlayer)
     }
 
     @Handler(priority = EventPriority.FIRST)
     private fun postMove(e: PostMovementTickEvent) {
-        if (config.moveFix) clientRot.setRotation(mc.thePlayer)
+        if (fixMovement) clientRot.setRotation(mc.thePlayer)
     }
 
     @Handler(priority = EventPriority.LAST)
     private fun preCrosshair(e: PreCrosshair) {
-        config = Systems.get(Modules::class).get(ModuleRotation::class)
         if (mc.player == null) return
 
         clientRot.getRotation(mc.thePlayer)
@@ -69,13 +72,13 @@ object RotationHandler : ProposalHandler<Rotation>() {
         interpolateRot()
         crosshairTarget = hit(mc.thePlayer.entityInteractionRange(), rot)
 
-        if (!config.mouseFix) return
+        if (!fixMouse) return
         rot.setRotation(mc.cameraEntity ?: mc.thePlayer)
     }
 
     @Handler
     private fun postCrosshair(e: PostCrosshair) {
-        if (mc.player == null || !config.mouseFix) return
+        if (mc.player == null || !fixMouse) return
         clientRot.setRotation(mc.cameraEntity ?: mc.thePlayer)
     }
 
@@ -88,7 +91,7 @@ object RotationHandler : ProposalHandler<Rotation>() {
     }
 
     fun mouseRotation(): FloatArray =
-        if (config.mouseFix) rot else clientRot
+        if (fixMouse) rot else clientRot
 
     override fun propose(proposal: Rotation, priority: Int): Boolean {
         if (!super.propose(proposal, priority)) return false
@@ -117,7 +120,7 @@ object RotationHandler : ProposalHandler<Rotation>() {
         rot[0] = interpolate(initialRot[0], rot[0], rotation.yaw)
         rot[1] = interpolate(initialRot[1], rot[1], rotation.pitch)
 
-        if (config.gcdFix) {
+        if (rotationConfig.gcdFix) {
             val gcd = RotationHelper.gcd()
             rot[0] = rot[0] - rot[0] % gcd
             rot[1] = rot[1] - rot[1] % gcd
@@ -130,7 +133,7 @@ object RotationHandler : ProposalHandler<Rotation>() {
 
     private fun interpolate(start: Float, current: Float, end: Float): Float =
          clamp(
-             current + engine.step(if (config.nonlinear) current else start, end) * API.base.getDeltaTime(),
+             current + engine.step(if (rotationConfig.nonlinear) current else start, end) * API.base.getDeltaTime(),
              if (start > end) end else start, if (start > end) start else end
          )
 }

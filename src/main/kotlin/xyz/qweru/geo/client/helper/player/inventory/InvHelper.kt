@@ -10,21 +10,13 @@ import xyz.qweru.geo.client.helper.player.SlotHelper
 import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.core.Global
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.system.Systems
-import xyz.qweru.geo.core.system.module.Modules
+import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
-import java.util.function.Predicate
 
 object InvHelper {
 
     private var lastSwapPriority = -1
-    private var module: ModuleSwap? = null
-        get() {
-            if (field == null) {
-                field = Systems.get(Modules::class).get(ModuleSwap::class)
-            }
-            return field
-        }
+    private val module: ModuleSwap by SystemCache.getModule()
 
     var selectedSlot: Int
         get() = inventory.selectedSlot
@@ -38,7 +30,6 @@ object InvHelper {
     @Handler
     private fun postTick(e: PostTickEvent) {
         lastSwapPriority = -1
-        module = Systems.get(Modules::class).get(ModuleSwap::class)
     }
 
     fun isHolding(item: (ItemStack) -> Boolean): Boolean = isInMainhand(item) || isInOffhand(item)

@@ -2,7 +2,7 @@ package xyz.qweru.geo.core.manager.movement
 
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.network.protocol.game.ServerboundClientTickEndPacket
-import xyz.qweru.geo.abstraction.network.GConnection
+import xyz.qweru.geo.abstraction.network.ClientConnection
 import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.client.helper.timing.Timer
@@ -29,7 +29,7 @@ object MovementTicker {
         tickingMovement = true
 
         tickPlayer(mc.thePlayer)
-        GConnection.sendPacket(ServerboundClientTickEndPacket.INSTANCE)
+        ClientConnection.sendPacket(ServerboundClientTickEndPacket.INSTANCE)
 
         canSendPackets = false
         tickingMovement = false

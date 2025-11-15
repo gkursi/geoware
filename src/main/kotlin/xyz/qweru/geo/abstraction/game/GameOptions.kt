@@ -8,7 +8,7 @@ import xyz.qweru.geo.mixin.input.KeyBindingAccessor
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
 
-object GOptions {
+object GameOptions {
     private val options: Options
         get() = Global.mc.options
 
@@ -39,8 +39,8 @@ object GOptions {
         operator fun getValue(u: Any?, property: KProperty<*>) =
             // differentiate mouse and keyboard bindings
             !bind.isUnbound && Global.mc.screen == null && (bind as KeyBindingAccessor).geo_getBound().value.let {
-                if (it <= GLFW.GLFW_MOUSE_BUTTON_LAST) return@let GLFW.glfwGetMouseButton(GWindow.handle, it) == GLFW.GLFW_PRESS
-                else return@let GLFW.glfwGetKey(GWindow.handle, it) == GLFW.GLFW_PRESS
+                if (it <= GLFW.GLFW_MOUSE_BUTTON_LAST) return@let GLFW.glfwGetMouseButton(Window.handle, it) == GLFW.GLFW_PRESS
+                else return@let GLFW.glfwGetKey(Window.handle, it) == GLFW.GLFW_PRESS
             }
 
         operator fun setValue(u: Any?, property: KProperty<*>, v: Boolean) {

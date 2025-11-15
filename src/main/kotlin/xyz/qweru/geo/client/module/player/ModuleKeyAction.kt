@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import org.lwjgl.glfw.GLFW
-import xyz.qweru.geo.abstraction.game.GOptions
+import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.client.helper.math.RangeHelper
@@ -68,7 +68,7 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
             return
         }
 
-        if (GOptions.useKey) {
+        if (GameOptions.useKey) {
             API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_2, Input.RELEASE)
             API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_2, Input.PRESS)
         } else {

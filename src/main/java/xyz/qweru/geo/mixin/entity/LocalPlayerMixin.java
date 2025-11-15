@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.qweru.geo.abstraction.network.GConnection;
+import xyz.qweru.geo.abstraction.network.ClientConnection;
 import xyz.qweru.geo.client.event.*;
 import xyz.qweru.geo.client.module.move.ModuleNoSlow;
 import xyz.qweru.geo.core.event.EventBus;
@@ -98,10 +98,10 @@ public abstract class LocalPlayerMixin implements ILocalPlayer {
     public void geo_tickMovementPackets() {
         LocalPlayer _this = (LocalPlayer) (Object) this;
         if (_this.isPassenger()) {
-            GConnection.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Rot(_this.getYRot(), _this.getXRot(), _this.onGround(), _this.horizontalCollision));
+            ClientConnection.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Rot(_this.getYRot(), _this.getXRot(), _this.onGround(), _this.horizontalCollision));
             Entity entity = _this.getRootVehicle();
             if (entity != _this) {
-                GConnection.INSTANCE.sendPacket(ServerboundMoveVehiclePacket.fromEntity(entity));
+                ClientConnection.INSTANCE.sendPacket(ServerboundMoveVehiclePacket.fromEntity(entity));
                 this.sendIsSprintingIfNeeded();
             }
         } else {
