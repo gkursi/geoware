@@ -1,5 +1,6 @@
 package xyz.qweru.geo.extend.minecraft.entity
 
+import net.minecraft.client.player.LocalPlayer
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Player
@@ -16,6 +17,14 @@ fun Player.inRange(range: ClosedRange<Float>) = this.distanceToSqr(mc.player).le
 }
 fun Player.inFov(fov: Float) = RotationHelper.getAngle(this) <= fov
 fun Player.visiblePoint() = WorldHelper.blockCollision(this.level(), mc.player?.eyePosition ?: Vec3.ZERO, this.boundingBox)
+fun LocalPlayer.movementYaw(base: Float = 180f): Float {
+    val input = input.moveVector
+    var yaw = base
+    if (input.x < 0) yaw = -base
+    if (input.y > 0) yaw += 45f
+    else if (input.y < 0) yaw -= 45f
+    return Mth.wrapDegrees(yaw)
+}
 
 val Player.canGlide: Boolean
     get() = !this.onGround() && this.getItemBySlot(EquipmentSlot.CHEST).`is`(Items.ELYTRA)

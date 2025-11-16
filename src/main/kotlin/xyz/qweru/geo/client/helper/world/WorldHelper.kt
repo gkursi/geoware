@@ -12,6 +12,7 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraft.world.phys.shapes.VoxelShape
 import xyz.qweru.geo.core.Global.mc
+import xyz.qweru.geo.core.manager.rotation.Rotation
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import java.util.function.Predicate
@@ -62,6 +63,8 @@ object WorldHelper {
 
         return null
     }
+
+    fun getCrosshairTarget(rotation: Rotation, range: Double) = getCrosshairTarget(range = range, rotation = floatArrayOf(rotation.yaw, rotation.pitch))
 
     fun playerIntersects(expand: Double = 0.0, validate: (BlockPos, BlockState, AABB) -> Boolean): Boolean {
         val bb = mc.thePlayer.boundingBox.inflate(expand)

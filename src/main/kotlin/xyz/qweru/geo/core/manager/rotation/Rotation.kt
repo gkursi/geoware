@@ -8,6 +8,22 @@ import xyz.qweru.geo.core.manager.rotation.RotationHandler.rotationConfig
 
 data class Rotation(private val wrappedYaw: Float, val pitch: Float, val config: RotationConfig = RotationConfig.DEFAULT) : Proposal {
 
+    companion object {
+        // priorities
+        const val IMPORTANT_BLOCK = 500
+        const val BLOCK = 450
+        const val NOT_IMPORTANT_BLOCK = 400
+
+        const val IMPORTANT_ATTACK = 200
+        const val ATTACK = 150
+        const val NOT_IMPORTANT_ATTACK = 100
+
+        const val VERY_IMPORTANT = 1000
+        const val IMPORTANT = 300
+        const val NORMAL = 10
+        const val NOT_IMPORTANT = 0
+    }
+
     val yaw = unwrapYaw(wrappedYaw, RotationHandler.rot[0])
 
     var applied = false

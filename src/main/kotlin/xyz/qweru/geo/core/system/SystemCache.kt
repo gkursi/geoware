@@ -13,8 +13,7 @@ object SystemCache {
 
     inline fun <reified T : Module> getModule(): Cached<T> {
         val klass = T::class
-        val module = Systems.get(Modules::class).get(klass)
-        return Cached(klass, module, currentSync)
+        return Cached(klass, null, currentSync)
     }
 
     inline fun <reified T : System> get(): Cached<T> {
@@ -24,16 +23,16 @@ object SystemCache {
     }
 
     private fun syncCacheIfNeeded(cached: Cached<*>) {
-        if (!RenderSystem.isOnRenderThread() || cached.lastSync == currentSync) return
+        if (cached.system != null && (!RenderSystem.isOnRenderThread() || cached.lastSync == currentSync)) return
         cached.lastSync = currentSync
         cached.system = Systems.get(Modules::class).get(cached.klass)
     }
 
-    data class Cached<T : System>(val klass: KClass<out System>, var system: System, var lastSync: Long = 0) {
+    data class Cached<T : System>(val klass: KClass<out System>, var system: System?, var lastSync: Long = 0) {
         @Suppress("UNCHECKED_CAST")
         operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
             syncCacheIfNeeded(this)
-            return system as T
+            return system!! as T
         }
     }
 }

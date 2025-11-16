@@ -17,6 +17,7 @@
     "math.Vec2fAccessor",
     "math.Vec3Accessor",
     "network.ClientConnectionMixin",
+    "network.packet.ServerboundPlayerInputPacketAccessor",
     "screen.HorseScreenHandlerAccessor",
     "screen.ItemGroupsAccessor"
   ],

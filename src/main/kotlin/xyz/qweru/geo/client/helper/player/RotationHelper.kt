@@ -6,11 +6,12 @@ import net.minecraft.world.phys.Vec3
 import xyz.qweru.geo.client.helper.entity.Target
 import xyz.qweru.geo.core.Global.mc
 import xyz.qweru.geo.core.manager.rotation.Rotation
+import xyz.qweru.geo.core.manager.rotation.RotationConfig
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import kotlin.math.sqrt
 
 object RotationHelper {
-    fun get(target: Vec3): Rotation {
+    fun get(target: Vec3, config: RotationConfig = RotationConfig.DEFAULT): Rotation {
         val player: Vec3 = mc.thePlayer.eyePosition
         val dx = target.x - player.x
         val dy = target.y - player.y
@@ -18,12 +19,12 @@ object RotationHelper {
         val dist = sqrt(dx * dx + dz * dz)
         val pitch = Mth.wrapDegrees((-(Mth.atan2(dy, dist) * 57.2957763671875)).toFloat())
         val yaw = Mth.wrapDegrees((Mth.atan2(dz, dx) * 57.2957763671875).toFloat() - 90.0f)
-        return Rotation(yaw, pitch)
+        return Rotation(yaw, pitch, config)
     }
 
-    fun get(target: Entity) = get(optimalPoint(target))
+    fun get(target: Entity, config: RotationConfig = RotationConfig.DEFAULT) = get(optimalPoint(target), config)
 
-    fun get(target: Target) = get(target.visiblePoint ?: optimalPoint(target.player))
+    fun get(target: Target, config: RotationConfig = RotationConfig.DEFAULT) = get(target.visiblePoint ?: optimalPoint(target.player), config)
 
     fun getAngle(target: Entity): Float {
         val current = floatArrayOf(Mth.wrapDegrees(mc.thePlayer.yRot), mc.thePlayer.xRot)

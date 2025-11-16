@@ -9,6 +9,7 @@ import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.manager.rotation.Rotation
 import xyz.qweru.geo.core.manager.rotation.RotationHandler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
@@ -60,7 +61,7 @@ class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
     private fun onTick(e: PreTickEvent) {
         if (!inGame || mc.screen != null || !silent || !canTarget()) return
         val target = this.target ?: return
-        RotationHandler.propose(RotationHelper.get(target), priority = 10)
+        RotationHandler.propose(RotationHelper.get(target), Rotation.NOT_IMPORTANT_ATTACK)
     }
 
     fun canTarget(): Boolean {

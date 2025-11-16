@@ -77,7 +77,7 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
         if (!inGame) return
         val target = this.target ?: return
         theRotation = RotationHelper.get(target)
-        RotationHandler.propose(theRotation, 20)
+        RotationHandler.propose(theRotation, Rotation.ATTACK)
     }
 
     private fun findTarget() {
