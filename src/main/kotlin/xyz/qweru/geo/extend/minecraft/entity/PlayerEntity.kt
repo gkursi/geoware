@@ -1,12 +1,14 @@
 package xyz.qweru.geo.extend.minecraft.entity
 
+import net.minecraft.client.multiplayer.PlayerInfo
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Items
 import net.minecraft.world.phys.Vec3
-import xyz.qweru.geo.core.Global.mc
+import xyz.qweru.geo.client.helper.network.ProfileHelper
+import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.client.helper.player.PlayerHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.client.helper.world.WorldHelper
@@ -32,3 +34,5 @@ val Player.rotation: FloatArray
     get() = floatArrayOf(yRot, xRot)
 val Player.relativeMotion
     get() = PlayerHelper.getRelativeVelocity(this)
+val Player.playerListEntry: PlayerInfo?
+    get() = ProfileHelper.findPlayerListEntry(this)

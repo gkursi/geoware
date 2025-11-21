@@ -4,10 +4,11 @@ import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Player
 import xyz.qweru.geo.client.helper.math.RangeHelper
-import xyz.qweru.geo.core.Global.mc
-import xyz.qweru.geo.core.manager.combat.TargetTracker
+import xyz.qweru.geo.core.Core.mc
+import xyz.qweru.geo.core.tracking.bot.BotTracker
+import xyz.qweru.geo.core.game.combat.TargetTracker.config
+import xyz.qweru.geo.core.game.combat.TargetTracker.teams
 import xyz.qweru.geo.core.system.SystemCache
-import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.core.system.friend.Friends
 import xyz.qweru.geo.extend.minecraft.entity.inFov
 import xyz.qweru.geo.extend.minecraft.entity.inRange
@@ -25,7 +26,7 @@ object TargetHelper {
         var bestRange = Double.MAX_VALUE
         var target: Target? = null
         for (player in mc.theLevel.players()) {
-            if (isFriendly(player) || isDead(player)) continue
+            if (isFriendly(player) || !canTarget(player) || isDead(player)) continue
             if (!player.inFov(fov) || !player.inRange(range)) continue
             if (!invisible && isInvisible(player)) continue
             val visiblePoint = player.visiblePoint()
@@ -40,7 +41,10 @@ object TargetHelper {
     }
 
     fun isFriendly(player: Player): Boolean =
-        player == mc.thePlayer || friends.isFriend(player) || !TargetTracker.canTarget(player)
+        player == mc.thePlayer || (friends.isFriend(player) && config.excludeFriends)
+
+    fun canTarget(player: Player): Boolean =
+        (!teams.enabled || !teams.isExempt(player)) && !BotTracker.isTracking(player)
 
     fun isDead(player: Player): Boolean = !player.isAlive
 

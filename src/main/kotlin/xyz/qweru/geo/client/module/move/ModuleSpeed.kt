@@ -15,7 +15,7 @@ import xyz.qweru.geo.client.event.PreMoveSendEvent
 import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.client.helper.world.WorldHelper
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.manager.movement.MovementState
+import xyz.qweru.geo.core.game.movement.MovementState
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.airTicks

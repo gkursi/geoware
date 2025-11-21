@@ -11,8 +11,8 @@ import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.manager.rotation.Rotation
-import xyz.qweru.geo.core.manager.rotation.RotationHandler
+import xyz.qweru.geo.core.game.rotation.Rotation
+import xyz.qweru.geo.core.game.rotation.RotationHandler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.attackCharge

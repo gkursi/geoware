@@ -4,13 +4,13 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
-import xyz.qweru.geo.core.Global.mc
+import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 
 operator fun BlockPos.plus(blockPos: BlockPos): BlockPos =
     this.offset(blockPos)
 fun BlockPos.getAABBOf(face: Direction): AABB {
-    val depth = 0.05
+    val depth = 0.01
     val size = 1.0
 
     val x = this.x.toDouble()

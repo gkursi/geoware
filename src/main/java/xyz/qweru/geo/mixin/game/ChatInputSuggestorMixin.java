@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.qweru.geo.core.Global;
-import xyz.qweru.geo.core.manager.command.CommandManager;
+import xyz.qweru.geo.core.Core;
+import xyz.qweru.geo.core.command.CommandManager;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -37,7 +37,7 @@ public abstract class ChatInputSuggestorMixin {
     @Inject(method = "updateCommandInfo", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/StringReader;canRead()Z"), cancellable = true)
     public void refresh(CallbackInfo ci, @Local StringReader reader) {
 
-        String prefix = Global.PREFIX;
+        String prefix = Core.PREFIX;
         int len = prefix.length();
 
         if (reader.canRead(len) && reader.getString().startsWith(prefix)) {

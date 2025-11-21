@@ -6,9 +6,11 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import xyz.qweru.geo.client.event.PostTickEvent
+import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.client.helper.player.SlotHelper
 import xyz.qweru.geo.client.module.config.ModuleSwap
-import xyz.qweru.geo.core.Global
+import xyz.qweru.geo.core.Core
+import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
@@ -25,10 +27,13 @@ object InvHelper {
         }
 
     val inventory: Inventory
-        get() = Global.mc.thePlayer.getInventory()
+        get() = Core.mc.thePlayer.getInventory()
 
-    @Handler
+    @Handler(priority = EventPriority.LAST)
     private fun postTick(e: PostTickEvent) {
+        if (lastSwapPriority != -1) {
+            swap0(selectedSlot, Int.MAX_VALUE)
+        }
         lastSwapPriority = -1
     }
 
@@ -46,7 +51,7 @@ object InvHelper {
 
     fun getMainhand(): ItemStack = inventory.getItem(selectedSlot)
 
-    fun getOffhand(): ItemStack = Global.mc.thePlayer.getItemBySlot(EquipmentSlot.OFFHAND)
+    fun getOffhand(): ItemStack = Core.mc.thePlayer.getItemBySlot(EquipmentSlot.OFFHAND)
 
     fun isSword(item: Item): Boolean =
         item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD
@@ -60,7 +65,7 @@ object InvHelper {
 
     fun swap(slot: Int, priority: Int = 0) {
         if (slot == selectedSlot) return
-        if (module!!.scrollSwap && slot >= module!!.scrollSwapMin - 1) swap0(scrollSlot(slot), priority)
+        if (module.scrollSwap && slot >= module.scrollSwapMin - 1) swap0(scrollSlot(slot), priority)
         else swap0(slot, priority)
     }
 
@@ -77,7 +82,8 @@ object InvHelper {
 
     private fun swap0(slot: Int, priority: Int) {
         if (priority <= lastSwapPriority) return
-        selectedSlot = slot
+        if (module.silentSwap) PacketHelper.swap(slot)
+        else selectedSlot = slot
     }
 
     private fun scrollSlot(target: Int): Int {

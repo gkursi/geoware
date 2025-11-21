@@ -14,7 +14,7 @@ import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.manager.combat.TargetTracker
+import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.inRange

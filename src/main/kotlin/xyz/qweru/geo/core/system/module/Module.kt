@@ -1,14 +1,15 @@
 package xyz.qweru.geo.core.system.module
 
 import com.google.gson.JsonObject
-import xyz.qweru.geo.core.Global
+import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.system.setting.Settings
 import xyz.qweru.geo.core.system.System
+import xyz.qweru.geo.extend.kotlin.log.dbg
 
 abstract class Module(name: String, val description: String = "${name.lowercase()} module", val category: Category = Category.MISC,
                       val alwaysEnabled: Boolean = false, var bind: Int = -1) : System(name, Type.MODULE) {
-    protected val mc = Global.mc
+    protected val mc = Core.mc
     val settings = Settings(this)
 
     var enabled: Boolean = alwaysEnabled
@@ -18,12 +19,12 @@ abstract class Module(name: String, val description: String = "${name.lowercase(
             if (field != prev) {
                 if (field) {
                     EventBus.subscribe(this)
-                    println("Subscribed $name")
+                    logger.dbg("Subscribed $name")
                     enable()
                 }
                 else {
                     EventBus.unsubscribe(this)
-                    println("Unsubscribed $name")
+                    logger.dbg("Unsubscribed $name")
                     disable()
                 }
             }

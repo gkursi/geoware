@@ -7,9 +7,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.qweru.geo.core.manager.movement.MovementState;
+import xyz.qweru.geo.core.game.movement.MovementState;
 
-import static xyz.qweru.geo.core.Global.mc;
+import static xyz.qweru.geo.core.Core.mc;
 
 @Mixin(SlimeBlock.class)
 public class SlimeBlockMixin {

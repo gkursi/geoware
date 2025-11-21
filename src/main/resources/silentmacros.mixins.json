@@ -23,6 +23,7 @@
   ],
   "client": [
     "entity.LocalPlayerMixin",
+    "entity.PlayerInfoAccessor",
     "game.ChatInputSuggestorMixin",
     "game.ClientPlayerInteractionManagerMixin",
     "game.MinecraftClientAccessor",

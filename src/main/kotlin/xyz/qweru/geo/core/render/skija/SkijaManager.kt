@@ -9,15 +9,11 @@ import org.jetbrains.skija.Surface
 import org.jetbrains.skija.SurfaceColorFormat
 import org.jetbrains.skija.SurfaceOrigin
 import xyz.qweru.geo.client.event.FramebufferSizeChangeEvent
-import xyz.qweru.geo.client.event.GameRenderEvent
 import xyz.qweru.geo.client.event.HudRenderEvent
-import xyz.qweru.geo.client.event.PostInitEvent
-import xyz.qweru.geo.client.event.SwapBufferEvent
+import xyz.qweru.geo.client.event.MinecraftInitEvent
 import xyz.qweru.geo.client.event.UIRenderEvent
 import xyz.qweru.geo.client.event.VanillaHudRenderEvent
-import xyz.qweru.geo.core.Global
-import xyz.qweru.geo.core.Global.mc
-import xyz.qweru.geo.core.event.EventBus
+import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.render.state.States
 
@@ -31,7 +27,7 @@ object SkijaManager {
     const val FRAMEBUFFER = 0 // TODO
 
     @Handler
-    private fun createContext(e: PostInitEvent) {
+    private fun createContext(e: MinecraftInitEvent) {
         val width = mc.window.width
         val height = mc.window.height
 

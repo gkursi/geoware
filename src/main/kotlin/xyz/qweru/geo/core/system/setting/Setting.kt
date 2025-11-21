@@ -4,7 +4,8 @@ import com.google.gson.JsonObject
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import org.apache.commons.lang3.text.WordUtils
-import xyz.qweru.geo.core.Global
+import xyz.qweru.geo.core.Core
+import xyz.qweru.geo.extend.kotlin.log.dbg
 import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
@@ -23,7 +24,7 @@ abstract class Setting<T : Setting<T, V>, V>(val name: String, val description: 
         set(value) {
             field = value
             changeListener.invoke(this as T)
-            Global.logger.info("$name changed value to $value")
+            Core.logger.info("$name changed value to $value")
         }
 
     fun onChange(listener: (T) -> Unit): T {
@@ -53,7 +54,7 @@ abstract class Setting<T : Setting<T, V>, V>(val name: String, val description: 
     operator fun provideDelegate(u: Any?, property: KProperty<*>): Setting<T, V> {
         val ann = property.findAnnotation<Usage>()
         usage = ((ann?.usage ?: emptyArray()) as Array<SettingUsage>) + group.usage
-        Global.logger.info("Setting usage: ${usage.joinToString(", ")}")
+        Core.logger.dbg("Setting usage: ${usage.joinToString(", ")}")
         return this
     }
 

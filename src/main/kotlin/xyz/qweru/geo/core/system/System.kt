@@ -3,7 +3,7 @@ package xyz.qweru.geo.core.system
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceCollection
-import xyz.qweru.geo.core.Global
+import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.helper.tree.SystemContext
 import kotlin.reflect.KClass
 
@@ -16,7 +16,7 @@ abstract class System(open val name: String, val type: Type = Type.INTERNAL) {
 
     protected var firstInit = true
         private set
-    protected val logger = Global.logger
+    protected val logger = Core.logger
 
     @Suppress("UNCHECKED_CAST")
     fun <T : System> get(system: KClass<T>): T = sub[system]!! as T

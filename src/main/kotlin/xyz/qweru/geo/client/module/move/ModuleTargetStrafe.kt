@@ -5,8 +5,8 @@ import xyz.qweru.geo.client.event.AttackPlayerEvent
 import xyz.qweru.geo.client.event.PlayerAttackPlayerEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.manager.combat.CombatState
-import xyz.qweru.geo.core.manager.combat.TargetTracker
+import xyz.qweru.geo.core.game.combat.CombatState
+import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.inFov

@@ -11,24 +11,21 @@ object SystemCache {
     val currentSync
         get() = Configs.Companion.changes
 
-    inline fun <reified T : Module> getModule(): Cached<T> {
-        val klass = T::class
-        return Cached(klass, null, currentSync)
-    }
+    inline fun <reified T : Module> getModule(): Cached<T> =
+        Cached(T::class, { Systems.get(Modules::class) }, null, currentSync)
 
-    inline fun <reified T : System> get(): Cached<T> {
-        val klass = T::class
-        val system = Systems.get(klass)
-        return Cached(klass, system, currentSync)
-    }
+    inline fun <reified T : System> get(): Cached<T> =
+        Cached(T::class, null, null, currentSync)
 
     private fun syncCacheIfNeeded(cached: Cached<*>) {
         if (cached.system != null && (!RenderSystem.isOnRenderThread() || cached.lastSync == currentSync)) return
+        val parent = cached.parent?.invoke() ?: Systems
+
         cached.lastSync = currentSync
-        cached.system = Systems.get(Modules::class).get(cached.klass)
+        cached.system = parent.get(cached.klass)
     }
 
-    data class Cached<T : System>(val klass: KClass<out System>, var system: System?, var lastSync: Long = 0) {
+    data class Cached<T : System>(val klass: KClass<out System>, val parent: (() -> System)?, var system: System?, var lastSync: Long = 0) {
         @Suppress("UNCHECKED_CAST")
         operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
             syncCacheIfNeeded(this)

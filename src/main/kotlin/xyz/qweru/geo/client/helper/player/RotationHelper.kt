@@ -4,9 +4,9 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 import xyz.qweru.geo.client.helper.entity.Target
-import xyz.qweru.geo.core.Global.mc
-import xyz.qweru.geo.core.manager.rotation.Rotation
-import xyz.qweru.geo.core.manager.rotation.RotationConfig
+import xyz.qweru.geo.core.Core.mc
+import xyz.qweru.geo.core.game.rotation.Rotation
+import xyz.qweru.geo.core.game.rotation.RotationConfig
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import kotlin.math.sqrt
 

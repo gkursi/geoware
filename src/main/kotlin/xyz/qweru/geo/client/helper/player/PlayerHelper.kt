@@ -11,19 +11,13 @@ object PlayerHelper {
         val vel = player.deltaMovement
 
         val yaw = Math.toRadians(-player.yRot.toDouble())
-        val pitch = Math.toRadians(-player.xRot.toDouble())
         val cosYaw = cos(yaw)
         val sinYaw = sin(yaw)
-        val cosPitch = cos(pitch)
-        val sinPitch = sin(pitch)
 
         // yaw
         val x1 = vel.x * cosYaw - vel.z * sinYaw
         val z1 = vel.x * sinYaw + vel.z * cosYaw
-        // pitch
-        val y2 = vel.y * cosPitch - z1 * sinPitch
-        val z2 = vel.y * sinPitch + z1 * cosPitch
 
-        return Vec3(x1, y2, z2)
+        return Vec3(x1, vel.y, z1)
     }
 }

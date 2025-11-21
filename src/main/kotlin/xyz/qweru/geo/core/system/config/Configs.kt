@@ -5,8 +5,9 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import it.unimi.dsi.fastutil.objects.ObjectArrayList
-import xyz.qweru.geo.core.Global
+import xyz.qweru.geo.core.Core
+import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.event.PostInitEvent
 import xyz.qweru.geo.core.system.System
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.core.helper.tree.SystemContext
@@ -26,8 +27,8 @@ class Configs : System("configs", type = Type.INTERNAL) {
         var changes: Long = 0
     }
 
-    val configFile = Global.DIRECTORY.resolve("$name.json")
-    val configDir = Global.DIRECTORY.findOrCreateDir("config")
+    val configFile = Core.DIRECTORY.resolve("$name.json")
+    val configDir = Core.DIRECTORY.findOrCreateDir("config")
     val knownConfigs = Object2ObjectOpenHashMap<String, Config>()
     val gson: Gson = GsonBuilder().setPrettyPrinting().create()
     val emptyJson = JsonObject()
@@ -48,7 +49,7 @@ class Configs : System("configs", type = Type.INTERNAL) {
         )
 
         thread(start = true) {
-            Global.logger.info("Watching $configDir for changes")
+            Core.logger.info("Watching $configDir for changes")
             var watchKey: WatchKey? = null
             do {
                 watchKey = watchService.take()
@@ -66,6 +67,9 @@ class Configs : System("configs", type = Type.INTERNAL) {
             }
         })
     }
+
+    @Handler
+    fun init(e: PostInitEvent) = init()
 
     override fun initThis() {
         loadThis((if (configFile.exists()) FileReader(configFile).use { JsonParser.parseReader(it)?.asJsonObject } else emptyJson) ?: emptyJson)
@@ -86,7 +90,7 @@ class Configs : System("configs", type = Type.INTERNAL) {
         }
 
         if (moduleSource.isEmpty || friendSource.isEmpty)
-            Global.logger.warn("A previously used config is invalid! You can safely ignore this message if this is your first run.")
+            Core.logger.warn("A previously used config is invalid! You can safely ignore this message if this is your first run.")
     }
 
     override fun saveThis(json: JsonObject) {
@@ -161,7 +165,7 @@ class Configs : System("configs", type = Type.INTERNAL) {
                 val config = getConfig(file) ?: continue
                 knownConfigs[file.nameWithoutExtension] = config
             } catch (_: IOException) {
-                Global.logger.warn("Skipping invalid config entry: $file")
+                Core.logger.warn("Skipping invalid config entry: $file")
             }
         }
         knownConfigs.trim()
@@ -172,7 +176,7 @@ class Configs : System("configs", type = Type.INTERNAL) {
         try {
             FileWriter(file).use(block)
         } catch (t: IOException) {
-            Global.logger.warn("Failed to write $file", t)
+            Core.logger.warn("Failed to write $file", t)
             if (!throwOnFail) return
             throw RuntimeException(t)
         }

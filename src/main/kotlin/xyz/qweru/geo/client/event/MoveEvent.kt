@@ -1,6 +1,6 @@
 package xyz.qweru.geo.client.event
 
-import xyz.qweru.geo.core.Global.mc
+import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.mixin.math.Vec3Accessor
 import kotlin.math.sqrt

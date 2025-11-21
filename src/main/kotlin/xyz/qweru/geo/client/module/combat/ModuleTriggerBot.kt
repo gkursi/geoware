@@ -6,16 +6,18 @@ import net.minecraft.world.phys.HitResult
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.client.event.PostMovementTickEvent
+import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.client.helper.player.AttackHelper
 import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.manager.combat.Attack
-import xyz.qweru.geo.core.manager.combat.CombatState
-import xyz.qweru.geo.core.manager.combat.TargetTracker
+import xyz.qweru.geo.core.game.combat.Attack
+import xyz.qweru.geo.core.game.combat.CombatState
+import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.extend.kotlin.log.dbg
 import xyz.qweru.geo.extend.minecraft.entity.attackCharge
 import xyz.qweru.geo.extend.minecraft.entity.relativeMotion
 import xyz.qweru.geo.extend.minecraft.world.hit
@@ -81,7 +83,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     fun checkPlayer(en: Player): Boolean {
         if (!mc.thePlayer.useItem.isEmpty && !InvHelper.isInMainhand { InvHelper.isSword(it.item) }) return true
         if (attackFirst && en != TargetTracker.target) return true
-        if (!TargetTracker.canTarget(en)) return true
+        if (!TargetHelper.canTarget(en)) return true
 
         if (TargetTracker.target == null) TargetTracker.target = en
         nextDamage = CombatState.TARGET.predictNextAttack()
@@ -98,9 +100,9 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
             ModuleSprint.sprint(false)
         }
 
-        println("next: $nextAttack, sprint: ${mc.thePlayer.isSprinting}")
+        logger.dbg("next: $nextAttack, sprint: ${mc.thePlayer.isSprinting}")
         val entity = mc.thePlayer
-        println("conditions: fall: ${entity.fallDistance} > 0.075f && ground:${!entity.onGround()} && charge:${entity.attackCharge} > 0.9f && climb:${!entity.onClimbable()} && water:${!entity.isInWater} && vehicle:${!entity.isPassenger}")
+        logger.dbg("conditions: fall: ${entity.fallDistance} > 0.075f && ground:${!entity.onGround()} && charge:${entity.attackCharge} > 0.9f && climb:${!entity.onClimbable()} && water:${!entity.isInWater} && vehicle:${!entity.isPassenger}")
         return false
     }
 

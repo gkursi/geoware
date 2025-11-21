@@ -7,18 +7,18 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.qweru.geo.core.Global;
-import xyz.qweru.geo.core.manager.command.CommandManager;
+import xyz.qweru.geo.core.Core;
+import xyz.qweru.geo.core.command.CommandManager;
 
-import static xyz.qweru.geo.core.Global.mc;
+import static xyz.qweru.geo.core.Core.mc;
 
 @Mixin(ClientPacketListener.class)
 public class ClientPlayNetworkHandlerMixin {
     @Inject(method = "sendChat", at = @At("HEAD"), cancellable = true)
     private void onSendChat(String content, CallbackInfo ci) {
-        if (content.startsWith(Global.PREFIX)) {
+        if (content.startsWith(Core.PREFIX)) {
             try {
-                CommandManager.INSTANCE.execute(content.substring(Global.PREFIX.length()));
+                CommandManager.INSTANCE.execute(content.substring(Core.PREFIX.length()));
             } catch (CommandSyntaxException e) {
                 mc.player.displayClientMessage(Component.literal("Invalid command: " + e.getMessage()), false);
             }

@@ -2,14 +2,12 @@ package xyz.qweru.geo.mixin.game;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.Packet;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.client.event.*;
 import xyz.qweru.geo.core.event.EventBus;
-import xyz.qweru.geo.core.manager.movement.MovementTicker;
+import xyz.qweru.geo.core.game.movement.MovementTicker;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
@@ -63,6 +61,6 @@ public class MinecraftMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void postInit(GameConfig gameConfig, CallbackInfo ci) {
-        EventBus.INSTANCE.post(PostInitEvent.INSTANCE);
+        EventBus.INSTANCE.post(MinecraftInitEvent.INSTANCE);
     }
 }

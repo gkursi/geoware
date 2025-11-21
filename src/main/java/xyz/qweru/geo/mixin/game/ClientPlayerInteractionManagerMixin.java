@@ -13,15 +13,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xyz.qweru.geo.client.event.AttackEntityEvent;
-import xyz.qweru.geo.client.event.PlaceBlockEvent;
+import xyz.qweru.geo.client.event.PostPlaceBlockEvent;
 import xyz.qweru.geo.core.event.EventBus;
 
 @Mixin(MultiPlayerGameMode.class)
 public class ClientPlayerInteractionManagerMixin {
-    @Inject(method = "useItemOn", at = @At("HEAD"))
-    private void preInteract(LocalPlayer player, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
-        PlaceBlockEvent.INSTANCE.hit = hitResult;
-        EventBus.INSTANCE.post(PlaceBlockEvent.INSTANCE);
+    @Inject(method = "useItemOn", at = @At("TAIL"))
+    private void onInteract(LocalPlayer player, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
+        PostPlaceBlockEvent.INSTANCE.hit = hitResult;
+        EventBus.INSTANCE.post(PostPlaceBlockEvent.INSTANCE);
     }
 
     @Inject(method = "attack", at = @At("HEAD"))

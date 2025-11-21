@@ -9,10 +9,9 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.AxeItem
 import net.minecraft.world.item.Items
 import xyz.qweru.geo.client.helper.player.inventory.InvHelper
-import xyz.qweru.geo.core.Global.mc
+import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.extend.minecraft.entity.attackCharge
 import xyz.qweru.geo.extend.minecraft.entity.groundTicks
-import xyz.qweru.geo.extend.minecraft.entity.isOnGround
 import xyz.qweru.geo.extend.minecraft.item.isOf
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 

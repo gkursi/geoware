@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import static xyz.qweru.geo.core.Global.mc;
+import static xyz.qweru.geo.core.Core.mc;
 
 /**
  * @see <a href="https://github.com/CCBlueX/LiquidBounce/blob/nextgen/src/main/java/net/ccbluex/liquidbounce/injection/mixins/minecraft/util/MixinDownloader.java">MixinDownloader.java</a>

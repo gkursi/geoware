@@ -30,6 +30,7 @@ repositories {
     maven("https://maven.lenni0451.net/everything")
     maven("https://repo.opencollab.dev/maven-snapshots")
     maven("https://jitpack.io")
+    maven("https://maven.meteordev.org/snapshots")
 }
 
 dependencies {
@@ -42,6 +43,7 @@ dependencies {
     modImplementation("com.ptsmods:devlogin:3.5")
     implementation("org.apache.commons:commons-math3:3.6.1")
     modImplementation("com.viaversion:viafabricplus-api:4.2.4")
+//    modImplementation("meteordevelopment:baritone:1.21.8-SNAPSHOT")
 
     // render
     implementation("xyz.qweru:multirender-api:1.0-SNAPSHOT")

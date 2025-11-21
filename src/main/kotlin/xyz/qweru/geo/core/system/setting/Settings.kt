@@ -2,10 +2,11 @@ package xyz.qweru.geo.core.system.setting
 
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
-import xyz.qweru.geo.core.Global
+import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.system.System
 import xyz.qweru.geo.core.helper.tree.SystemContext
 import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.extend.kotlin.log.dbg
 
 class Settings(val module: Module) : System("settings") {
     val allSettings = ObjectArrayList<Setting<*, *>>(5)
@@ -14,13 +15,13 @@ class Settings(val module: Module) : System("settings") {
 
     fun add(setting: Setting<*, *>) {
         allSettings.add(setting)
-        logger.info("Added setting ${setting.name} with value ${setting.value} in group ${setting.group.name} (${allSettings.size} total)")
+        logger.dbg("Added setting ${setting.name} with value ${setting.value} in group ${setting.group.name} (${allSettings.size} total)")
     }
 
     override fun loadThis(json: JsonObject) {
         for (setting in allSettings)
             json[setting.name]?.let { setting.load(it.asJsonObject) } ?: {
-                Global.logger.info("$name has no value in $json")
+                Core.logger.info("$name has no value in $json")
             }
     }
 

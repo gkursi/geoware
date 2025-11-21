@@ -17,5 +17,5 @@ You can either have it in the same directory as the root of this project,
 or remove `includeBuild` from `settings.gradle.kts` and include it from jitpack.
 
 ## Credit
-- LiquidBounce - TrackPack patch
+- LiquidBounce - TrackPack patch, Teams module
 - Meteor - system structure inspiration (no code was taken)

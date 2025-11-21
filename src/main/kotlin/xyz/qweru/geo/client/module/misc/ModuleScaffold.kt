@@ -18,18 +18,15 @@ import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.helper.world.WorldHelper
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.manager.rotation.Rotation
-import xyz.qweru.geo.core.manager.rotation.RotationConfig
-import xyz.qweru.geo.core.manager.rotation.RotationHandler
+import xyz.qweru.geo.core.game.rotation.Rotation
+import xyz.qweru.geo.core.game.rotation.RotationConfig
+import xyz.qweru.geo.core.game.rotation.RotationHandler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.airTicks
-import xyz.qweru.geo.extend.minecraft.entity.distanceFromEyesSq
-import xyz.qweru.geo.extend.minecraft.entity.isOnGround
 import xyz.qweru.geo.extend.minecraft.game.reverse
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
-import xyz.qweru.geo.extend.minecraft.game.withJump
 import xyz.qweru.geo.extend.minecraft.world.getAABBOf
 import xyz.qweru.geo.extend.minecraft.world.isVertical
 import xyz.qweru.geo.extend.minecraft.world.plus
@@ -39,7 +36,6 @@ import xyz.qweru.multirender.api.API
 import xyz.qweru.multirender.api.input.Input
 import kotlin.math.abs
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 class ModuleScaffold : Module("Scaffold", "Automatically places blocks below you", Category.MISC) {
@@ -83,7 +79,7 @@ class ModuleScaffold : Module("Scaffold", "Automatically places blocks below you
 
     @Handler
     private fun preCross(e: PreCrosshair) {
-        if (!inGame || place == Action.MANUAL || !isValidRotation() || !placeTimer.hasPassed() || awaitGround()) return
+        if (!inGame || place == Action.MANUAL || !isValidRotation() || !placeTimer.hasPassed() || awaitAir()) return
         InvHelper.swap({ it.item is BlockItem }, priority = 10)
         if (!InvHelper.isInMainhand { it.item is BlockItem }) return
         API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_2, Input.CLICK)
@@ -109,8 +105,8 @@ class ModuleScaffold : Module("Scaffold", "Automatically places blocks below you
         (packet as ServerboundPlayerInputPacketAccessor).geo_setInput(packet.input.reverse())
     }
 
-    private fun awaitGround(): Boolean =
-        !mc.thePlayer.isOnGround && mc.thePlayer.airTicks < airTicks
+    private fun awaitAir(): Boolean =
+        mc.thePlayer.airTicks < airTicks
 
     private fun findTarget() {
         if (isValidRotation()) return
@@ -137,7 +133,7 @@ class ModuleScaffold : Module("Scaffold", "Automatically places blocks below you
         currentRotation?.let {
             if(!RotationHandler.isLookingAt(it)) return@let false
             val hit = mc.hitResult
-            return@let hit is BlockHitResult && !hit.direction.isVertical
+            return@let hit is BlockHitResult
         } ?: false
 
     private fun validate(pos: BlockPos): Boolean {
@@ -183,7 +179,7 @@ class ModuleScaffold : Module("Scaffold", "Automatically places blocks below you
                         val pos = BlockPos(x, y, z) + mc.thePlayer.blockPosition()
                         val center = optimalCenter(pos) ?: continue
                         val state by lazy { mc.theLevel.getBlockState(pos) }
-                        val distance = mc.thePlayer.distanceFromEyesSq(center)
+                        val distance = mc.thePlayer.distanceToSqr(center)
 
                         if (distance > rangeSq || distance > nearestDist) continue
                         if (!validate(pos) || !state.canBeReplaced()) continue

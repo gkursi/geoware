@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.RespawnAnchorBlock
 import net.minecraft.world.phys.BlockHitResult
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PacketReceiveEvent
-import xyz.qweru.geo.client.event.PlaceBlockEvent
+import xyz.qweru.geo.client.event.PostPlaceBlockEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
@@ -18,6 +18,7 @@ import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
+import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.extend.minecraft.item.isOf
 import xyz.qweru.geo.extend.minecraft.world.isOf
 import xyz.qweru.multirender.api.API
@@ -30,7 +31,6 @@ class ModuleAnchorMacro : Module("AnchorMacro", "Automatically place and break a
     val breakAnchor by sa.boolean("Break", "Break anchor", true)
     val breakDelay by sa.longRange("Break Delay", "Delay for breaking", 0L..5, 0L..500L)
     val onlyOwn by sa.boolean("Only Own", "Only break anchors placed by you", true)
-    val replace by sa.boolean("Replace", "Replace broken anchors", true)
 
     private val fillTimer = TimerDelay()
     private val breakTimer = TimerDelay()
@@ -53,8 +53,8 @@ class ModuleAnchorMacro : Module("AnchorMacro", "Automatically place and break a
         else breakPos(hit)
     }
 
-    @Handler
-    private fun onPlaceBlock(e: PlaceBlockEvent) {
+    @Handler(priority = EventPriority.LOW)
+    private fun onPlaceBlock(e: PostPlaceBlockEvent) {
         if (!InvHelper.isHolding(Items.RESPAWN_ANCHOR)) return
         val hit = e.hit
         var pos = hit.blockPos

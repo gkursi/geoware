@@ -3,7 +3,9 @@ package xyz.qweru.geo.extend.minecraft.entity
 import net.minecraft.core.Position
 import net.minecraft.core.Vec3i
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 
 fun Entity.distanceFromEyesSq(vec: Position) = this.eyePosition.distanceToSqr(vec.x(), vec.y(), vec.z())
@@ -17,3 +19,10 @@ var Entity.isOnGround: Boolean
 var Entity.pos: Vec3
     get() = this.position()
     set(v) = this.setPos(v)
+val Player.armorItems: Iterable<ItemStack>
+    get() = listOf(
+        getItemBySlot(EquipmentSlot.FEET),
+        getItemBySlot(EquipmentSlot.LEGS),
+        getItemBySlot(EquipmentSlot.CHEST),
+        getItemBySlot(EquipmentSlot.HEAD),
+    )

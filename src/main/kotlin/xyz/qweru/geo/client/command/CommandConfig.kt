@@ -9,8 +9,8 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import xyz.qweru.geo.client.command.argument.ConfigArgumentType
 import xyz.qweru.geo.client.command.argument.ConfigTypeArgumentType
 import xyz.qweru.geo.client.command.argument.NewConfigArgumentType
-import xyz.qweru.geo.core.Global
-import xyz.qweru.geo.core.manager.command.Command
+import xyz.qweru.geo.core.Core
+import xyz.qweru.geo.core.command.Command
 import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.core.system.config.Config
@@ -57,7 +57,7 @@ class CommandConfig : Command("config", "Save/load/export configs",
             when (action) {
                 "save" -> {
                     configs.save(config.name, config.type)
-                    Global.logger.info("saved ${config.name}")
+                    Core.logger.info("saved ${config.name}")
                 }
                 "load" -> configs.loadConfig(config)
                 else -> throw IllegalArgumentException("Invalid action")

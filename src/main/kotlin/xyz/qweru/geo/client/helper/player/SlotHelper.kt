@@ -1,9 +1,7 @@
 package xyz.qweru.geo.client.helper.player
 
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
-import net.minecraft.client.gui.screens.inventory.HorseInventoryScreen
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.core.registries.Registries
 import net.minecraft.world.entity.animal.camel.Camel
 import net.minecraft.world.entity.animal.horse.AbstractHorse
 import net.minecraft.world.entity.animal.horse.Donkey
@@ -34,7 +32,7 @@ import net.minecraft.world.inventory.ShulkerBoxMenu
 import net.minecraft.world.inventory.SmithingMenu
 import net.minecraft.world.inventory.SmokerMenu
 import net.minecraft.world.inventory.StonecutterMenu
-import xyz.qweru.geo.core.Global.mc
+import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.mixin.screen.CreativeInventoryScreenAccessor
 import xyz.qweru.geo.mixin.screen.HorseScreenHandlerAccessor

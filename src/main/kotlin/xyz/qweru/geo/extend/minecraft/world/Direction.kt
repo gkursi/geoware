@@ -4,3 +4,5 @@ import net.minecraft.core.Direction
 
 val Direction.isVertical: Boolean
     get() = this == Direction.UP || this == Direction.DOWN
+val Direction.isBottom: Boolean
+    get() = this == Direction.DOWN

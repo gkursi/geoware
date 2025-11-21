@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.BuiltInExceptions
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import xyz.qweru.geo.client.command.argument.ModuleArgumentType
-import xyz.qweru.geo.core.manager.command.Command
+import xyz.qweru.geo.core.command.Command
 import xyz.qweru.geo.core.system.module.Module
 
 class CommandToggle : Command("toggle", "Toggle a module", "toggle <module>") {

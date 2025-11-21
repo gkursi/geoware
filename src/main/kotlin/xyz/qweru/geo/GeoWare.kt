@@ -2,15 +2,12 @@ package xyz.qweru.geo
 
 import net.fabricmc.api.ModInitializer
 import org.jetbrains.skija.Color4f
-import org.jetbrains.skija.ColorFilter
 import org.jetbrains.skija.Paint
 import org.jetbrains.skija.PaintMode
 import xyz.qweru.geo.client.event.UIRenderEvent
-import xyz.qweru.geo.core.Global
-import xyz.qweru.geo.core.manager.command.CommandManager
+import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.manager.Managers
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.core.system.config.Configs
 
@@ -19,15 +16,14 @@ class GeoWare : ModInitializer {
     override fun onInitialize() {
         val i = System.nanoTime()
 
+        Core.init()
         Systems.init()
-        CommandManager.register()
-        Managers.init()
         Systems.get(Configs::class).init()
 
         EventBus.subscribe(this)
         createInputListeners()
 
-        Global.logger.info("Initialized ${Global.MOD} in ${(System.nanoTime() - i)/1000000}ms")
+        Core.logger.info("Initialized ${Core.MOD} in ${(System.nanoTime() - i)/1000000}ms")
     }
 
     private fun createInputListeners() {

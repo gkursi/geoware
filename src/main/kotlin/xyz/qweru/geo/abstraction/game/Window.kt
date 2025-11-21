@@ -1,6 +1,6 @@
 package xyz.qweru.geo.abstraction.game
 
-import xyz.qweru.geo.core.Global.mc
+import xyz.qweru.geo.core.Core.mc
 
 object Window {
     val handle: Long

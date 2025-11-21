@@ -5,4 +5,4 @@ import xyz.qweru.geo.core.event.Cancellable
 object PreTickEvent : Cancellable()
 object PostTickEvent : Cancellable()
 object HandleTasksEvent
-object PostInitEvent
+object MinecraftInitEvent

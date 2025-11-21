@@ -3,14 +3,14 @@ package xyz.qweru.geo.abstraction.game
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.Options
 import org.lwjgl.glfw.GLFW
-import xyz.qweru.geo.core.Global
+import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.mixin.input.KeyBindingAccessor
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
 
 object GameOptions {
     private val options: Options
-        get() = Global.mc.options
+        get() = Core.mc.options
 
     /* Binds */
     var forwardKey by wrapBind(options.keyUp)
@@ -33,12 +33,19 @@ object GameOptions {
     fun syncBind(field: KMutableProperty0<Boolean>) =
         field.set(field.get())
 
+    fun syncMovement() {
+        syncBind(this::forwardKey)
+        syncBind(this::backKey)
+        syncBind(this::leftKey)
+        syncBind(this::rightKey)
+    }
+
     private fun wrapBind(bind: KeyMapping): KeyBindingWrapper = KeyBindingWrapper(bind)
 
     private class KeyBindingWrapper(val bind: KeyMapping) {
         operator fun getValue(u: Any?, property: KProperty<*>) =
             // differentiate mouse and keyboard bindings
-            !bind.isUnbound && Global.mc.screen == null && (bind as KeyBindingAccessor).geo_getBound().value.let {
+            !bind.isUnbound && Core.mc.screen == null && (bind as KeyBindingAccessor).geo_getBound().value.let {
                 if (it <= GLFW.GLFW_MOUSE_BUTTON_LAST) return@let GLFW.glfwGetMouseButton(Window.handle, it) == GLFW.GLFW_PRESS
                 else return@let GLFW.glfwGetKey(Window.handle, it) == GLFW.GLFW_PRESS
             }
