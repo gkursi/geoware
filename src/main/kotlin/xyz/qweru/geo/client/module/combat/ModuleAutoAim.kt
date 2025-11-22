@@ -29,6 +29,7 @@ class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
     val vSpeed by sg.int("V Speed", "Horizontal camera speed", 0, 0, 360).visible { !silent }
     val random by sg.longRange("Random", "Randomization", -40L..40L, -100L..100L).visible { !silent }
     val weaponOnly by sg.boolean("Weapon Only", "Only aim when holding a weapon", true)
+    val target by sg.enum("Target", "Which point to target", RotationHelper.TargetPoint.BODY)
 
     var range by st.floatRange("Range", "Range of target players", 1.5f..6f, 1f..15f)
     var wallRange by st.floatRange("Wall Range", "Range of target players", 0f..0f, 1f..15f)
@@ -37,19 +38,21 @@ class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
     val invisible by st.boolean("Invisible", "Allow targeting of completely invisible players (no armor & held item)", false)
 
     val rng = Random()
-    var target: Player? = null
+    var currentTarget: Player? = null
 
     @Handler
     private fun onFrame(e: GameRenderEvent) {
         if (!inGame || mc.screen != null || silent || !canTarget()) return
 
         val mod = rng.nextLong(random.start, random.endInclusive + 1) / 100
-        val delta = RotationHelper.getDelta(target!!)
+        val delta = RotationHelper.getDelta(currentTarget!!, target)
         val td = API.base.getDeltaTime()
         val gcd = RotationHelper.gcd()
+
         var deltaX = delta[0].toDouble() * td * hSpeed
         deltaX = deltaX + (mod * deltaX)
         deltaX = deltaX - (deltaX % gcd)
+
         var deltaY = delta[1].toDouble() * td * vSpeed
         deltaY = deltaY + (mod * deltaY)
         deltaY = deltaY - (deltaY % gcd)
@@ -60,15 +63,15 @@ class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
     @Handler
     private fun onTick(e: PreTickEvent) {
         if (!inGame || mc.screen != null || !silent || !canTarget()) return
-        val target = this.target ?: return
-        RotationHandler.propose(RotationHelper.get(target), Rotation.NOT_IMPORTANT_ATTACK)
+        val target = this.currentTarget ?: return
+        RotationHandler.propose(RotationHelper.get(target, point = this.target), Rotation.NOT_IMPORTANT_ATTACK)
     }
 
     fun canTarget(): Boolean {
         if (weaponOnly && !InvHelper.isInMainhand { InvHelper.isSword(it.item) || it.item is AxeItem || it.isOf(Items.MACE) }) return false
-        if (target == null || !lock || !target!!.inRange(range) || !target!!.isAlive || target!!.level() != mc.theLevel) {
-            target = TargetHelper.findTarget(range, wallRange, fov, invisible)?.player
+        if (currentTarget == null || !lock || !currentTarget!!.inRange(range) || !currentTarget!!.isAlive || currentTarget!!.level() != mc.theLevel) {
+            currentTarget = TargetHelper.findTarget(range, wallRange, fov, invisible)?.player
         }
-        return (target != null && target!!.inFov(fov))
+        return (currentTarget != null && currentTarget!!.inFov(fov))
     }
 }

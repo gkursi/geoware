@@ -15,6 +15,7 @@ import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.extend.kotlin.array.copy2
 import xyz.qweru.geo.extend.kotlin.array.getRotation
 import xyz.qweru.geo.extend.kotlin.array.setRotation
+import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.world.hit
 import xyz.qweru.multirender.api.API
@@ -70,7 +71,7 @@ object RotationHandler : ProposalHandler<Rotation>() {
             rot.copy2(clientRot)
         }
         interpolateRot()
-        crosshairTarget = hit(mc.thePlayer.entityInteractionRange(), rot)
+        crosshairTarget = mc.theLevel.hit(mc.thePlayer.entityInteractionRange(), rot)
 
         if (!fixMouse) return
         rot.setRotation(mc.cameraEntity ?: mc.thePlayer)

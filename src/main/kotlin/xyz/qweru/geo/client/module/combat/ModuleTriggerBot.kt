@@ -20,6 +20,7 @@ import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.kotlin.log.dbg
 import xyz.qweru.geo.extend.minecraft.entity.attackCharge
 import xyz.qweru.geo.extend.minecraft.entity.relativeMotion
+import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.world.hit
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.multirender.api.API
@@ -71,7 +72,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
             timer.reset(delay)
         } else if (failAttack && crosshair.type == HitResult.Type.MISS) {
             if (random.nextFloat() > failChance) return
-            val hit = hit(mc.thePlayer.entityInteractionRange() + failReach)
+            val hit = mc.theLevel.hit(mc.thePlayer.entityInteractionRange() + failReach)
             if (hit !is EntityHitResult) return
 
             ModuleAutoBlock.unblock()

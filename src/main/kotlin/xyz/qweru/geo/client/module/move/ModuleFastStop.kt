@@ -30,8 +30,10 @@ class ModuleFastStop : Module("FastStop", "Immediately stop moving on key releas
             }
         }),
         REDUCE({
-            it.velX *= reduction
-            it.velZ *= reduction
+            if (!GameOptions.moving) {
+                it.velX *= reduction
+                it.velZ *= reduction
+            }
         })
     }
 }

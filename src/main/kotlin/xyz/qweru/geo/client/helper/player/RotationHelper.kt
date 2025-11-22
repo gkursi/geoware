@@ -7,6 +7,7 @@ import xyz.qweru.geo.client.helper.entity.Target
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.game.rotation.Rotation
 import xyz.qweru.geo.core.game.rotation.RotationConfig
+import xyz.qweru.geo.extend.minecraft.entity.pos
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import kotlin.math.sqrt
 
@@ -22,9 +23,11 @@ object RotationHelper {
         return Rotation(yaw, pitch, config)
     }
 
-    fun get(target: Entity, config: RotationConfig = RotationConfig.DEFAULT) = get(optimalPoint(target), config)
+    fun get(target: Entity, config: RotationConfig = RotationConfig.DEFAULT, point: TargetPoint = TargetPoint.BODY) =
+        get(target.pos.add(0.0, point.value.invoke(target), 0.0), config)
 
-    fun get(target: Target, config: RotationConfig = RotationConfig.DEFAULT) = get(target.visiblePoint ?: optimalPoint(target.player), config)
+    fun get(target: Target, point: TargetPoint = TargetPoint.BODY, config: RotationConfig = RotationConfig.DEFAULT) =
+        get(target.visiblePoint ?: target.player.pos.add(0.0, point.value.invoke(target.player), 0.0), config)
 
     fun getAngle(target: Entity): Float {
         val current = floatArrayOf(Mth.wrapDegrees(mc.thePlayer.yRot), mc.thePlayer.xRot)
@@ -34,9 +37,9 @@ object RotationHelper {
         return sqrt(dy * dy + dp * dp)
     }
 
-    fun getDelta(target: Entity): FloatArray {
+    fun getDelta(target: Entity, point: TargetPoint = TargetPoint.BODY): FloatArray {
         val angles = floatArrayOf(0f, 0f)
-        get(target).set(angles)
+        get(target, point = point).set(angles)
         angles[0] = Mth.wrapDegrees(angles[0] - mc.thePlayer.yRot)
         angles[1] = angles[1] - mc.thePlayer.xRot
         return angles
@@ -47,6 +50,10 @@ object RotationHelper {
         return f * f * f * 1.2f
     }
 
-    private fun optimalPoint(target: Entity) = target.position().add(0.0, target.bbHeight * (if (target.y < mc.thePlayer.y) 0.45 else 0.65), 0.0)
+    enum class TargetPoint(val value: (Entity) -> Double) {
+        HEAD({ it.eyeHeight.toDouble() }),
+        BODY({ it.bbHeight * 0.5 }),
+        LEGS({ it.bbHeight * 0.1 })
+    }
 
 }

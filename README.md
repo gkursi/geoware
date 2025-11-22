@@ -1,5 +1,5 @@
 # Geoware
-Fabric 1.21.8 ghost client for 1.8+ sword pvp (for now)\
+Fabric 1.21.8 ghost client for 1.8/1.9+ sword pvp (might change in the future)
 
 ## Usage
 ### Commands

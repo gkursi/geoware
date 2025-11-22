@@ -26,11 +26,12 @@ object WorldHelper {
         range: Double,
         ignoreBlocks: Boolean = false,
         filter: Predicate<Entity> = Predicate<Entity> { true },
+        level: Level = mc.theLevel,
         rotation: FloatArray
     ): HitResult? {
         val cameraPos = entity.eyePosition
 
-        val direction = Vec3.directionFromRotation(rotation[0], rotation[1]).scale(range)
+        val direction = Vec3.directionFromRotation(rotation[1], rotation[0]).scale(range)
         val targetPos = cameraPos.add(direction)
 
         val entityHitResult = ProjectileUtil.getEntityHitResult(
@@ -41,6 +42,8 @@ object WorldHelper {
             filter.and { targetEntity -> !targetEntity.isSpectator },
             range * range
         )
+
+//        println("${if (entityHitResult == null) "(failed) " else ""}Raycasting from $cameraPos to $targetPos with box ${entity.boundingBox.expandTowards(direction).inflate(1.0)}")
 
         if (entityHitResult != null) {
             return entityHitResult
@@ -55,7 +58,7 @@ object WorldHelper {
                 entity
             )
 
-            val hitResult: HitResult? = mc.theLevel.clip(context)
+            val hitResult: HitResult? = level.clip(context)
             if (hitResult != null && hitResult.type != HitResult.Type.MISS) {
                 return hitResult
             }

@@ -6,6 +6,7 @@ import xyz.qweru.geo.client.module.combat.*
 import xyz.qweru.geo.client.module.config.ModuleRotation
 import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.client.module.config.ModuleTarget
+import xyz.qweru.geo.client.module.misc.ModuleGunColony
 import xyz.qweru.geo.client.module.misc.ModuleScaffold
 import xyz.qweru.geo.client.module.misc.ModuleTeams
 import xyz.qweru.geo.client.module.move.*
@@ -47,6 +48,7 @@ class Modules() : System("modules", Type.ROOT) {
         add(ModuleTarget())
         add(ModuleSafeAnchor())
         add(ModuleFastStop())
+        add(ModuleGunColony())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }
