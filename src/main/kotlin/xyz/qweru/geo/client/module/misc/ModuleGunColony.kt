@@ -1,19 +1,25 @@
 package xyz.qweru.geo.client.module.misc
 
+import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.network.protocol.game.ServerboundPlayerInputPacket
 import net.minecraft.world.InteractionHand
+import net.minecraft.world.entity.Pose
 import net.minecraft.world.entity.Relative
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Items
 import net.minecraft.world.phys.EntityHitResult
 import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.abstraction.network.ClientConnection
+import xyz.qweru.geo.client.event.GameRenderEvent
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PacketSendEvent
+import xyz.qweru.geo.client.event.PostCrosshair
+import xyz.qweru.geo.client.event.PreCrosshair
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
+import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.rotation.RotationHandler
 import xyz.qweru.geo.core.system.module.Category
@@ -44,6 +50,23 @@ class ModuleGunColony : Module("GunColony", "guncolony.com utils", Category.MISC
         )
     }
 
+    lateinit var pose: Pose
+
+    @Handler(priority = EventPriority.FIRST)
+    fun preC(e: GameRenderEvent) {
+        if (inGame && silentScope) {
+            pose = mc.thePlayer.pose
+            mc.thePlayer.pose = Pose.CROUCHING
+        }
+    }
+
+    @Handler
+    fun postC(e: GameRenderEvent) {
+        if (inGame && silentScope) {
+            mc.thePlayer.pose = pose
+        }
+    }
+
     @Handler
     fun packetReceive(e: PacketReceiveEvent) {
         val packet = e.packet
@@ -63,8 +86,8 @@ class ModuleGunColony : Module("GunColony", "guncolony.com utils", Category.MISC
     fun onTick(e: PreTickEvent) {
         if (!inGame) return
 
-        if (fastShoot)
-            (mc as MinecraftClientAccessor).geo_setItemUseCooldown(0)
+        if (fastShoot && GameOptions.useKey)
+            mc.gameMode?.useItem(mc.thePlayer, InteractionHand.MAIN_HAND)
 
         if (trigger) {
             val hit = mc.theLevel.hit(128.0)

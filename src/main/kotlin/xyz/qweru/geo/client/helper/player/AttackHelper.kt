@@ -16,11 +16,11 @@ import xyz.qweru.geo.extend.minecraft.item.isOf
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 object AttackHelper {
-    fun canAttack(target: Entity, playerWeaponOnly: Boolean = false, cooldown: Float = 1f): Boolean {
+    fun canAttack(target: Entity, weaponOnly: Boolean = false, cooldown: Float = 1f): Boolean {
         if (target is EndCrystal) return target.isAlive
         if (InvHelper.isInMainhand { st -> st.item is AxeItem } && target is LivingEntity && target.useItem.isOf(Items.SHIELD))
             return true
-        if (!InvHelper.isInMainhand { st -> InvHelper.isSword(st.item) || st.item is AxeItem } && target is Player && playerWeaponOnly)
+        if (!InvHelper.isInMainhand { st -> InvHelper.isSword(st.item) || st.item is AxeItem } && weaponOnly)
             return false
 
         return mc.thePlayer.attackCharge >= cooldown

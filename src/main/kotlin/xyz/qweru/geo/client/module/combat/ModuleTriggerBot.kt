@@ -1,5 +1,6 @@
 package xyz.qweru.geo.client.module.combat
 
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
@@ -7,6 +8,7 @@ import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
+import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.client.helper.player.AttackHelper
 import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
@@ -32,7 +34,9 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val sFailAttack = settings.group("Fail Attack")
     val sCrit = settings.group("Crits")
 
-    val playerWeaponOnly by sGeneral.boolean("Player Weapon Only", "Only attack players with a weapon", true)
+    val simulateClick by sGeneral.boolean("Simulate Click", "Simulates clicks instead of using packets", true)
+    val pauseUse by sGeneral.boolean("Pause On Eat", "Pause attacking while using an item", true)
+    val weaponOnly by sGeneral.boolean("Weapon Only", "Only attack with a weapon", true)
     val attackFirst by sGeneral.boolean("Require Target", "Requires you to attack the player manually before tbotting", false)
     val delay by sGeneral.longRange("Delay", "Attack delay", 0L..1L, 0L..500L)
     val miss by sGeneral.float("Miss%", "Chance of missing an attack", 0f, 0f, 0.9f)
@@ -56,8 +60,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
 
     @Handler
     private fun onTick(e: PostMovementTickEvent) {
-        if (!inGame) return
-        if (mc.screen != null || !timer.hasPassed()) return
+        if (!inGame || mc.screen != null || !timer.hasPassed() || (pauseUse && !mc.thePlayer.useItem.isEmpty)) return
 
         nextDamage = Attack()
         val crosshair = mc.hitResult ?: return
@@ -67,7 +70,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
             if (en is Player && checkPlayer(en)) return
             if (random.nextFloat() > miss) {
                 ModuleAutoBlock.unblock()
-                API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_1, Input.CLICK)
+                attack(en)
             }
             timer.reset(delay)
         } else if (failAttack && crosshair.type == HitResult.Type.MISS) {
@@ -81,6 +84,14 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         }
     }
 
+    fun attack(en: Entity) {
+        if (simulateClick) {
+            API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_1, Input.CLICK)
+        } else {
+            PacketHelper.attackAndSwing(en)
+        }
+    }
+
     fun checkPlayer(en: Player): Boolean {
         if (!mc.thePlayer.useItem.isEmpty && !InvHelper.isInMainhand { InvHelper.isSword(it.item) }) return true
         if (attackFirst && en != TargetTracker.target) return true
@@ -90,7 +101,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         nextDamage = CombatState.TARGET.predictNextAttack()
         val nextAttack = CombatState.SELF.predictNextAttack()
 
-        if (!AttackHelper.canAttack(en, playerWeaponOnly, cooldown = itemCooldown)) return true
+        if (!AttackHelper.canAttack(en, weaponOnly, cooldown = itemCooldown)) return true
         if (waitForCrit(nextAttack)) return true
 
         if (nextAttack.crit && nextAttack.sprint && autoCrit) {

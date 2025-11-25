@@ -69,7 +69,10 @@ object RotationHandler : ProposalHandler<Rotation>() {
         if (current == null) {
             // propose(Rotation(clientRot), -10)
             rot.copy2(clientRot)
+        } else if (current?.config?.forceClient == true) {
+            clientRot.copy2(rot)
         }
+
         interpolateRot()
         crosshairTarget = mc.theLevel.hit(mc.thePlayer.entityInteractionRange(), rot)
 
@@ -133,7 +136,8 @@ object RotationHandler : ProposalHandler<Rotation>() {
     }
 
     private fun interpolate(start: Float, current: Float, end: Float): Float =
-         clamp(
+        if (start == end) start
+        else clamp(
              current + engine.step(if (rotationConfig.nonlinear) current else start, end) * API.base.getDeltaTime(),
              if (start > end) end else start, if (start > end) start else end
          )

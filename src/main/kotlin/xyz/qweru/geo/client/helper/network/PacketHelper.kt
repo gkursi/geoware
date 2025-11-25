@@ -22,18 +22,22 @@ object PacketHelper {
         anticheat.finishPacket(packet)
     }
 
-    fun attackAndSwing(entity: Entity) {
+    fun attackAndSwing(entity: Entity, silentSwing: Boolean = false) {
         if (ViaHelper.isReverseHitOrder()) {
-            swing(Hand.MAIN_HAND)
+            swing(Hand.MAIN_HAND, silentSwing)
             attack(entity)
         } else {
             attack(entity)
-            sendPacket(ServerboundSwingPacket(InteractionHand.MAIN_HAND))
+            swing(Hand.MAIN_HAND, silentSwing)
         }
     }
 
-    fun swing(hand: Hand) {
-        sendPacket(ServerboundSwingPacket(hand.delegate))
+    fun swing(hand: Hand, silentSwing: Boolean = false) {
+        if (silentSwing) {
+            sendPacket(ServerboundSwingPacket(hand.delegate))
+        } else {
+            mc.thePlayer.swing(hand.delegate)
+        }
     }
 
     fun attack(entity: Entity) =

@@ -1,22 +1,30 @@
 package xyz.qweru.geo.client.module.config
 
+import xyz.qweru.geo.core.game.rotation.InterpolationEngine
+import xyz.qweru.geo.core.game.rotation.RotationHandler
+import xyz.qweru.geo.core.game.rotation.interpolate.ConstantInterpolationEngine
+import xyz.qweru.geo.core.game.rotation.interpolate.HumanInterpolationEngine
+import xyz.qweru.geo.core.game.rotation.interpolate.InstantInterpolationEngine
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 
 class ModuleRotation : Module("Rotation", "How to rotate", Category.CONFIG) {
     private val sg = settings.group("General")
     private val sf = settings.group("Fix")
-    private val sh = settings.group("Human")
+    private val sh = settings.group("Humanized")
+    private val sc = settings.group("Constant")
 
     val speed by sg.float("Speed", "Rotation speed", 75f, 0.1f, 200f)
     val nonlinear by sg.boolean("Nonlinear", "Calculate from the current yaw instead of the base yaw", false)
     val diff by sg.float("Allowed Diff", "Allowed difference from a rotation", 5f, 1f, 90f)
+    @Suppress("UNUSED")
+    val randomizer by sg.enum("Randomizer", "Randomizer to use", Engine.HUMANIZED)
+        .onChange { RotationHandler.engine = it.value.engine }
 
     val moveFix by sf.boolean("Fix Move", "Fix Movement", true)
     val mouseFix by sf.boolean("Fix Mouse", "Fix crosshair target", true)
     val gcdFix by sf.boolean("Fix Sens", "Fix gcd", true)
 
-    val humanize by sh.boolean("Humanize", "More human-like rotations", true)
     val flick by sh.boolean("Flick", "Allow flicking", true)
     val flickRange by sh.floatRange("Flick Range", "Threshold for flicking", 40f..100f, 0f..180f)
         .visible { flick }
@@ -32,4 +40,12 @@ class ModuleRotation : Module("Rotation", "How to rotate", Category.CONFIG) {
         .visible { mousePad }
     val mousePadPenaltyMax by sh.float("Max Penalty", "Maximum penalty to apply", 0.25f, 0f, 0.95f)
         .visible { mousePad }
+
+    val step by sc.float("Step", "Rotation step each tick", 30f, 1f, 90f)
+    val offset by sc.float("Offset", "Max random offset", 0.2f, 0f, 1f)
+
+    @Suppress("UNUSED")
+    enum class Engine(val engine: InterpolationEngine) {
+        CONSTANT(ConstantInterpolationEngine), INSTANT(InstantInterpolationEngine), HUMANIZED(HumanInterpolationEngine)
+    }
 }
