@@ -48,7 +48,7 @@ object EventBus {
 
     fun unsubscribe(obj: Any) {
         for (infos in handles.values) {
-            // replacing this with a binary search based on the priority might be faster
+            // replacing this with a binary search might be faster
             infos.removeIf { it.instance == obj }
         }
     }

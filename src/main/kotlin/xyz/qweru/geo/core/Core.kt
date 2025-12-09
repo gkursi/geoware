@@ -13,7 +13,6 @@ import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.game.movement.MovementTicker
 import xyz.qweru.geo.core.game.rotation.RotationHandler
 import xyz.qweru.geo.core.tracking.bot.BotTracker
-import xyz.qweru.geo.core.render.skija.SkijaManager
 import xyz.qweru.geo.extend.kotlin.file.findOrCreateDir
 
 object Core {
@@ -32,7 +31,6 @@ object Core {
         manage(CombatState.TARGET)
         manage(CombatEventHandler)
         manage(TargetTracker)
-        manage(SkijaManager)
         manage(RotationHandler)
         manage(BotTracker)
     }

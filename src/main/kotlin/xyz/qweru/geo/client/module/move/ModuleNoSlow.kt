@@ -18,6 +18,7 @@ class ModuleNoSlow : Module("NoSlow", "Remove different slowdowns", Category.MOV
     val itemSpeed by si.float("Item Slowdown", "How much should items slow you", 0f, 0f, 1f)
 
     val jumpDelay by sm.boolean("No Jump Delay", "No jump delay", true)
+    val blockPush by sm.boolean("No Block Push", "No block push", true)
 
     @Handler
     private fun preTick(e: PreTickEvent) {

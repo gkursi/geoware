@@ -6,13 +6,17 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import xyz.qweru.geo.client.event.TravelEvent;
 import xyz.qweru.geo.client.module.combat.ModuleHitbox;
 import xyz.qweru.geo.client.module.visual.ModuleViewModel;
 import xyz.qweru.geo.core.Core;
+import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.system.module.Modules;
 import xyz.qweru.geo.core.system.Systems;
 
@@ -32,6 +36,12 @@ public class LivingEntityMixin {
     private int getHandSwingDuration(Operation<Integer> original) {
         ModuleViewModel vm = Systems.INSTANCE.get(Modules.class).get(ModuleViewModel.class);
         return (int) (original.call() * (vm.getEnabled() ? 1f / vm.getSwingSpeed() : 1f));
+    }
+
+    @Inject(method = "travel", at = @At("HEAD"))
+    private void preTravel(Vec3 vec3, CallbackInfo ci) {
+        TravelEvent.INSTANCE.setVec(vec3);
+        EventBus.INSTANCE.post(TravelEvent.INSTANCE);
     }
 
 }

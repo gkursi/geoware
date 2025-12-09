@@ -11,7 +11,9 @@ import xyz.qweru.geo.client.helper.network.ProfileHelper
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.client.helper.player.PlayerHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
+import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.world.WorldHelper
+import xyz.qweru.geo.extend.minecraft.item.isOf
 
 fun Player.inRange(range: Float) = this.distanceToSqr(mc.player?.eyePosition ?: Vec3.ZERO) <= Mth.square(range)
 fun Player.inRange(range: ClosedRange<Float>) = this.distanceToSqr(mc.player).let {
@@ -36,3 +38,5 @@ val Player.relativeMotion
     get() = PlayerHelper.getRelativeVelocity(this)
 val Player.playerListEntry: PlayerInfo?
     get() = ProfileHelper.findPlayerListEntry(this)
+val Player.blocking: Boolean
+    get() = (useItem.isOf(Items.SHIELD) && isBlocking) || InvHelper.isSword(useItem.item)

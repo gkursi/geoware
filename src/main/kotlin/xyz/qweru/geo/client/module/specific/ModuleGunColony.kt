@@ -1,6 +1,5 @@
-package xyz.qweru.geo.client.module.misc
+package xyz.qweru.geo.client.module.specific
 
-import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.network.protocol.game.ServerboundPlayerInputPacket
@@ -15,13 +14,10 @@ import xyz.qweru.geo.abstraction.network.ClientConnection
 import xyz.qweru.geo.client.event.GameRenderEvent
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PacketSendEvent
-import xyz.qweru.geo.client.event.PostCrosshair
-import xyz.qweru.geo.client.event.PreCrosshair
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.game.rotation.RotationHandler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.game.theLevel
@@ -30,10 +26,9 @@ import xyz.qweru.geo.extend.minecraft.game.withSneak
 import xyz.qweru.geo.extend.minecraft.item.isOf
 import xyz.qweru.geo.extend.minecraft.network.isInteract
 import xyz.qweru.geo.extend.minecraft.world.hit
-import xyz.qweru.geo.mixin.game.MinecraftClientAccessor
 import xyz.qweru.geo.mixin.network.packet.PositionMoveRotationAccessor
 
-class ModuleGunColony : Module("GunColony", "guncolony.com utils", Category.MISC) {
+class ModuleGunColony : Module("GunColony", "guncolony.com utils", Category.Companion.SPECIFIC) {
     val sg = settings.group("General")
     val noRecoil by sg.boolean("No Recoil", "No recoil", true)
     val silentScope by sg.boolean("Silent Scope", "Silently scopes while shooting", true)
@@ -77,7 +72,8 @@ class ModuleGunColony : Module("GunColony", "guncolony.com utils", Category.MISC
             (packet.change as PositionMoveRotationAccessor).geo_setPitch(0f)
         }
 
-        ClientConnection.sendPacketImmediately(ServerboundMovePlayerPacket.Rot(
+        ClientConnection.sendPacketImmediately(
+            ServerboundMovePlayerPacket.Rot(
             mc.thePlayer.yRot, mc.thePlayer.xRot, true, mc.thePlayer.horizontalCollision
         ))
     }

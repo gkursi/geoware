@@ -49,10 +49,10 @@ class SettingGroup(val name: String, val parent: Settings, private var visiblePr
         return this
     }
 
-    // required for global usage
+    // required for @Usage to apply to entire groups
 
     override fun getValue(thisRef: Any, property: KProperty<*>): SettingGroup = this
-    override fun provideDelegate(thisRef: Any, property: KProperty<*>): SettingGroup {
+    override operator fun provideDelegate(thisRef: Any, property: KProperty<*>): SettingGroup {
         val ann = property.findAnnotation<Usage>()
         usage = ann?.usage ?: emptyArray()
         return this

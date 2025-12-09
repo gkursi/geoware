@@ -10,7 +10,8 @@ import java.util.concurrent.CompletableFuture
 class EnumSetting<T : Enum<*>>(name: String, description: String, default: T, group: SettingGroup
 ) : Setting<EnumSetting<T>, T>(name, description, default, group) {
 
-    val constants = default.javaClass.enumConstants!!
+    val constants: Array<T> = default.declaringJavaClass
+        .enumConstants as Array<T>
     val displayNames = constants.associateWith { it.name.replace("_", " ").lowercase().replaceFirstChar { c -> c.uppercase() } }
     private var index = 0
 

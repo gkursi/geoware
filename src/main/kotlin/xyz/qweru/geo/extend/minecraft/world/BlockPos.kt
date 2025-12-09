@@ -2,10 +2,13 @@ package xyz.qweru.geo.extend.minecraft.world
 
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.util.Mth
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
 import xyz.qweru.geo.core.Core.mc
+import xyz.qweru.geo.extend.minecraft.entity.pos
 import xyz.qweru.geo.extend.minecraft.game.theLevel
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 operator fun BlockPos.plus(blockPos: BlockPos): BlockPos =
     this.offset(blockPos)
@@ -26,6 +29,7 @@ fun BlockPos.getAABBOf(face: Direction): AABB {
         Direction.EAST -> AABB(x + 1, y, z, x + 1 + depth, y + size, z + size)
     }
 }
+fun BlockPos.within(reach: Double) = distToCenterSqr(mc.thePlayer.eyePosition) < Mth.square(reach)
 
 val BlockPos.state: BlockState
     get() = mc.theLevel.getBlockState(this)

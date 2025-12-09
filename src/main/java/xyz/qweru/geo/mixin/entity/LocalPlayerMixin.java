@@ -21,6 +21,7 @@ import xyz.qweru.geo.client.module.move.ModuleNoSlow;
 import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.game.movement.MovementState;
 import xyz.qweru.geo.core.game.movement.MovementTicker;
+import xyz.qweru.geo.core.system.SystemCache;
 import xyz.qweru.geo.core.system.Systems;
 import xyz.qweru.geo.core.system.module.Modules;
 import xyz.qweru.geo.imixin.ILocalPlayer;
@@ -34,6 +35,7 @@ public abstract class LocalPlayerMixin implements ILocalPlayer {
 
     @Unique int groundTicks = 0;
     @Unique int airTicks = 0;
+    @Unique SystemCache.Cached<ModuleNoSlow> noSlow = SystemCache.INSTANCE.getModule(ModuleNoSlow.class);
 
     @Inject(method = "aiStep", at = @At("HEAD"), cancellable = true)
     private void tickMovement(CallbackInfo ci) {
@@ -137,5 +139,11 @@ public abstract class LocalPlayerMixin implements ILocalPlayer {
             factor *= 1 - noSlow.getItemSpeed();
         }
         return factor;
+    }
+
+    @Inject(method = "moveTowardsClosestSpace", at = @At("HEAD"), cancellable = true)
+    private void cancelPush(double d, double e, CallbackInfo ci) {
+        if (noSlow.cast().getEnabled() && noSlow.cast().getBlockPush())
+            ci.cancel();
     }
 }

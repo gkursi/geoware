@@ -22,6 +22,7 @@ import xyz.qweru.geo.extend.minecraft.entity.airTicks
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.world.isOf
+import xyz.qweru.geo.extend.minecraft.world.withStrafe
 
 
 class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
@@ -49,6 +50,11 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
             Mode.GRIM_COLLIDE -> grimCollide(e)
             Mode.VULCAN -> vulcanSpeed(e)
             Mode.GRIM -> {}
+            Mode.GRIM_NEW -> {
+                val vel = mc.thePlayer.deltaMovement.withStrafe(0.03)
+                e.velX += vel.x
+                e.velZ += vel.z
+            }
         }
     }
 
@@ -59,12 +65,25 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
     }
     @Handler
     fun postMoveSend(e: PostMoveSendEvent) {
+        grimA()
+        grimB()
+    }
+
+    fun grimA() {
         if (mode != Mode.GRIM) return
         if (mc.thePlayer.onGround() || eq.act.invoke(mc.thePlayer.airTicks, a)) {
             PacketHelper.sendPacket(
                 ServerboundPlayerCommandPacket(mc.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING)
             )
         }
+    }
+
+    fun grimB() {
+        if (mode != Mode.GRIM_NEW) return
+
+        PacketHelper.sendPacket(
+            ServerboundPlayerCommandPacket(mc.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING)
+        )
     }
 
     fun grimCollide(e: PostMovementTickEvent) {
@@ -143,6 +162,7 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
     enum class Mode {
         VULCAN,
         GRIM,
+        GRIM_NEW,
         GRIM_COLLIDE
     }
 

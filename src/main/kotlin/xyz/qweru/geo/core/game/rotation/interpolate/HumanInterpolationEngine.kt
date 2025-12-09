@@ -1,10 +1,15 @@
 package xyz.qweru.geo.core.game.rotation.interpolate
 
 import net.minecraft.util.Mth
+import org.joml.Math.clamp
+import xyz.qweru.geo.client.event.GameRenderEvent
+import xyz.qweru.geo.core.event.EventBus
+import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.rotation.InterpolationEngine
 import xyz.qweru.geo.core.game.rotation.RotationHandler.rotationConfig
 import xyz.qweru.geo.core.game.rotation.RotationHandler.random
 import xyz.qweru.geo.extend.kotlin.math.inRange
+import xyz.qweru.geo.extend.kotlin.math.wrapped
 import xyz.qweru.multirender.api.API
 import kotlin.math.abs
 
@@ -12,36 +17,71 @@ object HumanInterpolationEngine : InterpolationEngine {
     private var yawMoved = 0f
     private var yawPenalty = 1f
 
-    override fun step(start: Float, end: Float): Float {
-        val min = Mth.wrapDegrees(start)
-        val dist = Mth.wrapDegrees(end) - min
-        val speed = getSpeed(dist)
+    private val yaw = Tracker()
+    private val pitch = Tracker(0.5f)
+
+    init {
+        EventBus.subscribe(this)
+    }
+
+    @Handler
+    private fun onFrame(e: GameRenderEvent) {
+        yawMoved *= 1 - 0.5f * API.base.getDeltaTime()
+    }
+
+    override fun stepYaw(start: Float, end: Float, current: Float): Float =
+        step(start, end, current, yaw)
+
+    override fun stepPitch(start: Float, end: Float, current: Float): Float =
+        step(start, end, current, pitch)
+
+    override fun onYawDelta(delta: Float) = yaw.onDelta(delta)
+
+    override fun onPitchDelta(delta: Float) = pitch.onDelta(delta)
+
+    private fun step(start: Float, end: Float, current: Float, tracker: Tracker): Float {
+        val dist = abs(end.wrapped - start.wrapped)
+        val speed = tracker.getSpeed(current.wrapped - start, dist)
         val mod = random.double(0.1, 1.0) * speed
         return dist * mod.toFloat()
     }
 
-    override fun onYawDelta(delta: Float) {
-        yawMoved += delta
+    private class Tracker(private val mul: Float = 1f) {
+        private var moved: Float = 0f
+        private var penalty: Float = 1f
 
-        if (abs(yawMoved) > rotationConfig.mousePadSize) {
-            yawPenalty -= rotationConfig.mousePadPenalty * API.base.getDeltaTime()
+        fun onDelta(delta: Float) {
+            moved += delta
+
+            if (abs(moved) > rotationConfig.mousePadSize) {
+                penalty -= rotationConfig.mousePadPenalty * API.base.getDeltaTime()
+            }
+
+            if (penalty < rotationConfig.mousePadPenaltyMax) {
+                penalty = 1f
+                moved = 0f
+            }
         }
 
-        if (yawPenalty < rotationConfig.mousePadPenaltyMax) {
-            yawPenalty = 1f
-            yawMoved = 0f
+        fun getSpeed(current: Float, dist: Float): Float {
+            var speed = rotationConfig.speed
+            if (rotationConfig.micro && rotationConfig.microRange.inRange(dist))
+                speed *= 10f
+            if (rotationConfig.flick && rotationConfig.flickRange.inRange(dist))
+                speed *= rotationConfig.flickBoost
+            if (rotationConfig.mousePad)
+                speed *= yawPenalty
+            if (rotationConfig.speedUp)
+                speed *= calculateSpeedup(current, dist)
+            return speed * mul
+        }
+
+        private fun calculateSpeedup(current: Float, dist: Float): Float {
+            val max = rotationConfig.speedYaw
+            val percent = clamp(0f, 1f, abs(current) / abs(dist))
+
+            return if (percent >= max) 1f
+            else percent / max
         }
     }
-
-    private fun getSpeed(dist: Float): Float {
-        var speed = rotationConfig.speed
-        if (rotationConfig.micro && rotationConfig.microRange.inRange(dist))
-            speed *= 10f
-        if (rotationConfig.flick && rotationConfig.flickRange.inRange(dist))
-            speed *= rotationConfig.flickBoost
-        if (rotationConfig.mousePad)
-            speed *= yawPenalty
-        return speed
-    }
-
 }

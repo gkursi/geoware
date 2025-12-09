@@ -1,10 +1,12 @@
 package xyz.qweru.geo.client.helper.player.inventory
 
+import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
+import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.event.PostTickEvent
 import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.client.helper.player.SlotHelper
@@ -18,12 +20,22 @@ import xyz.qweru.geo.extend.minecraft.game.thePlayer
 object InvHelper {
 
     private var lastSwapPriority = -1
+
     private val module: ModuleSwap by SystemCache.getModule()
 
     var selectedSlot: Int
         get() = inventory.selectedSlot
         set(value) {
             inventory.selectedSlot = value
+            serverSlot = value
+        }
+
+    var serverSlot = -1
+        private set
+        get() {
+            if (field == -1)
+                return selectedSlot
+            return field
         }
 
     val inventory: Inventory
@@ -35,6 +47,13 @@ object InvHelper {
             swap0(selectedSlot, Int.MAX_VALUE)
         }
         lastSwapPriority = -1
+    }
+
+    @Handler(priority = EventPriority.LAST)
+    private fun packetSend(e: PacketSendEvent) {
+        val packet = e.packet
+        if (packet !is ServerboundSetCarriedItemPacket) return
+        serverSlot = packet.slot
     }
 
     fun isHolding(item: (ItemStack) -> Boolean): Boolean = isInMainhand(item) || isInOffhand(item)
@@ -49,7 +68,7 @@ object InvHelper {
 
     fun isInOffhand(item: Item): Boolean = isInOffhand { it.`is`(item) }
 
-    fun getMainhand(): ItemStack = inventory.getItem(selectedSlot)
+    fun getMainhand(): ItemStack = inventory.getItem(serverSlot)
 
     fun getOffhand(): ItemStack = Core.mc.thePlayer.getItemBySlot(EquipmentSlot.OFFHAND)
 
@@ -69,6 +88,11 @@ object InvHelper {
         else swap0(slot, priority)
     }
 
+    fun sync() {
+        if (serverSlot == selectedSlot) return
+        swap0(selectedSlot, 0)
+    }
+
     fun find(item: (ItemStack) -> Boolean, start: Int = 0, end: Int = 9): FindResult {
         for (i in start..end - 1) {
             if (item.invoke(inventory.getItem(i))) {
@@ -81,9 +105,10 @@ object InvHelper {
     fun move(): InvAction = InvAction(InvAction.Type.MOVE)
 
     private fun swap0(slot: Int, priority: Int) {
-        if (priority <= lastSwapPriority) return
+        if (priority < lastSwapPriority) return
         if (module.silentSwap) PacketHelper.swap(slot)
         else selectedSlot = slot
+        serverSlot = slot
     }
 
     private fun scrollSlot(target: Int): Int {
@@ -93,7 +118,7 @@ object InvHelper {
 
         return when {
             rightDist <= leftDist -> (current + 1) % 9 // go right
-            else -> (current + 9 - 1) % 9            // go left
+            else -> (current + 9 - 1) % 9              // go left
         }
     }
 

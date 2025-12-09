@@ -35,6 +35,8 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val sCrit = settings.group("Crits")
 
     val simulateClick by sGeneral.boolean("Simulate Click", "Simulates clicks instead of using packets", true)
+    val silentSwing by sGeneral.boolean("Silent Swing", "Don't swing visually", false)
+        .visible { !simulateClick }
     val pauseUse by sGeneral.boolean("Pause On Eat", "Pause attacking while using an item", true)
     val weaponOnly by sGeneral.boolean("Weapon Only", "Only attack with a weapon", true)
     val attackFirst by sGeneral.boolean("Require Target", "Requires you to attack the player manually before tbotting", false)
@@ -88,7 +90,8 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         if (simulateClick) {
             API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_1, Input.CLICK)
         } else {
-            PacketHelper.attackAndSwing(en)
+            PacketHelper.attackAndSwing(en, silentSwing)
+            mc.thePlayer.resetAttackStrengthTicker()
         }
     }
 

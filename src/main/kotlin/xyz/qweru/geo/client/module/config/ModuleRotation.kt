@@ -38,8 +38,10 @@ class ModuleRotation : Module("Rotation", "How to rotate", Category.CONFIG) {
         .visible { mousePad }
     val mousePadPenalty by sh.float("Tick Penalty", "How much penalty to apply each tick", 0.05f, 0.001f, 0.5f)
         .visible { mousePad }
-    val mousePadPenaltyMax by sh.float("Max Penalty", "Maximum penalty to apply", 0.25f, 0f, 0.95f)
+    val mousePadPenaltyMax by sh.float("Max Penalty", "Maximum penalty to apply", 0f, 0f, 0.95f)
         .visible { mousePad }
+    val speedUp by sh.boolean("Accelerate", "Don't immediately go full speed", true)
+    val speedYaw by sh.float("Max Speed", "Will reach max speed at this rotation %", .25f, 0f, 1f)
 
     val step by sc.float("Step", "Rotation step each tick", 30f, 1f, 90f)
     val offset by sc.float("Offset", "Max random offset", 0.2f, 0f, 1f)

@@ -21,27 +21,26 @@ import xyz.qweru.multirender.api.input.Input
 class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT) {
     val sg = settings.group("General")
     val sJr = settings.group("Conditions").visible { mode == Mode.JUMP }
-    val sv = settings.group("Vulcan").visible { mode == Mode.VULCAN }
 
     var mode by sg.enum("Mode", "Mode for velocity", Mode.JUMP)
     var explosions by sg.boolean("Explosions", "Remove explosion velocity", false).visible { mode == Mode.VANILLA }
 
     var always by sJr.boolean("Always", "Always jump reset", false)
     var firstHit by sJr.boolean("First Hit", "Jump Reset on the first hit in an exchange", true)
+        .visible { !always }
     var sprintHit by sJr.boolean("Sprint Hit", "Jump reset when getting sprint-hit", true)
+        .visible { !always }
     var combo by sJr.int("Combo", "When combo count >= this (0 = disabled)", 2, 0, 5)
-    var pauseCombo by sJr.int("Pause Combo", "Don't reset when the combo against you >= this (0 = disabled)", 2, 0, 5)
-
-    var canJump = true
+        .visible { !always }
+    var pauseCombo by sJr.int("Pause Combo", "Don't reset when the combo against you >= this (0 = disabled)", 0, 0, 5)
 
     @Handler
     private fun onTick(e: PreTickEvent) {
         if (!inGame) return
         if (mode != Mode.JUMP) return
-        if (mc.thePlayer.hurtTime == Core.mc.player!!.hurtDuration - 1 && canJump && mc.thePlayer.onGround() && checkConditions()) {
+        if (mc.thePlayer.hurtTime == mc.player!!.hurtDuration - 1 && mc.thePlayer.onGround() && checkConditions()) {
             API.keyboardHandler.input(GLFW.GLFW_KEY_SPACE, Input.CLICK)
-            canJump = false
-        } else canJump = true
+        }
     }
 
     @Handler

@@ -2,14 +2,17 @@ package xyz.qweru.geo.core.game.combat
 
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.phys.EntityHitResult
 import xyz.qweru.geo.client.event.AttackFromPlayerEvent
 import xyz.qweru.geo.client.event.AttackPlayerEvent
 import xyz.qweru.geo.client.event.PreTickEvent
+import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.client.module.config.ModuleTarget
 import xyz.qweru.geo.client.module.misc.ModuleTeams
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.game.rotation.RotationHandler
 import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.extend.minecraft.entity.inRange
 
@@ -21,6 +24,10 @@ object TargetTracker {
     var target: Player? = null
     val teams: ModuleTeams by SystemCache.getModule()
     val config: ModuleTarget by SystemCache.getModule()
+
+    val lookingAtTarget: Boolean
+        get() = RotationHandler.crosshairTarget?.let {
+                it is EntityHitResult && it.entity == target } == true
 
     @Handler(priority = EventPriority.FIRST)
     private fun onAttackPlayer(e: AttackPlayerEvent) {
@@ -39,4 +46,5 @@ object TargetTracker {
         if (mc.level == null || mc.player == null || !target!!.inRange(Mth.square(config.abandonRange)))
             target = null
     }
+
 }

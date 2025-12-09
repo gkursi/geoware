@@ -25,8 +25,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-import xyz.qweru.geo.client.helper.entity.EntityHelper;
 import xyz.qweru.geo.client.module.visual.ModuleViewModel;
+import xyz.qweru.geo.core.system.SystemCache;
 import xyz.qweru.geo.core.system.Systems;
 import xyz.qweru.geo.core.system.module.Modules;
 
@@ -38,17 +38,20 @@ public abstract class HeldItemRendererMixin {
     @Shadow protected abstract void swingArm(float swingProgress, float equipProgress, PoseStack matrices, int armX, HumanoidArm arm);
 
     @Unique
+    SystemCache.Cached<ModuleViewModel> cache = SystemCache.INSTANCE.getModule(ModuleViewModel.class);
+
+    @Unique
     ModuleViewModel viewModel = null;
 
     @ModifyExpressionValue(method = "renderHandsWithItems", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F", ordinal = 0))
     private float removeLerpPitch(float original, @Local(argsOnly = true) LocalPlayer player, @Local(argsOnly = true) float td) {
-        viewModel = Systems.INSTANCE.get(Modules.class).get(ModuleViewModel.class);
-        return viewModel.getEnabled() && !viewModel.getHandInterp() ? player.getXRot(td) : original;
+        viewModel = cache.cast();
+        return viewModel.getEnabled() && !viewModel.getHandInterpolation() ? player.getXRot(td) : original;
     }
 
     @ModifyExpressionValue(method = "renderHandsWithItems", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F", ordinal = 1))
     private float removeLerpYaw(float original, @Local(argsOnly = true) LocalPlayer player, @Local(argsOnly = true) float td) {
-        return viewModel.getEnabled() && !viewModel.getHandInterp() ? player.getYRot(td) : original;
+        return viewModel.getEnabled() && !viewModel.getHandInterpolation() ? player.getYRot(td) : original;
     }
 
     @Inject(method = "applyItemArmTransform", at = @At("HEAD"), cancellable = true)
@@ -67,12 +70,12 @@ public abstract class HeldItemRendererMixin {
         Vector3f off = viewModel.getOffset(hand);
         Vector3f rot = viewModel.getRot(hand);
 
+        matrices.scale(scale.x, scale.y, scale.z);
+        matrices.translate(off.x, off.y, off.z);
+
         matrices.mulPose(Axis.XP.rotationDegrees(rot.x));
         matrices.mulPose(Axis.YP.rotationDegrees(rot.y));
         matrices.mulPose(Axis.ZP.rotationDegrees(rot.z));
-
-        matrices.scale(scale.x, scale.y, scale.z);
-        matrices.translate(off.x, off.y, off.z);
     }
 
     @WrapMethod(method = "applyItemArmAttackTransform")
@@ -91,21 +94,14 @@ public abstract class HeldItemRendererMixin {
     }
 
     @ModifyArgs(method = "swingArm", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V"))
-    private void changeSwingPos(Args args, @Local(ordinal = 0, argsOnly = true) float swingProgress) {
+    private void changeSwingPos(Args args, @Local(ordinal = 0, argsOnly = true) float swingProgress, @Local(argsOnly = true) int hand) {
         if (!viewModel.getEnabled()) return;
-        float x = viewModel.getSwingX() * Mth.sin(Mth.sqrt(swingProgress) * (float)Math.PI);
+        float x = viewModel.getSwingX() * Mth.sin(Mth.sqrt(swingProgress) * (float)Math.PI) * hand;
         float y = viewModel.getSwingY() * Mth.sin(Mth.sqrt(swingProgress) * ((float)Math.PI * 2F));
         float z = viewModel.getSwingZ() * Mth.sin(swingProgress * (float)Math.PI);
         args.set(0, x);
         args.set(1, y);
         args.set(2, z);
-    }
-
-    @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;applyEatTransform(Lcom/mojang/blaze3d/vertex/PoseStack;FLnet/minecraft/world/entity/HumanoidArm;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/player/Player;)V"))
-    private void onEat(AbstractClientPlayer abstractClientPlayer, float tickDelta, float pitch, InteractionHand hand, float swingProgress, ItemStack itemStack, float equipProgress, PoseStack poseStack, MultiBufferSource multiBufferSource, int j, CallbackInfo ci) {
-        HumanoidArm arm = EntityHelper.INSTANCE.getArm(minecraft.player, hand);
-        if (viewModel.getEnabled() && viewModel.getBlockHit())
-            swingArm(swingProgress, equipProgress, poseStack, arm == HumanoidArm.RIGHT ? 1 : -1, arm);
     }
 
     @ModifyExpressionValue(method = "applyEatTransform", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;abs(F)F", ordinal = 0))
@@ -137,5 +133,14 @@ public abstract class HeldItemRendererMixin {
     private void changeDegZ(Args args, @Local(ordinal = 3) float progress, @Local int arm) {
         if (!viewModel.getEnabled()) return;
         args.set(0, viewModel.getEatRZ() * arm * progress);
+    }
+
+    @WrapMethod(method = "swingArm")
+    private void swingArm(float f, float g, PoseStack poseStack, int i, HumanoidArm humanoidArm, Operation<Void> original) {
+        if (!viewModel.getEnabled() || viewModel.getMode() != ModuleViewModel.Mode.NORMAL) {
+            original.call(f, g, poseStack, i, humanoidArm);
+        } else {
+            viewModel.swing(f, g, poseStack, i, humanoidArm);
+        }
     }
 }

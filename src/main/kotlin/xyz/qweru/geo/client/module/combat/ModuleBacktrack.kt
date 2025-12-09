@@ -32,7 +32,7 @@ import xyz.qweru.geo.extend.minecraft.entity.inRange
 import xyz.qweru.geo.extend.minecraft.entity.pos
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you extra reach", Category.COMBAT) {
+class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you an advantage", Category.COMBAT) {
     val sg = settings.group("General")
     val sc = settings.group("Conditions")
 

@@ -26,7 +26,7 @@
     "entity.LocalPlayerMixin",
     "entity.PlayerInfoAccessor",
     "game.ChatInputSuggestorMixin",
-    "game.ClientPlayerInteractionManagerMixin",
+    "game.MultiPlayerGameModeMixin",
     "game.MinecraftClientAccessor",
     "game.MinecraftMixin",
     "game.SessionMixin",
@@ -36,7 +36,6 @@
     "render.GameRendererMixin",
     "render.HeldItemRendererMixin",
     "render.InGameHudMixin",
-    "render.WindowMixin",
     "screen.CreativeInventoryScreenAccessor",
     "screen.HandledScreenAccessor",
     "world.ClientWorldAccessor"

@@ -19,7 +19,6 @@ import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.world.hit
 import xyz.qweru.multirender.api.API
-import java.lang.Math.clamp
 
 object RotationHandler : ProposalHandler<Rotation>() {
 
@@ -103,15 +102,6 @@ object RotationHandler : ProposalHandler<Rotation>() {
         return true
     }
 
-    override fun handleProposal() {
-        super.handleProposal()
-//        val client = Rotation(clientRot, isSync = true)
-//        if (current != null || client.equals(lastSentRot) || client.equals(rot)) return
-//        current = client
-//        currentPriority = -10
-//        Global.logger.warn("Started rotating back")
-    }
-
     fun isLookingAt(rot: Rotation) =
         rot.equals(lastSentRot)
 
@@ -120,25 +110,31 @@ object RotationHandler : ProposalHandler<Rotation>() {
 
     private fun interpolateRot() {
         val rotation = current ?: return
-        val init = rot.copyOf()
-        rot[0] = interpolate(initialRot[0], rot[0], rotation.yaw)
-        rot[1] = interpolate(initialRot[1], rot[1], rotation.pitch)
+        val dt = API.base.getDeltaTime()
+
+        var dY = engine.stepYaw(initialRot[0], rotation.yaw, rot[0]) * dt
+        var dP = engine.stepPitch(initialRot[1], rotation.pitch, rot[1]) * dt
 
         if (rotationConfig.gcdFix) {
             val gcd = RotationHelper.gcd()
-            rot[0] = rot[0] - rot[0] % gcd
-            rot[1] = rot[1] - rot[1] % gcd
+            dY = dY - dY % gcd
+            dP = dP - dP % gcd
         }
 
-        engine.onYawDelta(rot[0] - init[0])
-        engine.onPitchDelta(rot[1] - init[1])
+        rot[0] = clamp(initialRot[0], rot[0], rotation.yaw, dY)
+        rot[1] = clamp(initialRot[1], rot[1], rotation.pitch, dP)
+
+        engine.onYawDelta(dY)
+        engine.onPitchDelta(dP)
+
         rotation.applied = true // rotate towards the rotation at least once before allowing its removal
     }
 
-    private fun interpolate(start: Float, current: Float, end: Float): Float =
+    private fun clamp(start: Float, current: Float, end: Float, delta: Float): Float =
         if (start == end) start
-        else clamp(
-             current + engine.step(if (rotationConfig.nonlinear) current else start, end) * API.base.getDeltaTime(),
-             if (start > end) end else start, if (start > end) start else end
-         )
+        else Math.clamp(
+            current + delta,
+            if (start > end) end else start,
+            if (start > end) start else end
+        )
 }

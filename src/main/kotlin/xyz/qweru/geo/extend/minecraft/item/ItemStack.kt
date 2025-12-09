@@ -1,10 +1,12 @@
 package xyz.qweru.geo.extend.minecraft.item
 
+import net.minecraft.resources.ResourceKey
 import net.minecraft.tags.ItemTags
-import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.component.DyedItemColor
+import net.minecraft.world.item.enchantment.Enchantment
+import xyz.qweru.geo.client.helper.player.inventory.ItemHelper
 
 fun ItemStack.isOf(item: Item): Boolean = this.`is`(item)
 fun ItemStack.getArmorColor(): Int? {
@@ -14,7 +16,8 @@ fun ItemStack.getArmorColor(): Int? {
         null
     }
 }
-
+fun ItemStack.getEnchantmentLevel(enchantment: ResourceKey<Enchantment?>) =
+    ItemHelper.getEnchantmentLevel(this, enchantment)
 
 val ItemStack.isFootArmor
     get() = this.`is`(ItemTags.LEG_ARMOR)

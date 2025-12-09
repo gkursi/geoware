@@ -9,6 +9,8 @@ object ConstantInterpolationEngine : InterpolationEngine {
     private val config by SystemCache.getModule<ModuleRotation>()
     private val random = LayeredRandom.DEFAULT
 
-    override fun step(start: Float, end: Float): Float =
-        config.step * (1 + random.float(-1f..1f) * config.offset)
+    override fun stepYaw(start: Float, end: Float, current: Float): Float = step()
+    override fun stepPitch(start: Float, end: Float, current: Float): Float = step() * .5f
+
+    private fun step() = config.step * (1 + random.float(-1f..1f) * config.offset)
 }

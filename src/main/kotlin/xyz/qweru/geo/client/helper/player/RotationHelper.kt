@@ -3,6 +3,7 @@ package xyz.qweru.geo.client.helper.player
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
+import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.client.helper.entity.Target
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.game.rotation.Rotation
@@ -24,16 +25,24 @@ object RotationHelper {
     }
 
     fun get(target: Entity, config: RotationConfig = RotationConfig.DEFAULT, point: TargetPoint = TargetPoint.BODY) =
-        get(target.pos.add(0.0, point.value.invoke(target), 0.0), config)
+        get(target.pos.add(point.value.invoke(target)), config)
 
     fun get(target: Target, point: TargetPoint = TargetPoint.BODY, config: RotationConfig = RotationConfig.DEFAULT) =
-        get(target.visiblePoint ?: target.player.pos.add(0.0, point.value.invoke(target.player), 0.0), config)
+        get(target.visiblePoint ?: target.player.pos.add(point.value.invoke(target.player)), config)
 
     fun getAngle(target: Entity): Float {
-        val current = floatArrayOf(Mth.wrapDegrees(mc.thePlayer.yRot), mc.thePlayer.xRot)
         val target = get(target)
-        val dy = Mth.wrapDegrees(target.yaw) - current[0]
-        val dp = target.pitch - current[1]
+        return getAngle(target.yaw, target.pitch)
+    }
+
+    fun getAngle(vec3: Vec3): Float {
+        val target = get(vec3)
+        return getAngle(target.yaw, target.pitch)
+    }
+
+    fun getAngle(yaw: Float, pitch: Float): Float {
+        val dy = Mth.wrapDegrees(yaw) - Mth.wrapDegrees(mc.thePlayer.yRot)
+        val dp = pitch - mc.thePlayer.xRot
         return sqrt(dy * dy + dp * dp)
     }
 
@@ -50,10 +59,70 @@ object RotationHelper {
         return f * f * f * 1.2f
     }
 
-    enum class TargetPoint(val value: (Entity) -> Double) {
-        HEAD({ it.eyeHeight.toDouble() }),
-        BODY({ it.bbHeight * 0.5 }),
-        LEGS({ it.bbHeight * 0.1 })
+    fun inputToYaw(facing: Float = mc.thePlayer.yRot): Float {
+        val forwards = GameOptions.forwards
+        val backwards = GameOptions.backwards
+        val left = GameOptions.left
+        val right = GameOptions.right
+
+        var actualYaw = facing
+        var forward = 1f
+
+        if (backwards) {
+            actualYaw += 180f
+            forward = -0.5f
+        } else if (forwards) {
+            forward = 0.5f
+        }
+
+        if (left) {
+            actualYaw -= 90f * forward
+        }
+        if (right) {
+            actualYaw += 90f * forward
+        }
+
+        return actualYaw
+    }
+
+    enum class TargetPoint(val value: (Entity) -> Vec3) {
+        HEAD({ Vec3(0.0, it.eyeHeight.toDouble(), 0.0) }),
+        BODY({ Vec3(0.0, it.bbHeight * 0.5, 0.0) }),
+        LEGS({ Vec3(0.0, it.bbHeight * 0.1, 0.0) }),
+        SMART({
+            val dimensions = it.getDimensions(it.pose)
+            var bestAngle = 720f
+            var point = Vec3(0.0, 1.0, 0.0)
+            
+            for (funX in pointsX) {
+                val x = funX.invoke(dimensions.width).toDouble()
+                for (funY in pointsY) {
+                    val y = funY.invoke(dimensions.height).toDouble()
+                    val angle = getAngle(it.pos.add(x, y, 0.0))
+                    if (angle < bestAngle) {
+                        bestAngle = angle
+                        point = Vec3(x, y, 0.0)
+                    }
+                }
+            }
+
+            point
+        });
+
+        companion object {
+            private val pointsX = arrayOf<(Float) -> Float>(
+                {w -> 0f},
+                {w -> 0.5f * w},
+                {w -> 0.75f * w},
+                {w -> 0.9f * w},
+            )
+
+            private val pointsY = arrayOf<(Float) -> Float>(
+                {h -> 0.5f * h},
+                {h -> 0.75f * h},
+                {h -> 0.9f * h},
+            )
+        }
     }
 
 }

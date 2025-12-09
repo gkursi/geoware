@@ -1,13 +1,8 @@
 package xyz.qweru.geo
 
 import net.fabricmc.api.ModInitializer
-import org.jetbrains.skija.Color4f
-import org.jetbrains.skija.Paint
-import org.jetbrains.skija.PaintMode
-import xyz.qweru.geo.client.event.UIRenderEvent
 import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.event.EventBus
-import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.Systems
 import xyz.qweru.geo.core.system.config.Configs
 
@@ -42,17 +37,5 @@ class GeoWare : ModInitializer {
 //                Events.post(KeyboardInputEvent)
 //            }
 //        }
-    }
-
-    @Handler
-    fun renderUI(e: UIRenderEvent) {
-        val canvas = e.canvas
-        val paint = Paint()
-            .setMode(PaintMode.STROKE_AND_FILL)
-            .setAntiAlias(true)
-            .setColor4f(Color4f(.67f, .420f, .67f, .9f))
-
-        canvas.drawCircle(2f, 2f, 20f, paint)
-        paint.close()
     }
 }

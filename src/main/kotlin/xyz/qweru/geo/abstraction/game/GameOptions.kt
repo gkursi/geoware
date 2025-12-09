@@ -24,8 +24,17 @@ object GameOptions {
     var attackKey by wrapBind(options.keyAttack)
 
     /* Misc */
+    val forwards: Boolean
+        get() = forwardKey && !backKey
+    val backwards: Boolean
+        get() = !forwardKey && backKey
+    val left: Boolean
+        get() = leftKey && !rightKey
+    val right: Boolean
+        get() = !leftKey && rightKey
+
     val moving: Boolean
-        get() = forwardKey || backKey || leftKey || rightKey
+        get() = forwards || backwards || left || right
 
     /**
      * Used to avoid ide warning

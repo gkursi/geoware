@@ -25,7 +25,6 @@ java {
 }
 
 repositories {
-    maven("https://packages.jetbrains.team/maven/p/skija/maven")
     maven("https://repo.viaversion.com")
     maven("https://maven.lenni0451.net/everything")
     maven("https://repo.opencollab.dev/maven-snapshots")
@@ -47,8 +46,9 @@ dependencies {
 
     // render
     implementation("xyz.qweru:multirender-api:1.0-SNAPSHOT")
-    modImplementation("xyz.qweru:multirender-base-mc1218:0.0.1")?.let { include(it) }
-    api("org.jetbrains.skija:skija-linux:0.93.1")
+    implementation("xyz.qweru:multirender-nanovg:1.0-SNAPSHOT")
+    modImplementation("xyz.qweru:multirender-1-21-8:0.0.1")?.let { include(it) }
+
 }
 
 tasks.processResources {
