@@ -17,11 +17,11 @@ import xyz.qweru.geo.extend.kotlin.file.findOrCreateDir
 
 object Core {
     const val MOD = "GeoWare"
-    @JvmField val DIRECTORY = FabricLoader.getInstance().gameDir.findOrCreateDir(MOD)
     const val PREFIX = "::"
 
     @JvmField val mc: Minecraft = Minecraft.getInstance()
     @JvmField val logger: Logger = LoggerFactory.getLogger(MOD)
+    @JvmField val dir = FabricLoader.getInstance().gameDir.findOrCreateDir(MOD)
 
     fun init() {
         manage(CommandManager)

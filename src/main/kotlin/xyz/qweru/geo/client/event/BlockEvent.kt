@@ -3,7 +3,7 @@ package xyz.qweru.geo.client.event
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.phys.BlockHitResult
-import xyz.qweru.geo.core.event.Cancellable
+import xyz.qweru.basalt.Cancellable
 
 abstract class BlockEvent : Cancellable() {
     lateinit var pos: BlockPos

@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Relative
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Items
 import net.minecraft.world.phys.EntityHitResult
+import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.abstraction.network.ClientConnection
 import xyz.qweru.geo.client.event.GameRenderEvent
@@ -16,7 +17,6 @@ import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
-import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module

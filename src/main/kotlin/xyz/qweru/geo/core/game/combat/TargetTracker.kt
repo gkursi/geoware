@@ -3,6 +3,7 @@ package xyz.qweru.geo.core.game.combat
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.EntityHitResult
+import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.AttackFromPlayerEvent
 import xyz.qweru.geo.client.event.AttackPlayerEvent
 import xyz.qweru.geo.client.event.PreTickEvent
@@ -10,7 +11,6 @@ import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.client.module.config.ModuleTarget
 import xyz.qweru.geo.client.module.misc.ModuleTeams
 import xyz.qweru.geo.core.Core.mc
-import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.rotation.RotationHandler
 import xyz.qweru.geo.core.system.SystemCache

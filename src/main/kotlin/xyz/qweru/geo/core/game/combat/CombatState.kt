@@ -3,10 +3,10 @@ package xyz.qweru.geo.core.game.combat
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
+import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.EntityDamageEvent
 import xyz.qweru.geo.client.helper.player.AttackHelper
 import xyz.qweru.geo.core.Core.mc
-import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 
 class CombatState(private val playerProvider: (CombatState) -> Player?) {

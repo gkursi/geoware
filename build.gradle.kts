@@ -42,13 +42,12 @@ dependencies {
     modImplementation("com.ptsmods:devlogin:3.5")
     implementation("org.apache.commons:commons-math3:3.6.1")
     modImplementation("com.viaversion:viafabricplus-api:4.2.4")
-//    modImplementation("meteordevelopment:baritone:1.21.8-SNAPSHOT")
+    implementation("com.github.gkursi:basalt:20dd54f16b")
 
     // render
     implementation("xyz.qweru:multirender-api:1.0-SNAPSHOT")
     implementation("xyz.qweru:multirender-nanovg:1.0-SNAPSHOT")
-    modImplementation("xyz.qweru:multirender-1-21-8:0.0.1")?.let { include(it) }
-
+    modRuntimeOnly("xyz.qweru:multirender-1-21-8:0.0.1")?.let { include(it) }
 }
 
 tasks.processResources {

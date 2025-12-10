@@ -6,13 +6,13 @@ import net.minecraft.world.item.Items
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
+import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.extend.minecraft.item.isOf
 import xyz.qweru.geo.mixin.screen.HandledScreenAccessor
 import xyz.qweru.multirender.api.API

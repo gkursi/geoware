@@ -2,12 +2,12 @@ package xyz.qweru.geo.core.game.rotation
 
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.world.phys.HitResult
+import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.*
 import xyz.qweru.geo.client.helper.math.random.LayeredRandom
 import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.client.module.config.ModuleRotation
 import xyz.qweru.geo.core.Core.mc
-import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.helper.manage.ProposalHandler
 import xyz.qweru.geo.core.game.rotation.interpolate.HumanInterpolationEngine
@@ -15,6 +15,7 @@ import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.extend.kotlin.array.copy2
 import xyz.qweru.geo.extend.kotlin.array.getRotation
 import xyz.qweru.geo.extend.kotlin.array.setRotation
+import xyz.qweru.geo.extend.kotlin.math.wrapped
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.world.hit
@@ -102,6 +103,14 @@ object RotationHandler : ProposalHandler<Rotation>() {
         return true
     }
 
+    override fun handleProposal() {
+        super.handleProposal()
+        if (current?.config?.isSync != true) return
+        propose(Rotation(
+            mc.thePlayer.yRot.wrapped, mc.thePlayer.xRot
+        ), -10)
+    }
+
     fun isLookingAt(rot: Rotation) =
         rot.equals(lastSentRot)
 
@@ -112,20 +121,25 @@ object RotationHandler : ProposalHandler<Rotation>() {
         val rotation = current ?: return
         val dt = API.base.getDeltaTime()
 
-        var dY = engine.stepYaw(initialRot[0], rotation.yaw, rot[0]) * dt
-        var dP = engine.stepPitch(initialRot[1], rotation.pitch, rot[1]) * dt
+        var yawDelta = engine.stepYaw(initialRot[0], rotation.yaw, rot[0]) * dt
+        var pitchDelta = engine.stepPitch(initialRot[1], rotation.pitch, rot[1]) * dt
+
+        if (rot[0] + yawDelta > rotation.yaw)
+            yawDelta = rotation.yaw - rot[0]
+        if (rot[1] + pitchDelta > rotation.pitch)
+            pitchDelta = rotation.pitch - rot[1]
 
         if (rotationConfig.gcdFix) {
             val gcd = RotationHelper.gcd()
-            dY = dY - dY % gcd
-            dP = dP - dP % gcd
+            yawDelta -= yawDelta % gcd
+            pitchDelta -= pitchDelta % gcd
         }
 
-        rot[0] = clamp(initialRot[0], rot[0], rotation.yaw, dY)
-        rot[1] = clamp(initialRot[1], rot[1], rotation.pitch, dP)
+        rot[0] += yawDelta
+        rot[1] += pitchDelta
 
-        engine.onYawDelta(dY)
-        engine.onPitchDelta(dP)
+        engine.onYawDelta(yawDelta)
+        engine.onPitchDelta(pitchDelta)
 
         rotation.applied = true // rotate towards the rotation at least once before allowing its removal
     }

@@ -6,13 +6,13 @@ import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
+import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.event.PostTickEvent
 import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.client.helper.player.SlotHelper
 import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.core.Core
-import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.extend.minecraft.game.thePlayer

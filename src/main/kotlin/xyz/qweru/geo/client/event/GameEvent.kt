@@ -1,6 +1,6 @@
 package xyz.qweru.geo.client.event
 
-import xyz.qweru.geo.core.event.Cancellable
+import xyz.qweru.basalt.Cancellable
 
 object PreTickEvent : Cancellable()
 object PostTickEvent : Cancellable()

@@ -4,7 +4,6 @@ import net.minecraft.world.entity.player.Player
 import xyz.qweru.geo.client.event.AttackPlayerEvent
 import xyz.qweru.geo.client.event.PlayerAttackPlayerEvent
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.combat.CombatState
 import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
@@ -12,6 +11,7 @@ import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.inFov
 import xyz.qweru.geo.abstraction.game.GameOptions
 import xyz.qweru.geo.client.helper.timing.TimerDelay
+import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.extend.minecraft.entity.inRange
 
 class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around the target", Category.MOVEMENT) {

@@ -40,8 +40,10 @@ object HumanInterpolationEngine : InterpolationEngine {
     override fun onPitchDelta(delta: Float) = pitch.onDelta(delta)
 
     private fun step(start: Float, end: Float, current: Float, tracker: Tracker): Float {
-        val dist = abs(end.wrapped - start.wrapped)
-        val speed = tracker.getSpeed(current.wrapped - start, dist)
+        val wStart = start.wrapped
+        val dist = abs(end.wrapped - wStart)
+        val progress = abs(current.wrapped - wStart)
+        val speed = tracker.getSpeed(progress, dist)
         val mod = random.double(0.1, 1.0) * speed
         return dist * mod.toFloat()
     }
@@ -78,7 +80,7 @@ object HumanInterpolationEngine : InterpolationEngine {
 
         private fun calculateSpeedup(current: Float, dist: Float): Float {
             val max = rotationConfig.speedYaw
-            val percent = clamp(0f, 1f, abs(current) / abs(dist))
+            val percent = current / dist
 
             return if (percent >= max) 1f
             else percent / max

@@ -27,8 +27,8 @@ class Configs : System("configs", type = Type.INTERNAL) {
         var changes: Long = 0
     }
 
-    val configFile = Core.DIRECTORY.resolve("$name.json")
-    val configDir = Core.DIRECTORY.findOrCreateDir("config")
+    val configFile = Core.dir.resolve("$name.json")
+    val configDir = Core.dir.findOrCreateDir("config")
     val knownConfigs = Object2ObjectOpenHashMap<String, Config>()
     val gson: Gson = GsonBuilder().setPrettyPrinting().create()
     val emptyJson = JsonObject()

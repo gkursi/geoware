@@ -1,6 +1,7 @@
 package xyz.qweru.geo.client.module.combat
 
 import net.minecraft.world.phys.HitResult
+import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.abstraction.game.GameOptions
@@ -8,7 +9,6 @@ import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.helper.world.WorldHelper
-import xyz.qweru.geo.core.event.EventPriority
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
