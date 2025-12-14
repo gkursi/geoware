@@ -10,8 +10,8 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Items
 import net.minecraft.world.phys.EntityHitResult
 import xyz.qweru.basalt.EventPriority
-import xyz.qweru.geo.abstraction.game.GameOptions
-import xyz.qweru.geo.abstraction.network.ClientConnection
+import xyz.qweru.geo.client.helper.player.GameOptions
+import xyz.qweru.geo.client.helper.network.ClientConnection
 import xyz.qweru.geo.client.event.GameRenderEvent
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PacketSendEvent

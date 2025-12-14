@@ -6,7 +6,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.component.DyedItemColor
 import net.minecraft.world.item.enchantment.Enchantment
-import xyz.qweru.geo.client.helper.player.inventory.ItemHelper
+import xyz.qweru.geo.client.helper.inventory.ItemHelper
 
 fun ItemStack.isOf(item: Item): Boolean = this.`is`(item)
 fun ItemStack.getArmorColor(): Int? {

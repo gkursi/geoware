@@ -2,7 +2,7 @@ package xyz.qweru.geo.client.module.move
 
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket
 import xyz.qweru.basalt.EventPriority
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.event.PreMovementTickEvent
 import xyz.qweru.geo.client.helper.timing.TimerDelay

@@ -5,10 +5,16 @@ import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.system.setting.Settings
 import xyz.qweru.geo.core.system.System
+import xyz.qweru.geo.core.ui.notification.Notifications
 import xyz.qweru.geo.extend.kotlin.log.dbg
 
-abstract class Module(name: String, val description: String = "${name.lowercase()} module", val category: Category = Category.MISC,
-                      val alwaysEnabled: Boolean = false, var bind: Int = -1) : System(name, Type.MODULE) {
+abstract class Module(
+    name: String,
+    val description: String = "${name.lowercase()} module",
+    val category: Category = Category.MISC,
+    val alwaysEnabled: Boolean = false,
+    var bind: Int = -1
+) : System(name, Type.MODULE) {
     protected val mc = Core.mc
     val settings = Settings(this)
 
@@ -19,14 +25,12 @@ abstract class Module(name: String, val description: String = "${name.lowercase(
             if (field != prev) {
                 if (field) {
                     EventBus.subscribe(this)
-                    logger.dbg("Subscribed $name")
                     enable()
-                }
-                else {
+                } else {
                     EventBus.unsubscribe(this)
-                    logger.dbg("Unsubscribed $name")
                     disable()
                 }
+                Notifications.onToggle(this)
             }
         }
     val inGame: Boolean get() = mc.level != null && mc.player != null

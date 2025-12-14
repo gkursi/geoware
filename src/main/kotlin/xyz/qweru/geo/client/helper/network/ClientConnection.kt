@@ -1,4 +1,4 @@
-package xyz.qweru.geo.abstraction.network
+package xyz.qweru.geo.client.helper.network
 
 import net.minecraft.client.multiplayer.ClientPacketListener
 import net.minecraft.network.Connection

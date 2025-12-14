@@ -1,4 +1,4 @@
-package xyz.qweru.geo.client.helper.player
+package xyz.qweru.geo.client.helper.inventory
 
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
 import net.minecraft.core.registries.BuiltInRegistries
@@ -32,12 +32,11 @@ import net.minecraft.world.inventory.ShulkerBoxMenu
 import net.minecraft.world.inventory.SmithingMenu
 import net.minecraft.world.inventory.SmokerMenu
 import net.minecraft.world.inventory.StonecutterMenu
-import xyz.qweru.geo.core.Core.mc
+import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.mixin.screen.CreativeInventoryScreenAccessor
 import xyz.qweru.geo.mixin.screen.HorseScreenHandlerAccessor
 import xyz.qweru.geo.mixin.screen.ItemGroupsAccessor
-
 
 object SlotHelper {
     /**
@@ -69,8 +68,8 @@ object SlotHelper {
      * @see net.minecraft.screen.slot.Slot.id
      */
     fun indexToId(i: Int): Int {
-        if (mc.player == null) return -1
-        val handler: AbstractContainerMenu? = mc.thePlayer.containerMenu
+        if (Core.mc.player == null) return -1
+        val handler: AbstractContainerMenu? = Core.mc.thePlayer.containerMenu
 
         if (handler is InventoryMenu) return survivalInventory(i)
         if (handler is CreativeModeInventoryScreen.ItemPickerMenu) return creativeInventory(i)

@@ -1,16 +1,19 @@
 package xyz.qweru.geo.client.module.combat
 
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.AxeItem
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import org.lwjgl.glfw.GLFW
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.client.helper.network.PacketHelper
-import xyz.qweru.geo.client.helper.player.AttackHelper
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.player.AttackConditions
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.core.event.Handler
@@ -21,6 +24,7 @@ import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.kotlin.log.dbg
 import xyz.qweru.geo.extend.minecraft.entity.attackCharge
+import xyz.qweru.geo.extend.minecraft.entity.isOnGround
 import xyz.qweru.geo.extend.minecraft.entity.relativeMotion
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.world.hit
@@ -33,6 +37,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val sGeneral = settings.group("General")
     val sFailAttack = settings.group("Fail Attack")
     val sCrit = settings.group("Crits")
+    val sTarget = settings.group("Target")
 
     val simulateClick by sGeneral.boolean("Simulate Click", "Simulates clicks instead of using packets", true)
     val silentSwing by sGeneral.boolean("Silent Swing", "Don't swing visually", false)
@@ -46,6 +51,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         .visible { awaitCrit }
     val itemCooldown by sGeneral.float("Cooldown", "Vanilla item cooldown required to attack", 1f, 0f, 1f)
     val sprintReset by sGeneral.boolean("Sprint Reset", "Automatically resets sprint on hit", true)
+    val noAxeCooldown by sTarget.boolean("Fast Axe", "Ignore item cooldown when holding an axe if the target is blocking", true)
 
     val failAttack by sFailAttack.boolean("Fail Attack", "Try to attack (and fail) if the target is slightly out of reach", false)
     val failReach by sFailAttack.float("Fail Reach", "Extra reach for failing", 0.25f, 0.01f, 1f)
@@ -55,6 +61,10 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val autoCrit by sCrit.boolean("Auto Crit", "Automatically stop sprinting pre-crit", true)
     val requireFall by sCrit.boolean("Require Fall", "Requires falling", true)
     val exceptPunish by sCrit.boolean("Except Punish", "Ignore falling when moving backwards", true)
+
+    val players by sTarget.boolean("Players", "Player targeting", true)
+    val crystals by sTarget.boolean("Crystals", "Crystal targeting", true)
+    val onlyGround by sTarget.boolean("Only Ground", "Only break crystals while on ground", true)
 
     val timer = TimerDelay()
     val random = Random()
@@ -71,7 +81,6 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
             val en = crosshair.entity
             if (en is Player && checkPlayer(en)) return
             if (random.nextFloat() > miss) {
-                ModuleAutoBlock.unblock()
                 attack(en)
             }
             timer.reset(delay)
@@ -80,7 +89,6 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
             val hit = mc.theLevel.hit(mc.thePlayer.entityInteractionRange() + failReach)
             if (hit !is EntityHitResult) return
 
-            ModuleAutoBlock.unblock()
             API.mouseHandler.input(GLFW.GLFW_MOUSE_BUTTON_1, Input.CLICK)
             timer.reset(delay)
         }
@@ -104,7 +112,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         nextDamage = CombatState.TARGET.predictNextAttack()
         val nextAttack = CombatState.SELF.predictNextAttack()
 
-        if (!AttackHelper.canAttack(en, weaponOnly, cooldown = itemCooldown)) return true
+        if (!canAttack(en)) return true
         if (waitForCrit(nextAttack)) return true
 
         if (nextAttack.crit && nextAttack.sprint && autoCrit) {
@@ -121,8 +129,27 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         return false
     }
 
+    fun canAttack(target: Entity): Boolean {
+        if (target is EndCrystal) {
+            return crystals && (!onlyGround || mc.thePlayer.isOnGround)
+        }
+        if (target is Player && !players) {
+            return false
+        }
+
+        val item = InvHelper.getMainhand().item
+        if (item is AxeItem && target is LivingEntity && target.isBlocking) {
+            return true
+        }
+        if (item !is AxeItem && InvHelper.isSword(item) && weaponOnly) {
+            return false
+        }
+
+        return mc.thePlayer.attackCharge >= itemCooldown
+    }
+
     fun waitForCrit(nextAttack: Attack): Boolean =
-        awaitCrit && AttackHelper.willCrit(groundTicks = groundTicks) && awaitPartialCrit() && !nextAttack.crit
+        awaitCrit && AttackConditions.willCrit(groundTicks = groundTicks) && awaitPartialCrit() && !nextAttack.crit
 
     fun awaitPartialCrit(): Boolean = !requireFall || exceptPunish && mc.thePlayer.relativeMotion.x < 0
 }

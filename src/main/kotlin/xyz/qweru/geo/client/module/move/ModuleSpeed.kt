@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity
 import net.minecraft.world.phys.Vec3
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.event.PostMoveSendEvent
 import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.client.event.PreMoveSendEvent

@@ -30,7 +30,9 @@ object HumanInterpolationEngine : InterpolationEngine {
     }
 
     override fun stepYaw(start: Float, end: Float, current: Float): Float =
-        step(start, end, current, yaw)
+        step(start, end, current, yaw).also {
+            println("Stepping $it yaw (dist=${end.wrapped - start.wrapped})")
+        }
 
     override fun stepPitch(start: Float, end: Float, current: Float): Float =
         step(start, end, current, pitch)
@@ -41,9 +43,9 @@ object HumanInterpolationEngine : InterpolationEngine {
 
     private fun step(start: Float, end: Float, current: Float, tracker: Tracker): Float {
         val wStart = start.wrapped
-        val dist = abs(end.wrapped - wStart)
+        val dist = end.wrapped - wStart
         val progress = abs(current.wrapped - wStart)
-        val speed = tracker.getSpeed(progress, dist)
+        val speed = tracker.getSpeed(progress, abs(dist))
         val mod = random.double(0.1, 1.0) * speed
         return dist * mod.toFloat()
     }

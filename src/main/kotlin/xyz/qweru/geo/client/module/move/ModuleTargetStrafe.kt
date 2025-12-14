@@ -9,7 +9,7 @@ import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.inFov
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.extend.minecraft.entity.inRange

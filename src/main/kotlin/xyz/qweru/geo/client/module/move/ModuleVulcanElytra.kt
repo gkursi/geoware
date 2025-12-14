@@ -5,7 +5,7 @@ import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.Items
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PostMovementTickEvent
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module

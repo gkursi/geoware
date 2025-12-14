@@ -9,12 +9,11 @@ import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import org.lwjgl.glfw.GLFW
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
-import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.client.helper.network.PacketHelper
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.combat.TargetTracker

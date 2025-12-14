@@ -1,25 +1,30 @@
 package xyz.qweru.geo.core.game.rotation
 
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
+import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
+import net.minecraft.network.protocol.game.ServerboundUseItemPacket
 import net.minecraft.world.phys.HitResult
 import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.*
 import xyz.qweru.geo.client.helper.math.random.LayeredRandom
 import xyz.qweru.geo.client.helper.player.RotationHelper
+import xyz.qweru.geo.client.helper.player.RotationHelper.circularDistance
 import xyz.qweru.geo.client.module.config.ModuleRotation
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.helper.manage.ProposalHandler
 import xyz.qweru.geo.core.game.rotation.interpolate.HumanInterpolationEngine
 import xyz.qweru.geo.core.system.SystemCache
+import xyz.qweru.geo.core.ui.notification.Notifications
 import xyz.qweru.geo.extend.kotlin.array.copy2
 import xyz.qweru.geo.extend.kotlin.array.getRotation
 import xyz.qweru.geo.extend.kotlin.array.setRotation
-import xyz.qweru.geo.extend.kotlin.math.wrapped
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.world.hit
+import xyz.qweru.geo.mixin.network.packet.ServerboundUseItemPacketAccessor
 import xyz.qweru.multirender.api.API
+import kotlin.io.path.Path
 
 object RotationHandler : ProposalHandler<Rotation>() {
 
@@ -67,8 +72,10 @@ object RotationHandler : ProposalHandler<Rotation>() {
 
         clientRot.getRotation(mc.thePlayer)
         if (current == null) {
-            // propose(Rotation(clientRot), -10)
+            // todo: properly rotate back
+            val preYaw = rot[0]
             rot.copy2(clientRot)
+            rot[0] = RotationHelper.unwrapYaw(rot[0], preYaw)
         } else if (current?.config?.forceClient == true) {
             clientRot.copy2(rot)
         }
@@ -88,10 +95,19 @@ object RotationHandler : ProposalHandler<Rotation>() {
 
     @Handler
     private fun packetSent(e: PacketSendEvent) {
-        val packet = e.packet
-        if (packet !is ServerboundMovePlayerPacket) return
-        lastSentRot[0] = packet.getYRot(lastSentRot[0])
-        lastSentRot[1] = packet.getXRot(lastSentRot[1])
+        when (val packet = e.packet) {
+            is ServerboundMovePlayerPacket -> {
+                lastSentRot[0] = packet.getYRot(lastSentRot[0])
+                lastSentRot[1] = packet.getXRot(lastSentRot[1])
+            }
+            is ServerboundUseItemPacketAccessor -> {
+                packet.geo_setXRot(lastSentRot[0])
+                packet.geo_setYRot(lastSentRot[1])
+            }
+            is ServerboundUseItemOnPacket -> {
+                Notifications.info("UseItemOn with sequence ${packet.sequence}")
+            }
+        }
     }
 
     fun mouseRotation(): FloatArray =
@@ -103,19 +119,8 @@ object RotationHandler : ProposalHandler<Rotation>() {
         return true
     }
 
-    override fun handleProposal() {
-        super.handleProposal()
-        if (current?.config?.isSync != true) return
-        propose(Rotation(
-            mc.thePlayer.yRot.wrapped, mc.thePlayer.xRot
-        ), -10)
-    }
-
     fun isLookingAt(rot: Rotation) =
         rot.equals(lastSentRot)
-
-    internal fun inRange(value: Float, range: ClosedRange<Float>) =
-        value >= range.start && value <= range.endInclusive
 
     private fun interpolateRot() {
         val rotation = current ?: return
@@ -124,10 +129,13 @@ object RotationHandler : ProposalHandler<Rotation>() {
         var yawDelta = engine.stepYaw(initialRot[0], rotation.yaw, rot[0]) * dt
         var pitchDelta = engine.stepPitch(initialRot[1], rotation.pitch, rot[1]) * dt
 
-        if (rot[0] + yawDelta > rotation.yaw)
-            yawDelta = rotation.yaw - rot[0]
-        if (rot[1] + pitchDelta > rotation.pitch)
-            pitchDelta = rotation.pitch - rot[1]
+        val start = initialRot[0]
+        val current = rot[0]
+        val end = rotation.yaw
+
+        if (circularDistance(start, current + yawDelta) > circularDistance(start, end)) {
+            yawDelta = end - current
+        }
 
         if (rotationConfig.gcdFix) {
             val gcd = RotationHelper.gcd()
@@ -143,12 +151,4 @@ object RotationHandler : ProposalHandler<Rotation>() {
 
         rotation.applied = true // rotate towards the rotation at least once before allowing its removal
     }
-
-    private fun clamp(start: Float, current: Float, end: Float, delta: Float): Float =
-        if (start == end) start
-        else Math.clamp(
-            current + delta,
-            if (start > end) end else start,
-            if (start > end) start else end
-        )
 }

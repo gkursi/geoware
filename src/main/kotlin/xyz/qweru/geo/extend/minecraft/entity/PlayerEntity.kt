@@ -11,7 +11,7 @@ import xyz.qweru.geo.client.helper.network.ProfileHelper
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.client.helper.player.PlayerHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.world.WorldHelper
 import xyz.qweru.geo.extend.minecraft.item.isOf
 

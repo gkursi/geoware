@@ -19,6 +19,7 @@
     "network.ClientConnectionMixin",
     "network.packet.PositionMoveRotationAccessor",
     "network.packet.ServerboundPlayerInputPacketAccessor",
+    "network.packet.ServerboundUseItemPacketAccessor",
     "screen.HorseScreenHandlerAccessor",
     "screen.ItemGroupsAccessor"
   ],
@@ -26,9 +27,9 @@
     "entity.LocalPlayerMixin",
     "entity.PlayerInfoAccessor",
     "game.ChatInputSuggestorMixin",
-    "game.MultiPlayerGameModeMixin",
     "game.MinecraftClientAccessor",
     "game.MinecraftMixin",
+    "game.MultiPlayerGameModeMixin",
     "game.SessionMixin",
     "input.KeyBindingAccessor",
     "input.MouseMixin",

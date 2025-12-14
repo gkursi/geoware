@@ -1,4 +1,4 @@
-package xyz.qweru.geo.abstraction.game
+package xyz.qweru.geo.client.helper.player
 
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.Options
@@ -11,6 +11,8 @@ import kotlin.reflect.KProperty
 object GameOptions {
     private val options: Options
         get() = Core.mc.options
+    private val handle: Long
+        get() = Core.mc.window.window
 
     /* Binds */
     var forwardKey by wrapBind(options.keyUp)
@@ -55,8 +57,8 @@ object GameOptions {
         operator fun getValue(u: Any?, property: KProperty<*>) =
             // differentiate mouse and keyboard bindings
             !bind.isUnbound && Core.mc.screen == null && (bind as KeyBindingAccessor).geo_getBound().value.let {
-                if (it <= GLFW.GLFW_MOUSE_BUTTON_LAST) return@let GLFW.glfwGetMouseButton(Window.handle, it) == GLFW.GLFW_PRESS
-                else return@let GLFW.glfwGetKey(Window.handle, it) == GLFW.GLFW_PRESS
+                if (it <= GLFW.GLFW_MOUSE_BUTTON_LAST) return@let GLFW.glfwGetMouseButton(handle, it) == GLFW.GLFW_PRESS
+                else return@let GLFW.glfwGetKey(handle, it) == GLFW.GLFW_PRESS
             }
 
         operator fun setValue(u: Any?, property: KProperty<*>, v: Boolean) {

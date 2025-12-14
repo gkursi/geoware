@@ -1,4 +1,4 @@
-package xyz.qweru.geo.client.helper.player.inventory
+package xyz.qweru.geo.client.helper.inventory
 
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap
 import it.unimi.dsi.fastutil.objects.Object2IntMap

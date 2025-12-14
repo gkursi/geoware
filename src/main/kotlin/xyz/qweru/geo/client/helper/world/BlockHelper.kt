@@ -6,7 +6,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.enchantment.Enchantments
 import net.minecraft.world.level.block.state.BlockState
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.item.getEnchantmentLevel
