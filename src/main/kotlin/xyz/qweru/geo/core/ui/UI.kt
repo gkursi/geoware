@@ -3,7 +3,9 @@ package xyz.qweru.geo.core.ui
 import multirender.nanovg.NanoState
 import multirender.nanovg.event.NanoRenderEvent
 import multirender.nanovg.util.math.Vec2f
+import multirender.wm.WindowManager
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.ui.gui.GUI
 import xyz.qweru.multirender.api.API
 import java.awt.Color
 
@@ -14,27 +16,12 @@ object UI {
     fun init() {
         API.events.subscribe(this)
         NanoState.init()
+        GUI.init()
     }
 
     @Handler
     fun onRender(e: NanoRenderEvent) {
-//        e.context.shape {
-//            path {
-//                roundedRectangle(
-//                    Vec2f.absolute(2f, 2f),
-//                    Vec2f.relative(0.5f, .5f),
-//                    5f
-//                )
-//            }
-//            fill { paint = boxGradient(
-//                Vec2f.absolute(2f, 2f),
-//                Vec2f.relative(0.5f, 0.5f),
-//                colorB,
-//                colorA,
-//                20f,
-//                1000f
-//            ) }
-//        }
+//        GUI.render(e.context)
     }
 
 }

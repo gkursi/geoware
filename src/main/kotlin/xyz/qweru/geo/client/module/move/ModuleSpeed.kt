@@ -1,5 +1,6 @@
 package xyz.qweru.geo.client.module.move
 
+import kotlinx.io.files.Path
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
@@ -94,6 +95,10 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
     }
 
     fun vulcanSpeed(e: PostMovementTickEvent) {
+        if (mc.thePlayer.isFallFlying) {
+            PacketHelper.sendPacket(ServerboundPlayerCommandPacket(mc.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING))
+        }
+
         if (mc.thePlayer.airTicks == airTick) {
             e.velY += downVel
             val vec: Vec3 = mc.thePlayer.lookAngle

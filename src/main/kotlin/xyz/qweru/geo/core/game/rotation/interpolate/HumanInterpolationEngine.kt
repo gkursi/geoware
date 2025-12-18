@@ -3,15 +3,18 @@ package xyz.qweru.geo.core.game.rotation.interpolate
 import net.minecraft.util.Mth
 import org.joml.Math.clamp
 import xyz.qweru.geo.client.event.GameRenderEvent
+import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.rotation.InterpolationEngine
 import xyz.qweru.geo.core.game.rotation.RotationHandler.rotationConfig
 import xyz.qweru.geo.core.game.rotation.RotationHandler.random
+import xyz.qweru.geo.extend.kotlin.log.dbg
 import xyz.qweru.geo.extend.kotlin.math.inRange
 import xyz.qweru.geo.extend.kotlin.math.wrapped
 import xyz.qweru.multirender.api.API
 import kotlin.math.abs
+import kotlin.math.max
 
 object HumanInterpolationEngine : InterpolationEngine {
     private var yawMoved = 0f
@@ -82,10 +85,10 @@ object HumanInterpolationEngine : InterpolationEngine {
 
         private fun calculateSpeedup(current: Float, dist: Float): Float {
             val max = rotationConfig.speedYaw
-            val percent = current / dist
+            val percent = current / max(dist, 1f)
 
-            return if (percent >= max) 1f
-            else percent / max
+            return if (percent >= max) 2f
+            else 1f + percent / max
         }
     }
 }

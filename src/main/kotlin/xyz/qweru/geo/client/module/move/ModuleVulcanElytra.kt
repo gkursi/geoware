@@ -4,9 +4,11 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.Items
 import org.lwjgl.glfw.GLFW
+import xyz.qweru.geo.client.event.PostCrosshair
 import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.game.movement.MovementTicker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.canGlide
@@ -20,7 +22,8 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
     val mode by sg.enum("Mode", "Mode", Mode.CONTROL)
     val bounce by sg.boolean("Bounce", "Should you bounce off the ground", false)
     val yToKeep by sg.float("Keep Y", "Which y coord to stay above", 320f, -90f, 600f)
-        .visible { mode == Mode.KEEP_Y}
+        .visible { mode == Mode.KEEP_Y }
+    val moveTick by sg.int("Move Tick", "Move tick speed", 19, 1, 20)
 
     val sb = settings.group("Boost")
     val boostGlide by sb.float("Boost", "How much to boost y elytra movement", 0.25f, -3f, 3f)
@@ -35,6 +38,11 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
     var gliding = false
     var canGlide = false
     var onGround = false
+
+    @Handler
+    private fun crosshair(e: PostCrosshair) {
+        MovementTicker.tickSpeed = moveTick
+    }
 
     @Handler
     private fun onVelocity(event: PostMovementTickEvent) {
@@ -70,8 +78,8 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
 
         if (gliding) {
             val mul = if (GameOptions.moving) hMul else 1f
-            event.velX = event.velX * mul
-            event.velZ = event.velZ * mul
+            event.velX *= mul
+            event.velZ *= mul
             event.clampHorizontal(hBoostLimit.toDouble())
         }
 

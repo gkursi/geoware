@@ -1,6 +1,7 @@
 package xyz.qweru.geo.client.helper.math.random
 
 import xyz.qweru.geo.client.helper.math.FloatingPointHelper
+import xyz.qweru.geo.client.helper.math.RandomProvider
 import kotlin.math.round
 
 /**
@@ -21,10 +22,10 @@ class LayeredRandom : RandomProvider {
 
     override fun next(): Double = layer.get(0.0)
 
-    fun int(range: IntRange) = int(range.start, range.endInclusive)
+    fun int(range: IntRange) = int(range.first, range.last)
     fun int(min: Int, max: Int) = round(min + ((max - min) * next())).toInt()
 
-    fun long(range: LongRange) = long(range.start, range.endInclusive)
+    fun long(range: LongRange) = long(range.first, range.last)
     fun long(min: Long, max: Long) = round(min + ((max - min) * next())).toLong()
 
     fun float(range: ClosedRange<Float>) = float(range.start, range.endInclusive)

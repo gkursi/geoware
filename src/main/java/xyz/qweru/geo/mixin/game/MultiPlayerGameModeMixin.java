@@ -54,7 +54,7 @@ public abstract class MultiPlayerGameModeMixin implements IMultiplayerGameMode {
 
     @Inject(method = "startPrediction", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", shift = At.Shift.BEFORE))
     private void onPredict(ClientLevel clientLevel, PredictiveAction predictiveAction, CallbackInfo ci, @Local int seq, @Local Packet<ServerGamePacketListener> packet) {
-        Notifications.INSTANCE.info("Predicting sequence %s for packet %s".formatted(seq, packet.type()));
+//        Notifications.INSTANCE.info("Predicting sequence %s for packet %s".formatted(seq, packet.type()));
     }
 
     @Inject(method = "startDestroyBlock", at = @At("HEAD"), cancellable = true)

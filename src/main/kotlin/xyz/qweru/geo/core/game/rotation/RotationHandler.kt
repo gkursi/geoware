@@ -101,8 +101,8 @@ object RotationHandler : ProposalHandler<Rotation>() {
                 lastSentRot[1] = packet.getXRot(lastSentRot[1])
             }
             is ServerboundUseItemPacketAccessor -> {
-                packet.geo_setXRot(lastSentRot[0])
-                packet.geo_setYRot(lastSentRot[1])
+//                packet.geo_setYRot(lastSentRot[0])
+//                packet.geo_setXRot(lastSentRot[1])
             }
             is ServerboundUseItemOnPacket -> {
                 Notifications.info("UseItemOn with sequence ${packet.sequence}")

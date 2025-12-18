@@ -23,6 +23,7 @@ abstract class Module(
             val prev = field
             field = if (alwaysEnabled) true else value
             if (field != prev) {
+                Notifications.onToggle(this)
                 if (field) {
                     EventBus.subscribe(this)
                     enable()
@@ -30,7 +31,6 @@ abstract class Module(
                     EventBus.unsubscribe(this)
                     disable()
                 }
-                Notifications.onToggle(this)
             }
         }
     val inGame: Boolean get() = mc.level != null && mc.player != null
