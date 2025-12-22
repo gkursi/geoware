@@ -1,79 +1,100 @@
 package xyz.qweru.geo.core.game.interaction
 
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket
+import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
+import net.minecraft.network.protocol.game.ServerboundUseItemPacket
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.entity.Entity
-import net.minecraft.world.phys.Vec3
 import xyz.qweru.geo.client.event.PacketSendEvent
-import xyz.qweru.geo.client.event.PreMoveSendEvent
-import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.network.PacketHelper
+import xyz.qweru.geo.client.helper.player.GameOptions
+import xyz.qweru.geo.client.helper.version.ViaHelper
+import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.helper.manage.Proposal
 import xyz.qweru.geo.core.helper.manage.ProposalHandler
-import xyz.qweru.geo.core.ui.notification.Notifications
-import xyz.qweru.geo.extend.minecraft.network.isInteract
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
-object InteractionManager : ProposalHandler<Interaction>() {
+object InteractionManager : ProposalHandler<InteractionManager.Action>() {
 
-    private var canSendPackets = true
-    private var extraPackets = 0
+    val useItem = object : State() {
+        override fun applyClient() {
+            GameOptions.syncBind(GameOptions::useKey)
+            if (client) {
+                if (mc.thePlayer.isUsingItem) return
+                mc.player?.startUsingItem(useHand)
+//                GameOptions.useKey = true
+            } else {
+                if (!mc.thePlayer.isUsingItem) return
+                mc.player?.stopUsingItem()
+            }
+        }
 
-    override fun handleProposal() {
-        current?.interact()
-        super.handleProposal()
+        override fun applyServer() {
+            if (server) {
+                PacketHelper.useItemAndSwing(useHand)
+            } else {
+                PacketHelper.sendPacket(
+                    ServerboundPlayerActionPacket(
+                        ServerboundPlayerActionPacket.Action.RELEASE_USE_ITEM, BlockPos.ZERO, ViaHelper.getReleaseItemDirection()
+                    )
+                )
+            }
+        }
+
     }
 
-    @Handler
-    private fun sendInteraction(e: PreMoveSendEvent) {
-        handleProposal()
-    }
-
-    @Handler
-    private fun preTick(e: PreTickEvent) {
-        canSendPackets = true
-        extraPackets = 0
-    }
+    var useHand = InteractionHand.MAIN_HAND
 
     @Handler
     private fun sendPacket(e: PacketSendEvent) {
-        val packet = e.packet
-        if (!packet.isInteract) return
-        if (!canSendPackets) {
-//            e.cancelled = true
-            extraPackets++
-            Notifications.warning("Duplicate interact packet (x$extraPackets)")
-        }
-        canSendPackets = false
-    }
-
-    fun builder(type: Type, block: Config.() -> Unit): Interaction {
-        block.invoke(Config)
-        return object : Interaction {
-            var interacted = false
-            val hand = Config.hand
-            val position = Config.position
-            val entity = Config.entity
-
-            override fun interact() {
-                when (type) {
-                    Type.ATTACK -> PacketHelper.attackAndSwing(entity!!)
-                    Type.USE_ITEM -> PacketHelper.useItemAndSwing(hand)
-                    Type.INTERACT -> PacketHelper.interactEntityAndSwing(entity!!, hand)
-                    Type.INTERACT_AT -> PacketHelper.interactAtEntityAndSwing(entity!!, hand, position)
+        when (val packet = e.packet) {
+            is ServerboundUseItemPacket, is ServerboundUseItemOnPacket -> {
+                useItem.server = true
+            }
+            is ServerboundPlayerActionPacket -> {
+                if (packet.action == ServerboundPlayerActionPacket.Action.RELEASE_USE_ITEM) {
+                    useItem.server = false
                 }
             }
-
-            override fun isComplete() = interacted
         }
     }
 
-    object Config {
-        var hand = InteractionHand.MAIN_HAND
-        var position: Vec3 = Vec3.ZERO
-        var entity: Entity? = null
+    fun releaseUsedItem(priority: Int) = propose(
+        proposal = {
+            useItem.server = false
+            useItem.applyServer()
+        },
+        priority = priority
+    )
+
+    fun useItem(priority: Int, hand: InteractionHand) = propose(
+        proposal = {
+            useHand = hand
+            useItem.server = true
+            useItem.applyServer()
+        },
+        priority = priority
+    )
+
+    abstract class State {
+        var client: Boolean = false
+        var server: Boolean = false
+
+        open fun syncToServer() {
+            client = server
+            applyClient()
+        }
+
+        open fun syncToClient() {
+            server = client
+            applyServer()
+        }
+
+        abstract fun applyClient()
+        abstract fun applyServer()
     }
 
-    enum class Type {
-        ATTACK, INTERACT, INTERACT_AT, USE_ITEM
-    }
-
+    fun interface Action : (InteractionManager) -> Unit, Proposal
 }

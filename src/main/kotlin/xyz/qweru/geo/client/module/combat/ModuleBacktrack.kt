@@ -2,34 +2,26 @@ package xyz.qweru.geo.client.module.combat
 
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.common.ClientboundDisconnectPacket
-import net.minecraft.network.protocol.game.ClientGamePacketListener
-import net.minecraft.network.protocol.game.ClientboundEntityPositionSyncPacket
-import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket
-import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket
-import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
-import net.minecraft.network.protocol.game.ClientboundSetHealthPacket
-import net.minecraft.network.protocol.game.ClientboundSoundPacket
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
-import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
+import net.minecraft.network.protocol.game.*
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.entity.PositionMoveRotation
 import net.minecraft.world.phys.Vec3
 import xyz.qweru.basalt.EventPriority
-import xyz.qweru.geo.client.helper.world.TrackedPosition
 import xyz.qweru.geo.client.event.HandleTasksEvent
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.helper.network.PacketHelper
+import xyz.qweru.geo.client.helper.timing.TimerDelay
+import xyz.qweru.geo.client.helper.world.TrackedPosition
+import xyz.qweru.geo.client.helper.world.inRange
+import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.combat.CombatState
 import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.extend.kotlin.log.dbg
+import xyz.qweru.geo.extend.minecraft.entity.pos
 import xyz.qweru.geo.extend.minecraft.entity.relativeMotion
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
-import xyz.qweru.geo.client.helper.timing.TimerDelay
-import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.extend.kotlin.log.dbg
-import xyz.qweru.geo.extend.minecraft.entity.inRange
-import xyz.qweru.geo.extend.minecraft.entity.pos
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you an advantage", Category.COMBAT) {
@@ -149,7 +141,7 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you an advant
     private fun shouldBacktrack(): Boolean {
         if (requireTarget && TargetTracker.target == null) return false
         return always || (CombatState.SELF.combo >= combo && combo > 0) || TargetTracker.target?.let { target ->
-            target.relativeMotion.x < 0 && backwards || target.inRange(range) && inRange
+            target.relativeMotion.x < 0 && backwards || trackedPosition.inRange(range) && inRange
         } ?: false
     }
 

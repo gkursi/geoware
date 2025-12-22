@@ -54,6 +54,7 @@ class Modules() : System("modules", Type.ROOT) {
         add(ModulePhaseWalk())
         add(ModuleLimiter())
         add(ModuleMine())
+        add(ModuleFastProjectile())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }

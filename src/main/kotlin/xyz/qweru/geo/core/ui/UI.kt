@@ -2,11 +2,10 @@ package xyz.qweru.geo.core.ui
 
 import multirender.nanovg.NanoState
 import multirender.nanovg.event.NanoRenderEvent
-import multirender.nanovg.util.math.Vec2f
-import multirender.wm.WindowManager
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.ui.gui.GUI
+import xyz.qweru.geo.core.ui.gui.NanoGUI
 import xyz.qweru.multirender.api.API
+import xyz.qweru.multirender.api.input.event.KeyPressEvent
 import java.awt.Color
 
 object UI {
@@ -16,12 +15,17 @@ object UI {
     fun init() {
         API.events.subscribe(this)
         NanoState.init()
-        GUI.init()
+        NanoGUI.init()
     }
 
     @Handler
     fun onRender(e: NanoRenderEvent) {
-//        GUI.render(e.context)
+        NanoGUI.render(e.context)
+    }
+
+    @Handler
+    fun keyPress(e: KeyPressEvent) {
+        NanoGUI.onKey(e.key)
     }
 
 }

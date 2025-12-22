@@ -20,6 +20,7 @@ import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.combat.Attack
 import xyz.qweru.geo.core.game.combat.CombatState
 import xyz.qweru.geo.core.game.combat.TargetTracker
+import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.kotlin.log.dbg
@@ -51,6 +52,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         .visible { awaitCrit }
     val itemCooldown by sGeneral.float("Cooldown", "Vanilla item cooldown required to attack", 1f, 0f, 1f)
     val sprintReset by sGeneral.boolean("Sprint Reset", "Automatically resets sprint on hit", true)
+    val unblock by sGeneral.boolean("Unblock", "Automatically unblock before hit", true)
     val noAxeCooldown by sTarget.boolean("Fast Axe", "Ignore item cooldown when holding an axe if the target is blocking", true)
 
     val failAttack by sFailAttack.boolean("Fail Attack", "Try to attack (and fail) if the target is slightly out of reach", false)
@@ -69,6 +71,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     val timer = TimerDelay()
     val random = Random()
     var nextDamage = Attack()
+    val block: ModuleAutoBlock by SystemCache.getModule()
 
     @Handler
     private fun onTick(e: PostMovementTickEvent) {
@@ -79,6 +82,13 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
 
         if (crosshair is EntityHitResult) {
             val en = crosshair.entity
+
+            if (block.enabled && block.blocking) {
+                if (unblock)
+                    block.unblock()
+                return
+            }
+
             if (en is Player && checkPlayer(en)) return
             if (random.nextFloat() > miss) {
                 attack(en)
@@ -138,7 +148,7 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
         }
 
         val item = InvHelper.getMainhand().item
-        if (item is AxeItem && target is LivingEntity && target.isBlocking) {
+        if (item is AxeItem && target is LivingEntity && target.isBlocking && noAxeCooldown) {
             return true
         }
         if (item !is AxeItem && InvHelper.isSword(item) && weaponOnly) {

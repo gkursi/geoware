@@ -1,45 +1,75 @@
 package xyz.qweru.geo.client.module.combat
 
+import net.minecraft.world.InteractionHand
 import xyz.qweru.basalt.EventPriority
-import xyz.qweru.geo.client.helper.player.GameOptions
-import xyz.qweru.geo.client.event.PreTickEvent
+import xyz.qweru.geo.client.event.PacketSendEvent
+import xyz.qweru.geo.client.event.PostTickEvent
+import xyz.qweru.geo.client.event.PreCrosshair
+import xyz.qweru.geo.client.event.PreMoveSendEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
-import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.client.helper.inventory.InvHelper
+import xyz.qweru.geo.client.helper.math.RangeHelper
+import xyz.qweru.geo.client.helper.network.ChatHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.game.interaction.InteractionManager
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.network.isInteract
 
 class ModuleAutoBlock : Module("AutoBlock", "Automatically block", Category.COMBAT) {
+
+    val sg = settings.group("General")
+    val mode by sg.enum("Mode", "Auto block mode", Mode.LEGIT)
+    val delay by sg.longRange("Delay", "Delay", 50L..100L, 0L..500L)
 
     val sc = settings.group("Conditions")
     val fov by sc.float("FOV", "Fov to block", 90f, 0f, 180f)
     val distance by sc.floatRange("Distance", "Required distance to the player", 0f..3.5f, 0f..8f)
 
-    val timer = TimerDelay()
+    private var invert = false
+    private val timer = TimerDelay()
     var blocking = false
         private set
 
-    @Handler(priority = EventPriority.FIRST)
-    private fun beforePreTick(e: PreTickEvent) {
-        if (!inGame || !canBlock()) {
-            if (blocking) blocking = false
-            GameOptions.syncBind(GameOptions::useKey)
-            return
+    @Handler
+    private fun preCrosshair(e: PreCrosshair) {
+        if (!inGame || mode != Mode.LEGIT) return
+        invert = if (!blocking) {
+            canBlock() && shouldBlock() && timer.hasPassed()
+        } else {
+            !canBlock() || !shouldBlock()
         }
-        blocking = shouldBlock() && timer.hasPassed()
-        GameOptions.useKey = blocking
+    }
+
+    fun unblock() {
+        if (!blocking) return
+        invert = true
+    }
+
+    @Handler
+    private fun packetSend(e: PacketSendEvent) {
+        if (!e.packet.isInteract) return
+        invert = false
     }
 
     @Handler(priority = EventPriority.LAST)
-    private fun afterPreTick(e: PreTickEvent) {
-        if (!inGame || !canBlock()) return
-        GameOptions.useKey = blocking
+    private fun postTick(e: PreMoveSendEvent) {
+        if (!inGame || mode != Mode.LEGIT || !invert) return
+        invert = false
+        blocking = !blocking
+        InteractionManager.useItem.client = blocking
+        InteractionManager.useItem.applyClient()
+        timer.reset(delay)
     }
 
     private fun shouldBlock(): Boolean =
         TargetHelper.findTarget(distance, RangeHelper.of(0f, 0f), fov) != null
 
     private fun canBlock(): Boolean = InvHelper.isInMainhand { InvHelper.isSword(it.item) }
+
+    enum class Mode {
+        LEGIT
+    }
 }
