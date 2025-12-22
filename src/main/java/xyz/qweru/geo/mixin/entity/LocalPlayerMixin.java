@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.qweru.geo.abstraction.network.ClientConnection;
+import xyz.qweru.geo.client.helper.network.ClientConnection;
 import xyz.qweru.geo.client.event.*;
 import xyz.qweru.geo.client.module.move.ModuleNoSlow;
 import xyz.qweru.geo.core.event.EventBus;

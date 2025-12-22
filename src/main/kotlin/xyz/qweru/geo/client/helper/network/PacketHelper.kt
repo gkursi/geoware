@@ -2,35 +2,25 @@ package xyz.qweru.geo.client.helper.network
 
 import net.minecraft.network.PacketListener
 import net.minecraft.network.protocol.Packet
-import net.minecraft.network.protocol.game.ServerGamePacketListener
-import net.minecraft.network.protocol.game.ServerPacketListener
-import net.minecraft.network.protocol.game.ServerboundInteractPacket
-import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
-import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket
-import net.minecraft.network.protocol.game.ServerboundSwingPacket
-import net.minecraft.network.protocol.game.ServerboundUseItemPacket
+import net.minecraft.network.protocol.game.*
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
-import xyz.qweru.geo.abstraction.game.Hand
-import xyz.qweru.geo.abstraction.network.ClientConnection
-import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.client.helper.anticheat.AntiCheat
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.version.ViaHelper
+import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.imixin.IMultiplayerGameMode
 
 object PacketHelper {
-    fun sendPacket(packet: Packet<out ServerPacketListener>, anticheat: AntiCheat = AntiCheat.NONE): Boolean {
-        val result = anticheat.setupPacket(packet)
-        if (!result.pass) return false
+    fun sendPacket(packet: Packet<out ServerPacketListener>, anticheat: AntiCheat = AntiCheat.none) {
+        anticheat.setupPacket(packet)
         ClientConnection.sendPacket(packet)
         anticheat.finishPacket(packet)
-        return true
     }
 
-    inline fun sendSequencedPacket(anticheat: AntiCheat = AntiCheat.NONE, crossinline block: (Int) -> Packet<ServerGamePacketListener>) {
+    inline fun sendSequencedPacket(anticheat: AntiCheat = AntiCheat.none, crossinline block: (Int) -> Packet<ServerGamePacketListener>) {
         lateinit var packet: Packet<ServerGamePacketListener>
         (mc.gameMode as IMultiplayerGameMode).geo_sequencedPacket {
             packet = block.invoke(it)
@@ -42,19 +32,19 @@ object PacketHelper {
 
     fun attackAndSwing(entity: Entity, silentSwing: Boolean = false) {
         if (ViaHelper.isReverseHitOrder()) {
-            swing(Hand.MAIN_HAND, silentSwing)
+            swing(InteractionHand.MAIN_HAND, silentSwing)
             attack(entity)
         } else {
             attack(entity)
-            swing(Hand.MAIN_HAND, silentSwing)
+            swing(InteractionHand.MAIN_HAND, silentSwing)
         }
     }
 
-    fun swing(hand: Hand, silentSwing: Boolean = false) {
+    fun swing(hand: InteractionHand, silentSwing: Boolean = false) {
         if (silentSwing) {
-            sendPacket(ServerboundSwingPacket(hand.delegate))
+            sendPacket(ServerboundSwingPacket(hand))
         } else {
-            mc.thePlayer.swing(hand.delegate)
+            mc.thePlayer.swing(hand)
         }
     }
 
@@ -77,7 +67,23 @@ object PacketHelper {
 
     fun useItemAndSwing(hand: InteractionHand, yaw: Float = mc.thePlayer.yRot, pitch: Float = mc.thePlayer.xRot, silentSwing: Boolean = false) {
         useItem(hand, yaw, pitch)
-        swing(Hand.MAIN_HAND, silentSwing)
+        swing(InteractionHand.MAIN_HAND, silentSwing)
+    }
+
+    fun interactEntity(entity: Entity, hand: InteractionHand, secondary: Boolean = false) =
+        sendPacket(ServerboundInteractPacket.createInteractionPacket(entity, secondary, hand))
+
+    fun interactEntityAndSwing(entity: Entity, hand: InteractionHand, secondary: Boolean = false, silentSwing: Boolean = false) {
+        interactEntity(entity, hand, secondary)
+        swing(hand, silentSwing)
+    }
+
+    fun interactAtEntity(entity: Entity, hand: InteractionHand, pos: Vec3, secondary: Boolean = false) =
+        sendPacket(ServerboundInteractPacket.createInteractionPacket(entity, secondary, hand, pos))
+
+    fun interactAtEntityAndSwing(entity: Entity, hand: InteractionHand, pos: Vec3, secondary: Boolean = false, silentSwing: Boolean = false) {
+        interactAtEntity(entity, hand, pos, secondary)
+        swing(hand, silentSwing)
     }
 
     // generics stuff

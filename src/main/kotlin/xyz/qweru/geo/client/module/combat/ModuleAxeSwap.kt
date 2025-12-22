@@ -2,7 +2,7 @@ package xyz.qweru.geo.client.module.combat
 
 import net.minecraft.world.item.AxeItem
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.combat.TargetTracker

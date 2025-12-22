@@ -5,8 +5,8 @@ package xyz.qweru.geo.core.game.combat
  * @param crit See AttackHelper#canCrit
  * @param critPossible See AttackHelper#willCrit
  *
- * @see xyz.qweru.geo.client.helper.player.AttackHelper.willCrit
- * @see xyz.qweru.geo.client.helper.player.AttackHelper.canCrit
+ * @see xyz.qweru.geo.client.helper.player.AttackConditions.willCrit
+ * @see xyz.qweru.geo.client.helper.player.AttackConditions.canCrit
  */
 data class Attack(
     @Volatile var sprint: Boolean = false,

@@ -1,17 +1,17 @@
 package xyz.qweru.geo.client.helper.math
 
-import net.minecraft.util.Mth
+import xyz.qweru.geo.extend.kotlin.math.wrapped
 
 object RangeHelper {
-    fun <T: Comparable<T>> from(x: T, y: T): ClosedRange<T> =
+    fun <T: Comparable<T>> of(x: T, y: T): ClosedRange<T> =
         object : ClosedRange<T> {
-            override val start: T = x
-            override val endInclusive: T = y
+            override val start: T = if (y < x) y else x
+            override val endInclusive: T = if (x > y) x else y
         }
 
-    fun fromPoint(point: Float, dev: Float, mod: (Float) -> Float = { it }): ClosedRange<Float> =
-        from(mod.invoke(point - dev), mod.invoke(point + dev))
+    fun ofPoint(point: Float, dev: Float, mod: (Float) -> Float = { it }): ClosedRange<Float> =
+        of(mod.invoke(point - dev), mod.invoke(point + dev))
 
-    fun fromRotationPoint(point: Float, dev: Float)
-        = fromPoint(point, dev, mod = { Mth.wrapDegrees(it) })
+    fun ofRotationPoint(point: Float, dev: Float)
+        = ofPoint(point, dev) { it.wrapped }
 }

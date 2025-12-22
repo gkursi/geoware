@@ -20,7 +20,7 @@ class FloatRangeSetting(name: String, description: String, default: ClosedRange<
     override fun parseAndSet(string: String) {
         val parts = string.split(" ")
         if (parts.size != 2) throw Exception()
-        value = RangeHelper.from(parts[0].toFloat(), parts[1].toFloat())
+        value = RangeHelper.of(parts[0].toFloat(), parts[1].toFloat())
     }
 
     override fun save(jsonObject: JsonObject) {
@@ -29,6 +29,6 @@ class FloatRangeSetting(name: String, description: String, default: ClosedRange<
     }
 
     override fun load(jsonObject: JsonObject) {
-        value = RangeHelper.from(jsonObject.get("min")?.asFloat ?: minMax.start, jsonObject.get("max")?.asFloat ?: minMax.endInclusive)
+        value = RangeHelper.of(jsonObject.get("min")?.asFloat ?: minMax.start, jsonObject.get("max")?.asFloat ?: minMax.endInclusive)
     }
 }

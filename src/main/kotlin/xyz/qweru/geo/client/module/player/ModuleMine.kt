@@ -5,10 +5,10 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket
+import net.minecraft.world.InteractionHand
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.BlockHitResult
-import xyz.qweru.geo.abstraction.game.Hand
 import xyz.qweru.geo.client.event.AttackBlockEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.network.PacketHelper
@@ -155,7 +155,7 @@ class ModuleMine : Module("Mine", "Automatically mine blocks", Category.PLAYER) 
         private fun sendAction(action: ServerboundPlayerActionPacket.Action) {
             mc.thePlayer.displayClientMessage(Component.literal("sent $action"), false)
             if (swing)
-                PacketHelper.swing(Hand.MAIN_HAND, silentSwing)
+                PacketHelper.swing(InteractionHand.MAIN_HAND, silentSwing)
             if (action == ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK)
                 PacketHelper.sendPacket(ServerboundPlayerActionPacket(action, block?.pos ?: return, block?.direction ?: return))
             else

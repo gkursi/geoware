@@ -3,11 +3,12 @@ package xyz.qweru.geo.client.helper.player
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.helper.entity.Target
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.game.rotation.Rotation
 import xyz.qweru.geo.core.game.rotation.RotationConfig
+import xyz.qweru.geo.extend.kotlin.math.wrapped
 import xyz.qweru.geo.extend.minecraft.entity.pos
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import kotlin.math.sqrt
@@ -85,23 +86,40 @@ object RotationHelper {
         return actualYaw
     }
 
+    fun unwrapYaw(yaw: Float, current: Float): Float =
+        current + (yaw.wrapped - current.wrapped).wrapped
+
+    /**
+     * converts yaw from [-180; 180] to [0; 360]
+     */
+    fun circularDistance(start: Float, x: Float): Float {
+        var d = (x - start).wrapped
+        if (d < 0) d += 360f
+        return d
+    }
+
     enum class TargetPoint(val value: (Entity) -> Vec3) {
         HEAD({ Vec3(0.0, it.eyeHeight.toDouble(), 0.0) }),
         BODY({ Vec3(0.0, it.bbHeight * 0.5, 0.0) }),
         LEGS({ Vec3(0.0, it.bbHeight * 0.1, 0.0) }),
-        SMART({
+        NEAR({
             val dimensions = it.getDimensions(it.pose)
-            var bestAngle = 720f
+            var bestAngle = Float.MAX_VALUE
             var point = Vec3(0.0, 1.0, 0.0)
             
-            for (funX in pointsX) {
+            for (funX in pointsH) {
                 val x = funX.invoke(dimensions.width).toDouble()
-                for (funY in pointsY) {
+                for (funY in pointsV) {
                     val y = funY.invoke(dimensions.height).toDouble()
-                    val angle = getAngle(it.pos.add(x, y, 0.0))
-                    if (angle < bestAngle) {
-                        bestAngle = angle
-                        point = Vec3(x, y, 0.0)
+                    for (funZ in pointsH) {
+                        val z = funZ.invoke(dimensions.width).toDouble()
+
+                        val vec = Vec3(x, y, z)
+                        val angle = getAngle(it.pos.add(vec))
+                        if (angle < bestAngle) {
+                            bestAngle = angle
+                            point = vec
+                        }
                     }
                 }
             }
@@ -110,14 +128,13 @@ object RotationHelper {
         });
 
         companion object {
-            private val pointsX = arrayOf<(Float) -> Float>(
-                {w -> 0f},
+            private val pointsH = arrayOf<(Float) -> Float>(
+                {w -> 0.1f * w},
+                {w -> 0.25f * w},
                 {w -> 0.5f * w},
-                {w -> 0.75f * w},
-                {w -> 0.9f * w},
             )
 
-            private val pointsY = arrayOf<(Float) -> Float>(
+            private val pointsV = arrayOf<(Float) -> Float>(
                 {h -> 0.5f * h},
                 {h -> 0.75f * h},
                 {h -> 0.9f * h},

@@ -1,4 +1,4 @@
-package xyz.qweru.geo.client.helper.player.inventory
+package xyz.qweru.geo.client.helper.inventory
 
 import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket
 import net.minecraft.world.entity.EquipmentSlot
@@ -10,7 +10,6 @@ import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.event.PostTickEvent
 import xyz.qweru.geo.client.helper.network.PacketHelper
-import xyz.qweru.geo.client.helper.player.SlotHelper
 import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.event.Handler

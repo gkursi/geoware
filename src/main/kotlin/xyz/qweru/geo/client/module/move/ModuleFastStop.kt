@@ -1,6 +1,6 @@
 package xyz.qweru.geo.client.module.move
 
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.module.Category

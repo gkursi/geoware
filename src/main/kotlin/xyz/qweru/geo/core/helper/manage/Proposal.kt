@@ -1,5 +1,6 @@
 package xyz.qweru.geo.core.helper.manage
 
 interface Proposal {
-    fun isComplete(): Boolean
+    @Deprecated("to be removed")
+    fun isComplete(): Boolean = true
 }

@@ -1,7 +1,7 @@
 package xyz.qweru.geo.client.module.move
 
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer

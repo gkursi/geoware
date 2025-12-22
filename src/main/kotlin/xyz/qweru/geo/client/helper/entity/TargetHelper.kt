@@ -20,7 +20,7 @@ object TargetHelper {
     val friends: Friends by SystemCache.get()
 
     fun findTarget(
-        range: ClosedRange<Float>, wallRange: ClosedRange<Float> = RangeHelper.from(0f, 0f),
+        range: ClosedRange<Float>, wallRange: ClosedRange<Float> = 0f..0f,
         fov: Float = 360f, invisible: Boolean = true
     ): Target? {
         var bestRange = Double.MAX_VALUE
@@ -52,7 +52,7 @@ object TargetHelper {
         player.hasEffect(MobEffects.INVISIBILITY) && !hasArmor(player) && !hasItems(player)
 
     fun findTarget(range: Float, wallRange: Float, fov: Float, invisible: Boolean = true) =
-        findTarget(RangeHelper.from(0f, range), RangeHelper.from(0f, wallRange), fov, invisible)
+        findTarget(RangeHelper.of(0f, range), RangeHelper.of(0f, wallRange), fov, invisible)
 
     fun hasArmor(p: Player): Boolean =
         !p.getItemBySlot(EquipmentSlot.HEAD).isEmpty || !p.getItemBySlot(EquipmentSlot.CHEST).isEmpty

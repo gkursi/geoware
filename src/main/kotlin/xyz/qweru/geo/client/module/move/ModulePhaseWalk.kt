@@ -31,9 +31,9 @@ class ModulePhaseWalk : Module("PhaseWalk", "Clip trough blocks on dupeanarchy",
     private fun onEdge(): Boolean {
         val pointX = FloatingPointHelper.point(abs(mc.thePlayer.x))
         val pointZ = FloatingPointHelper.point(abs(mc.thePlayer.z))
-        return RangeHelper.from(0.29, 0.31).let {
+        return RangeHelper.of(0.29, 0.31).let {
             it.inRange(pointX) || it.inRange(pointZ)
-        } || RangeHelper.from(0.69, 0.71).let {
+        } || RangeHelper.of(0.69, 0.71).let {
             it.inRange(pointX) || it.inRange(pointZ)
         }
     }

@@ -14,8 +14,8 @@ import kotlin.reflect.full.findAnnotation
 abstract class Setting<T : Setting<T, V>, V>(val name: String, val description: String, val default: V, val group: SettingGroup) {
     private var changeListener: (T) -> Unit = {}
     private var visibleProvider: () -> Boolean = {true}
-    private lateinit var usage: Array<SettingUsage> // TODO: maybe replace with a (Hash)Set
-    val displayName = WordUtils.capitalize(name.replace("_", " "))
+    private lateinit var usage: Array<SettingUsage> // TODO: maybe replace with a set
+    val displayName: String = WordUtils.capitalize(name.replace("_", " "))
 
     val visible: Boolean
         get() = visibleProvider.invoke()

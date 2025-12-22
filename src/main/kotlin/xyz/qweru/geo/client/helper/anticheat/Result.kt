@@ -1,6 +1,6 @@
 package xyz.qweru.geo.client.helper.anticheat
 
-enum class EvalResult(val pass: Boolean) {
+enum class Result(val pass: Boolean) {
     SUCCESS(true),
     FAIL(false)
 }

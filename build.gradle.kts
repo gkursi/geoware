@@ -47,6 +47,7 @@ dependencies {
     // render
     implementation("xyz.qweru:multirender-api:1.0-SNAPSHOT")
     implementation("xyz.qweru:multirender-nanovg:1.0-SNAPSHOT")
+    implementation("xyz.qweru:multirender-twm:1.0-SNAPSHOT")
     modRuntimeOnly("xyz.qweru:multirender-1-21-8:0.0.1")?.let { include(it) }
 }
 

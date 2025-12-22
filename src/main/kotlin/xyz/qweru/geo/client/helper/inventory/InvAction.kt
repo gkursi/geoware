@@ -1,9 +1,8 @@
-package xyz.qweru.geo.client.helper.player.inventory
+package xyz.qweru.geo.client.helper.inventory
 
 import net.minecraft.world.inventory.ClickType
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
-import xyz.qweru.geo.client.helper.player.SlotHelper
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.item.isOf

@@ -3,6 +3,7 @@ package xyz.qweru.geo.client.event
 import net.minecraft.world.phys.Vec3
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.world.withStrafe
 import xyz.qweru.geo.mixin.math.Vec3Accessor
 import kotlin.math.sqrt
 
@@ -39,6 +40,20 @@ object PostMovementTickEvent {
             velY = (velY / magnitude) * maxMag
             velZ = (velZ / magnitude) * maxMag
         }
+    }
+
+    fun addStrafe(speed: Float) {
+        val vec = Vec3.ZERO.withStrafe(speed = speed.toDouble())
+        velX += vec.x
+        velY += vec.y
+        velZ += vec.z
+    }
+
+    fun setStrafe(speed: Float) {
+        val vec = Vec3.ZERO.withStrafe(speed = speed.toDouble())
+        velX = vec.x
+        velY = vec.y
+        velZ = vec.z
     }
 }
 

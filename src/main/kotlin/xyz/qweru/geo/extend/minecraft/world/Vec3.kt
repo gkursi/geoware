@@ -1,7 +1,7 @@
 package xyz.qweru.geo.extend.minecraft.world
 
 import net.minecraft.world.phys.Vec3
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.helper.player.RotationHelper
 import kotlin.math.cos
 import kotlin.math.hypot
