@@ -29,9 +29,7 @@ object HumanInterpolationEngine : InterpolationEngine {
     }
 
     override fun stepYaw(start: Float, end: Float, current: Float): Float =
-        step(start, end, current, yaw).also {
-//            println("Stepping $it yaw (dist=${end.wrapped - start.wrapped})")
-        }
+        step(start, end, current, yaw)
 
     override fun stepPitch(start: Float, end: Float, current: Float): Float =
         step(start, end, current, pitch)

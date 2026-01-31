@@ -1,30 +1,29 @@
 package xyz.qweru.geo.core.game.rotation
 
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
-import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket
 import net.minecraft.world.phys.HitResult
 import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.*
+import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.client.helper.math.random.LayeredRandom
+import xyz.qweru.geo.client.helper.network.ChatHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
-import xyz.qweru.geo.client.helper.player.RotationHelper.circularDistance
 import xyz.qweru.geo.client.module.config.ModuleRotation
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.helper.manage.ProposalHandler
 import xyz.qweru.geo.core.game.rotation.interpolate.HumanInterpolationEngine
+import xyz.qweru.geo.core.helper.manage.ProposalHandler
 import xyz.qweru.geo.core.system.SystemCache
-import xyz.qweru.geo.core.ui.notification.Notifications
 import xyz.qweru.geo.extend.kotlin.array.copy2
-import xyz.qweru.geo.extend.kotlin.array.getRotation
-import xyz.qweru.geo.extend.kotlin.array.setRotation
+import xyz.qweru.geo.extend.kotlin.array.applyRotation
+import xyz.qweru.geo.extend.kotlin.array.copyRotationFrom
+import xyz.qweru.geo.extend.kotlin.math.wrapped
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.world.hit
 import xyz.qweru.geo.mixin.network.packet.ServerboundUseItemPacketAccessor
 import xyz.qweru.multirender.api.API
-import kotlin.io.path.Path
 
 object RotationHandler : ProposalHandler<Rotation>() {
 
@@ -33,9 +32,9 @@ object RotationHandler : ProposalHandler<Rotation>() {
     val initialRot: FloatArray = floatArrayOf(0f, 0f)
     // prevents us from assuming a rotation too early
     val lastSentRot: FloatArray = floatArrayOf(0f, 0f)
-    var engine: InterpolationEngine = HumanInterpolationEngine
 
     val random = LayeredRandom.DEFAULT
+    var engine: InterpolationEngine = HumanInterpolationEngine
     val rotationConfig: ModuleRotation by SystemCache.getModule()
     var crosshairTarget: HitResult? = null
         private set
@@ -45,52 +44,65 @@ object RotationHandler : ProposalHandler<Rotation>() {
     private val fixMovement
         get() = rotationConfig.moveFix || current?.config?.moveFix == true
 
+    override fun resetProposal() {
+        super.resetProposal()
+        if (mc.player == null) return
+
+        if (current != null && current?.config?.sync == false) {
+            ChatHelper.info("Regular rotation")
+            return
+        }
+
+        ChatHelper.info("Sync rotation")
+
+        current = Rotation(
+            mc.thePlayer.yRot.wrapped,
+            mc.thePlayer.xRot,
+            RotationConfig(sync = true)
+        )
+
+        if (isLookingAt(current!!)) {
+            current = null
+        }
+    }
+
     @Handler(priority = EventPriority.FIRST)
-    private fun preTick(e: PreTickEvent) = handleProposal()
+    private fun preTick(e: PreTickEvent) = resetProposal()
 
     @Handler(priority = EventPriority.LAST)
     private fun preSendMove(e: PreMoveSendEvent) =
-        rot.setRotation(mc.thePlayer)
+        rot.applyRotation(mc.thePlayer)
 
     @Handler(priority = EventPriority.FIRST)
     private fun postSendMove(e: PostMoveSendEvent) =
-        clientRot.setRotation(mc.thePlayer)
+        clientRot.applyRotation(mc.thePlayer)
 
     @Handler(priority = EventPriority.LAST)
     private fun preMove(e: PreMovementTickEvent) {
-        if (fixMovement) rot.setRotation(mc.thePlayer)
+        if (fixMovement) rot.applyRotation(mc.thePlayer)
     }
 
     @Handler(priority = EventPriority.FIRST)
     private fun postMove(e: PostMovementTickEvent) {
-        if (fixMovement) clientRot.setRotation(mc.thePlayer)
+        if (fixMovement) clientRot.applyRotation(mc.thePlayer)
     }
 
     @Handler(priority = EventPriority.LAST)
     private fun preCrosshair(e: PreCrosshair) {
         if (mc.player == null) return
 
-        clientRot.getRotation(mc.thePlayer)
-        if (current == null) {
-            // todo: properly rotate back
-            val preYaw = rot[0]
-            rot.copy2(clientRot)
-            rot[0] = RotationHelper.unwrapYaw(rot[0], preYaw)
-        } else if (current?.config?.forceClient == true) {
-            clientRot.copy2(rot)
-        }
-
-        interpolateRot()
+        clientRot.copyRotationFrom(mc.thePlayer)
+        stepRotation()
         crosshairTarget = mc.theLevel.hit(mc.thePlayer.entityInteractionRange(), rot)
 
         if (!fixMouse) return
-        rot.setRotation(mc.cameraEntity ?: mc.thePlayer)
+        rot.applyRotation(mc.thePlayer)
     }
 
     @Handler
     private fun postCrosshair(e: PostCrosshair) {
         if (mc.player == null || !fixMouse) return
-        clientRot.setRotation(mc.cameraEntity ?: mc.thePlayer)
+        clientRot.applyRotation(mc.thePlayer)
     }
 
     @Handler
@@ -100,7 +112,8 @@ object RotationHandler : ProposalHandler<Rotation>() {
                 lastSentRot[0] = packet.getYRot(lastSentRot[0])
                 lastSentRot[1] = packet.getXRot(lastSentRot[1])
             }
-            is ServerboundUseItemPacketAccessor -> {
+            is ServerboundUseItemPacket -> {
+                packet as ServerboundUseItemPacketAccessor
                 packet.geo_setYRot(lastSentRot[0])
                 packet.geo_setXRot(lastSentRot[1])
             }
@@ -117,22 +130,17 @@ object RotationHandler : ProposalHandler<Rotation>() {
     }
 
     fun isLookingAt(rot: Rotation) =
-        rot.equals(lastSentRot)
+        RangeHelper.ofRotationPoint(lastSentRot[0], rotationConfig.diff)
+            .contains(rot.yaw)
+        && RangeHelper.ofRotationPoint(lastSentRot[1], rotationConfig.diff)
+            .contains(rot.pitch)
 
-    private fun interpolateRot() {
+    private fun stepRotation() {
         val rotation = current ?: return
         val dt = API.base.getDeltaTime()
 
-        var yawDelta = engine.stepYaw(initialRot[0], rotation.yaw, rot[0]) * dt
+        var yawDelta = engine.stepYaw(initialRot[0].wrapped, rotation.yaw.wrapped, rot[0].wrapped) * dt
         var pitchDelta = engine.stepPitch(initialRot[1], rotation.pitch, rot[1]) * dt
-
-        val start = initialRot[0]
-        val current = rot[0]
-        val end = rotation.yaw
-
-        if (circularDistance(start, current + yawDelta) > circularDistance(start, end)) {
-            yawDelta = end - current
-        }
 
         if (rotationConfig.gcdFix) {
             val gcd = RotationHelper.gcd()
@@ -142,6 +150,8 @@ object RotationHandler : ProposalHandler<Rotation>() {
 
         rot[0] += yawDelta
         rot[1] += pitchDelta
+
+        rot[1] = rot[1].coerceIn(-90f, 90f)
 
         engine.onYawDelta(yawDelta)
         engine.onPitchDelta(pitchDelta)
