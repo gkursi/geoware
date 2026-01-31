@@ -13,7 +13,7 @@ import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 class ModuleAxeSwap : Module("AxeSwap", "Automatically swaps to an axe when the target is using a shield", Category.COMBAT) {
 
-    val sg = settings.group("General")
+    val sg = settings.general
     val delay by sg.longRange("Delay", "Delay", 250L..300L, 0L..500L)
     val swapBack by sg.boolean("Swap Back", "Swaps back to previous slot", true)
     val pauseUse by sg.boolean("Pause On Eat", "Don't swap while using an item", true)

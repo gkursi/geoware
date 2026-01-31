@@ -21,7 +21,7 @@ object MovementTicker {
 
     fun canTick(): Boolean {
         return tickSpeed == 20 // we can always tick at 20, since it's called at the usual timing
-                || tickTimer.hasPassed(1000L / tickSpeed)
+                || tickSpeed != 0 && tickTimer.hasPassed(1000L / tickSpeed)
     }
 
     fun tick() {

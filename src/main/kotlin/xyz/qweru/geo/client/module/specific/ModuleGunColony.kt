@@ -28,8 +28,8 @@ import xyz.qweru.geo.extend.minecraft.network.isInteract
 import xyz.qweru.geo.extend.minecraft.world.hit
 import xyz.qweru.geo.mixin.network.packet.PositionMoveRotationAccessor
 
-class ModuleGunColony : Module("GunColony", "guncolony.com utils", Category.Companion.SPECIFIC) {
-    val sg = settings.group("General")
+class ModuleGunColony : Module("GunColony", "guncolony.com utils", Category.SPECIFIC) {
+    val sg = settings.general
     val noRecoil by sg.boolean("No Recoil", "No recoil", true)
     val silentScope by sg.boolean("Silent Scope", "Silently scopes while shooting", true)
     val fastShoot by sg.boolean("Fast Shoot", "Removes cooldown from semi-automatic guns", true)

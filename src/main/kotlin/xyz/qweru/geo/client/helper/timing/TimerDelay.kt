@@ -10,10 +10,13 @@ class TimerDelay : Timer() {
 
     fun hasPassed(): Boolean = hasPassed(target)
 
-    fun reset(min: Long, max: Long) {
-        target = if (min == max) min else random.long(min, max)
+    fun reset(delay: LongRange) = reset(delay.first, delay.last + 1L)
+
+    fun reset(min: Long, max: Long) =
+        reset(if (min == max) min else random.long(min, max))
+
+    fun reset(delay: Long) {
+        target = delay
         reset()
     }
-
-    fun reset(delay: LongRange) = reset(delay.start, delay.endInclusive + 1L)
 }

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "silentmacros",
+  "id": "geoware",
   "version": "${version}",
-  "name": "silentmacros",
+  "name": "Geoware",
   "description": "",
   "authors": ["qweru"],
   "contact": {},
@@ -14,7 +14,7 @@
     ]
   },
   "mixins": [
-    "silentmacros.mixins.json"
+    "geoware.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",

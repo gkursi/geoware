@@ -20,7 +20,7 @@ import xyz.qweru.geo.extend.minecraft.network.isInteract
 
 class ModuleAutoBlock : Module("AutoBlock", "Automatically block", Category.COMBAT) {
 
-    val sg = settings.group("General")
+    val sg = settings.general
     val mode by sg.enum("Mode", "Auto block mode", Mode.LEGIT)
     val delay by sg.longRange("Delay", "Delay", 50L..100L, 0L..500L)
 

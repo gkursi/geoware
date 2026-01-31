@@ -18,6 +18,7 @@ object CombatEventHandler {
 
     @Handler
     private fun onPacketReceive(e: PacketReceiveEvent) {
+        if (mc.level == null)
         when (val packet = e.packet) {
             is ClientboundDamageEventPacket -> {
                 if (packet.sourceDirectId == -1 && packet.entityId == -1) return

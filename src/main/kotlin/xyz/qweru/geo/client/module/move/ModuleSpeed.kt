@@ -1,6 +1,5 @@
 package xyz.qweru.geo.client.module.move
 
-import kotlinx.io.files.Path
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
@@ -8,12 +7,10 @@ import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.ChestBlockEntity
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity
-import net.minecraft.world.phys.Vec3
-import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.event.PostMoveSendEvent
 import xyz.qweru.geo.client.event.PostMovementTickEvent
-import xyz.qweru.geo.client.event.PreMoveSendEvent
 import xyz.qweru.geo.client.helper.network.PacketHelper
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.helper.world.WorldHelper
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.movement.MovementState
@@ -24,34 +21,36 @@ import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.world.isOf
 import xyz.qweru.geo.extend.minecraft.world.withStrafe
-
+import kotlin.math.roundToInt
 
 class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
-    private val sg = settings.group("General")
-    private val mode by sg.enum("Mode", "Speed mode", Mode.VULCAN)
+    private val sg = settings.general
 
-    private val svulcan = settings.group("Vulcan").visible { mode == Mode.VULCAN }
+    private val mode by sg.enum("Mode", "Speed mode", Mode.VULCAN_LOWHOP)
+
+    private val svulcan = settings.group("Vulcan LHop").visible { mode == Mode.VULCAN_LOWHOP }
     private val downVel by svulcan.float("Velocity", "Downwards velocity", -0.1f, -0.5f, 0.5f)
-    private val hVel by svulcan.float("Velocity H", "Horizontal velocity", 0f, -0.5f, 0.5f)
     private val airTick by svulcan.int("Air Tick", "Which air tick to use", 6, 1, 10)
 
     private val sgrimA = settings.group("Grim A").visible { mode == Mode.GRIM_COLLIDE }
     private val extraCollide by sgrimA.float("Extra Collide", ".", 0.5f, 0f, 1f)
     private val ml by sgrimA.float("Mul", "fixing my skill issue", 0.3f, 0.1f, 2f)
 
-    private val a by sg.int("a", ".", 1, 0, 5)
-    private val eq by sg.enum("eq", ".", Compare.EQ)
+    private val svulcanb = settings.group("Vulcan").visible { mode == Mode.VULCAN }
+    private val speed by svulcanb.float("Speed", "Speed", 0.3f, 0.1f, 1f)
 
     private var hardCollisionTicks = 0
     private val maxHardCollisionTicks = 3
+
+    private var boostTicks = 0
 
     @Handler
     private fun onVelocity(e: PostMovementTickEvent) {
         when (mode) {
             Mode.GRIM_COLLIDE -> grimCollide(e)
-            Mode.VULCAN -> vulcanSpeed(e)
-            Mode.GRIM -> {}
-            Mode.GRIM_NEW -> {
+            Mode.VULCAN_LOWHOP -> vulcanLowHop(e)
+            Mode.VULCAN -> vulcanElytra(e)
+            Mode.GRIM -> {
                 val vel = mc.thePlayer.deltaMovement.withStrafe(0.03)
                 e.velX += vel.x
                 e.velZ += vel.z
@@ -60,27 +59,8 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
     }
 
     @Handler
-    fun preMoveSend(e: PreMoveSendEvent) {
-        if (!inGame || mode != Mode.GRIM) return
-        GameOptions.jumpKey = mc.thePlayer.onGround() && GameOptions.moving
-    }
-    @Handler
     fun postMoveSend(e: PostMoveSendEvent) {
-        grimA()
-        grimB()
-    }
-
-    fun grimA() {
         if (mode != Mode.GRIM) return
-        if (mc.thePlayer.onGround() || eq.act.invoke(mc.thePlayer.airTicks, a)) {
-            PacketHelper.sendPacket(
-                ServerboundPlayerCommandPacket(mc.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING)
-            )
-        }
-    }
-
-    fun grimB() {
-        if (mode != Mode.GRIM_NEW) return
 
         PacketHelper.sendPacket(
             ServerboundPlayerCommandPacket(mc.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING)
@@ -94,16 +74,23 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
         e.velZ += mul * ml * e.velZ
     }
 
-    fun vulcanSpeed(e: PostMovementTickEvent) {
-        if (mc.thePlayer.isFallFlying) {
-            PacketHelper.sendPacket(ServerboundPlayerCommandPacket(mc.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING))
-        }
-
+    fun vulcanLowHop(e: PostMovementTickEvent) {
         if (mc.thePlayer.airTicks == airTick) {
             e.velY += downVel
-            val vec: Vec3 = mc.thePlayer.lookAngle
-            e.velX += vec.x * hVel
-            e.velZ += vec.z * hVel
+        }
+    }
+
+    fun vulcanElytra(e: PostMovementTickEvent) {
+        if (mc.thePlayer.isFallFlying) {
+            boostTicks = mc.thePlayer.airTicks.coerceAtMost(10)
+            return
+        }
+
+        if (boostTicks <= 0) return
+        boostTicks--
+
+        if (GameOptions.moving) {
+            e.addStrafe(speed)
         }
     }
 
@@ -166,14 +153,8 @@ class ModuleSpeed : Module("Speed", "bypass test", Category.MOVEMENT) {
 
     enum class Mode {
         VULCAN,
+        VULCAN_LOWHOP,
         GRIM,
-        GRIM_NEW,
         GRIM_COLLIDE
-    }
-
-    enum class Compare(val act: (Int, Int) -> Boolean) {
-        EQ({a, b -> a == b}),
-        LARGE({a, b -> a >= b}),
-        SMALL({a, b -> a <= b})
     }
 }

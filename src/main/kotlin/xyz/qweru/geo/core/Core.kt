@@ -12,6 +12,7 @@ import xyz.qweru.geo.core.game.combat.CombatState
 import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.game.interaction.InteractionManager
 import xyz.qweru.geo.core.game.movement.MovementTicker
+import xyz.qweru.geo.core.game.packet.PacketManager
 import xyz.qweru.geo.core.game.rotation.RotationHandler
 import xyz.qweru.geo.core.tracking.bot.BotTracker
 import xyz.qweru.geo.extend.kotlin.file.findOrCreateDir
@@ -35,6 +36,7 @@ object Core {
         manage(RotationHandler)
         manage(BotTracker)
         manage(InteractionManager)
+        manage(PacketManager)
     }
 
     private fun manage(o: Any) {

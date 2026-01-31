@@ -10,7 +10,7 @@ import xyz.qweru.geo.core.system.setting.SettingUsage
 import xyz.qweru.geo.core.system.setting.Usage
 
 class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VISUAL) {
-    val sg = settings.group("General")
+    val sg = settings.general
     val mode by sg.enum("Mode", "Swing mode", Mode.COMPATIBILITY)
 
     @Usage(SettingUsage.VISUAL, SettingUsage.POSITION)

@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.client.multiplayer.ClientSuggestionProvider
 import xyz.qweru.geo.client.command.CommandConfig
+import xyz.qweru.geo.client.command.CommandSession
 import xyz.qweru.geo.client.command.CommandSet
 import xyz.qweru.geo.client.command.CommandToggle
 import xyz.qweru.geo.core.Core.mc
@@ -19,6 +20,7 @@ object CommandManager {
         add(CommandToggle())
         add(CommandSet())
         add(CommandConfig())
+        add(CommandSession())
     }
 
     private fun add(command: Command) {

@@ -41,7 +41,7 @@ dependencies {
 
     modImplementation("com.ptsmods:devlogin:3.5")
     implementation("org.apache.commons:commons-math3:3.6.1")
-    modImplementation("com.viaversion:viafabricplus-api:4.2.4")
+    modImplementation("com.viaversion:viafabricplus-api:4.2.5")
     implementation("com.github.gkursi:basalt:20dd54f16b")
 
     // render

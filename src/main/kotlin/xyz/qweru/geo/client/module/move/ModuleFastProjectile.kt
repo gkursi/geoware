@@ -15,7 +15,7 @@ import xyz.qweru.geo.extend.minecraft.entity.pos
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 class ModuleFastProjectile : Module("FastProjectiles","guh", Category.MOVEMENT) {
-    val sg = settings.group("General")
+    val sg = settings.general
     val count by sg.int("Count", "Move packet count", 2, 1, 20)
     val len by sg.float("Length", "Move packet size", 1f, 1f, 20f)
 

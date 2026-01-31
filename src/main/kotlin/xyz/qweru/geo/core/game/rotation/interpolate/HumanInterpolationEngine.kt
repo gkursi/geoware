@@ -1,15 +1,11 @@
 package xyz.qweru.geo.core.game.rotation.interpolate
 
-import net.minecraft.util.Mth
-import org.joml.Math.clamp
 import xyz.qweru.geo.client.event.GameRenderEvent
-import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.rotation.InterpolationEngine
 import xyz.qweru.geo.core.game.rotation.RotationHandler.rotationConfig
 import xyz.qweru.geo.core.game.rotation.RotationHandler.random
-import xyz.qweru.geo.extend.kotlin.log.dbg
 import xyz.qweru.geo.extend.kotlin.math.inRange
 import xyz.qweru.geo.extend.kotlin.math.wrapped
 import xyz.qweru.multirender.api.API
@@ -34,7 +30,7 @@ object HumanInterpolationEngine : InterpolationEngine {
 
     override fun stepYaw(start: Float, end: Float, current: Float): Float =
         step(start, end, current, yaw).also {
-            println("Stepping $it yaw (dist=${end.wrapped - start.wrapped})")
+//            println("Stepping $it yaw (dist=${end.wrapped - start.wrapped})")
         }
 
     override fun stepPitch(start: Float, end: Float, current: Float): Float =
@@ -79,16 +75,16 @@ object HumanInterpolationEngine : InterpolationEngine {
             if (rotationConfig.mousePad)
                 speed *= yawPenalty
             if (rotationConfig.speedUp)
-                speed *= calculateSpeedup(current, dist)
+                speed *= accelerate(current, dist)
             return speed * mul
         }
 
-        private fun calculateSpeedup(current: Float, dist: Float): Float {
+        private fun accelerate(current: Float, dist: Float): Float {
             val max = rotationConfig.speedYaw
             val percent = current / max(dist, 1f)
 
             return if (percent >= max) 2f
-            else 1f + percent / max
+            else 1f + percent / max + random.float(-0.1f..0.1f)
         }
     }
 }

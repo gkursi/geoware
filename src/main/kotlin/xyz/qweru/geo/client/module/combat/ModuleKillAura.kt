@@ -20,7 +20,7 @@ import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.item.isOf
 
 class ModuleKillAura : Module("KillAura", "Automatically attack players in range", Category.COMBAT) {
-    private val sg = settings.group("General")
+    private val sg = settings.general
     private val st = settings.group("Timing")
     private val sc = settings.group("Conditions")
 

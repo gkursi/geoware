@@ -93,7 +93,7 @@ object InvHelper {
     }
 
     fun find(item: (ItemStack) -> Boolean, start: Int = 0, end: Int = 9): FindResult {
-        for (i in start..end - 1) {
+        for (i in start..<end) {
             if (item.invoke(inventory.getItem(i))) {
                 return FindResult(i)
             }
@@ -102,6 +102,9 @@ object InvHelper {
     }
 
     fun move(): InvAction = InvAction(InvAction.Type.MOVE)
+    fun offhand(): InvAction = InvAction(InvAction.Type.QUICK_OFFHAND)
+    fun pickup(): InvAction = InvAction(InvAction.Type.PICKUP)
+    fun quickMove(): InvAction = InvAction(InvAction.Type.QUICK_MOVE)
 
     private fun swap0(slot: Int, priority: Int) {
         if (priority < lastSwapPriority) return

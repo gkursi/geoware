@@ -9,7 +9,7 @@ import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 
 class ModuleRotation : Module("Rotation", "How to rotate", Category.CONFIG) {
-    private val sg = settings.group("General")
+    private val sg = settings.general
     private val sf = settings.group("Fix")
     private val sh = settings.group("Humanized")
     private val sc = settings.group("Constant")

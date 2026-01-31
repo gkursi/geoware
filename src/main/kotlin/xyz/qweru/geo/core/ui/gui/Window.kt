@@ -1,10 +1,10 @@
 package xyz.qweru.geo.core.ui.gui
 
 import multirender.nanovg.util.math.Vec2f
-import multirender.wm.backend.WindowBackend
+import multirender.wm.window.Renderer
 import java.awt.Color
 
-class Window(i: Int) : WindowBackend {
+class Window(i: Int) : Renderer {
     private val color = when (i % 4) {
         0 -> Color.red
         1 -> Color.green

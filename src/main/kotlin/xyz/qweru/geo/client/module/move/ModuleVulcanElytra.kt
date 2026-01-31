@@ -9,7 +9,7 @@ import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category.MOVEMENT) {
-    val sg = settings.group("General")
+    val sg = settings.general
     val moveTick by sg.int("Move Tick", "Move tick speed", 19, 1, 20)
     val glideTick by sg.int("Glide Tick", "Glide ticks to apply strafe for", 1, 0, 10)
 

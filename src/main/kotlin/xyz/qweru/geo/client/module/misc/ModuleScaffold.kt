@@ -15,7 +15,7 @@ import xyz.qweru.geo.extend.minecraft.world.sqrtSpeed
 import xyz.qweru.geo.extend.minecraft.world.state
 
 class ModuleScaffold : Module("Scaffold", "Automatically places blocks below you", Category.MISC) {
-    private val sg = settings.group("General")
+    private val sg = settings.general
 
     private var y = 0
     private var target: BlockHitResult? = null

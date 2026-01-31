@@ -14,7 +14,7 @@ import xyz.qweru.geo.extend.minecraft.item.isOf
 import xyz.qweru.geo.mixin.game.MinecraftClientAccessor
 
 class ModuleFastUse : Module("FastUse", "Reduce item use cooldown", Category.PLAYER) {
-    private val sGeneral = settings.group("General")
+    private val sGeneral = settings.general
     private val sTargets = settings.group("Target")
 
     private val delay by sGeneral.longRange("Delay", "Use delay", 35L..85L, 0L..500L)

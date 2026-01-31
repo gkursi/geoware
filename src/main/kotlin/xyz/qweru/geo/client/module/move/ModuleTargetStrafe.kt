@@ -15,7 +15,7 @@ import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.extend.minecraft.entity.inRange
 
 class ModuleTargetStrafe : Module("TargetStrafe", "Automatically strafe around the target", Category.MOVEMENT) {
-    val sg = settings.group("General")
+    val sg = settings.general
 
     val minCombo by sg.int("Min Combo", "Min combo to start strafing", 0, 0, 4)
     val minDistance by sg.float("Min Distance", "Min distance to start strafing", 5f, 1f, 8f)

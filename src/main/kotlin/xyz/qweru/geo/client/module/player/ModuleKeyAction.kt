@@ -31,7 +31,7 @@ import xyz.qweru.multirender.api.input.Input
  * this needs major cleanup, maybe separate in to different modules?
  */
 class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLAYER) {
-    val sg = settings.group("General")
+    val sg = settings.general
     var swapBack by sg.boolean("Swap Back", "Swap back", true)
     var delay by sg.longRange("Delay", "Delay between actions", 250L..275L, 0L..1000L)
     val simulateClick by sg.boolean("Sim Click", "Simulate click", true)

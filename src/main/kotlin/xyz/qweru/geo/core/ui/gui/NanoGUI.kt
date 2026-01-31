@@ -1,9 +1,12 @@
 package xyz.qweru.geo.core.ui.gui
 
 import multirender.nanovg.NanoContext
-import multirender.wm.WindowManager
+import multirender.nanovg.util.math.Vec2f
+import multirender.wm.manager.WindowManager
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.core.Core.mc
+import xyz.qweru.multirender.api.API
+import kotlin.io.path.Path
 
 object NanoGUI {
     var i = 0
@@ -28,6 +31,15 @@ object NanoGUI {
         when (key) {
             GLFW.GLFW_KEY_ENTER ->
                 WindowManager.addWindow(Window(i++))
+            GLFW.GLFW_KEY_SPACE -> {
+                val wh = Vec2f.relative(0.25f, 0.25f)
+                WindowManager.addFloatingWindow(
+                    Window(i++),
+                    API.mouseHandler.x,
+                    API.mouseHandler.y,
+                    wh.x(), wh.y()
+                )
+            }
             GLFW.GLFW_KEY_Q ->
                 WindowManager.closeFocused()
         }

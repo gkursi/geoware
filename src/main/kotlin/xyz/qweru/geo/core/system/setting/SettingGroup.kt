@@ -29,6 +29,9 @@ class SettingGroup(val name: String, val parent: Settings, private var visiblePr
     fun float(name: String, description: String, value: Float, min: Float, max: Float): FloatSetting =
         FloatSetting(name.lowercase().replace(" ", "-"), description, value, this, min, max).apply { parent.add(this) }
 
+    fun float(name: String, description: String, value: Float, bounds: ClosedFloatingPointRange<Float>): FloatSetting =
+        FloatSetting(name.lowercase().replace(" ", "-"), description, value, this, bounds.start, bounds.endInclusive).apply { parent.add(this) }
+
     fun longRange(name: String, description: String, value: LongRange, minMax: LongRange): LongRangeSetting =
         LongRangeSetting(name.lowercase().replace(" ", "-"), description, value, minMax, this).apply { parent.add(this) }
 
@@ -37,6 +40,10 @@ class SettingGroup(val name: String, val parent: Settings, private var visiblePr
 
     fun int(name: String, description: String, value: Int, min: Int, max: Int): IntSetting =
         IntSetting(name.lowercase().replace(" ", "-"), description, value, this, min, max).apply { parent.add(this) }
+
+    fun int(name: String, description: String, value: Int, bounds: IntRange): IntSetting =
+        IntSetting(name.lowercase().replace(" ", "-"), description, value, this, bounds.first, bounds.last).apply { parent.add(this) }
+
 
     fun <T : Enum<*>> enum(name: String, description: String, value: T): EnumSetting<T> =
         EnumSetting(name.lowercase().replace(" ", "-"), description, value, this).apply { parent.add(this) }

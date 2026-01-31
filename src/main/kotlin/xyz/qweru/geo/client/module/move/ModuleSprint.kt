@@ -30,7 +30,7 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
         }
     }
 
-    val sg = settings.group("General")
+    val sg = settings.general
     val mode by sg.enum("Mode", "Mode for applying sprint", Mode.LEGIT)
     val keyMode by sg.enum("Key", "Key to tap when resetting sprint", KeyMode.W)
     val resetTime by sg.longRange("Reset Time", "Delay between stopping and starting sprint", 50L..100L, 0L..1500L)

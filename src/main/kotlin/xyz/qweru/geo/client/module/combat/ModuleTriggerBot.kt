@@ -35,7 +35,7 @@ import xyz.qweru.multirender.api.input.Input
 import java.util.*
 
 class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when hovering them", Category.COMBAT) {
-    val sGeneral = settings.group("General")
+    val sGeneral = settings.general
     val sFailAttack = settings.group("Fail Attack")
     val sCrit = settings.group("Crits")
     val sTarget = settings.group("Target")
@@ -133,9 +133,6 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
             ModuleSprint.sprint(false)
         }
 
-        logger.dbg("next: $nextAttack, sprint: ${mc.thePlayer.isSprinting}")
-        val entity = mc.thePlayer
-        logger.dbg("conditions: fall: ${entity.fallDistance} > 0.075f && ground:${!entity.onGround()} && charge:${entity.attackCharge} > 0.9f && climb:${!entity.onClimbable()} && water:${!entity.isInWater} && vehicle:${!entity.isPassenger}")
         return false
     }
 

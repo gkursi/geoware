@@ -28,7 +28,7 @@ class InvAction(private val type: Type) {
     }
 
     /**
-     * From action
+     * To action
      */
     fun item(item: Item) = item { it.isOf(item) }
 
@@ -41,15 +41,23 @@ class InvAction(private val type: Type) {
 
     fun toOffhand() = toId(45)
 
+    fun toFreeSlot(): InvAction? {
+        val inv = mc.thePlayer.inventory
+        for (slot in 9..36) {
+            if (inv.getItem(slot).isEmpty) return to(slot)
+        }
+        return null
+    }
+
     /**
-     * Returns false on success, true on fail
+     * Returns true on success, false on fail
      */
     fun apply() = type.block.invoke(this)
 
-    private fun click(id: Int) {
+    private fun click(id: Int, button: Int = 0, type: ClickType = ClickType.PICKUP) {
         mc.gameMode!!.handleInventoryMouseClick(
             mc.thePlayer.containerMenu.containerId,
-            id, 0, ClickType.PICKUP,
+            id, button, type,
             mc.thePlayer
         )
     }
@@ -60,8 +68,29 @@ class InvAction(private val type: Type) {
                 click(from)
                 click(to)
                 click(from)
-                false
+                true
             } else {
+                false
+            }
+        }),
+        QUICK_OFFHAND({
+            if (from == -1) false
+            else {
+                click(from, 40, ClickType.SWAP)
+                true
+            }
+        }),
+        PICKUP({
+            if (from == -1) false
+            else {
+                click(from)
+                true
+            }
+        }),
+        QUICK_MOVE({
+            if (from == -1) false
+            else {
+                click(from, type = ClickType.QUICK_MOVE)
                 true
             }
         })

@@ -1,13 +1,15 @@
 package xyz.qweru.geo.core.ui.gui
 
 import multirender.nanovg.util.math.Vec2f
-import multirender.wm.backend.BarBackend
+import multirender.wm.bar.Bar
+import multirender.wm.manager.Context
 import multirender.wm.util.Alignment
 import java.awt.Color
 
-object NanoBar : BarBackend {
-    override fun render(alignment: Alignment, width: Float) {
-        when (alignment) {
+object NanoBar : Bar {
+    override fun render(context: Context) {
+        val width = context.config.barWidth
+        when (context.config.barAlign) {
             Alignment.TOP -> {
                 draw(NanoWM.getRemainingWidth(), width)
                 NanoWM.moveOriginBy(0f, width)

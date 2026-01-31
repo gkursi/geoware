@@ -19,7 +19,7 @@ import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.item.isOf
 
 class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
-    val sg = settings.group("General")
+    val sg = settings.general
     val st = settings.group("Target")
 
     val silent: Boolean by sg.boolean("Silent", "Silently aim", false)
