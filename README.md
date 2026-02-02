@@ -1,3 +1,5 @@
+## use the [ui branch](https://github.com/gkursi/geoware/tree/ui) for a more up-to-date version
+
 # Geoware
 Fabric 1.21.8 ~~ghost~~ client for 1.8/1.9+ sword pvp + some misc stuff
 
