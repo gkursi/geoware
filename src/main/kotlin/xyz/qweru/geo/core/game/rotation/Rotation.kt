@@ -44,9 +44,12 @@ data class Rotation(val yaw: Float, val pitch: Float, val config: RotationConfig
 
         if (yaw != other.yaw) return false
         if (pitch != other.pitch) return false
-        if (applied != other.applied) return false
         if (config != other.config) return false
 
         return true
+    }
+
+    override fun toString(): String {
+        return "yaw=$yaw, pitch=$pitch, config=$config"
     }
 }

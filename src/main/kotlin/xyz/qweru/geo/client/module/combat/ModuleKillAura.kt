@@ -47,7 +47,7 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
         if (rotation == RotationMode.TICK) {
             rotate()
         }
-        if (RotationHandler.isLookingAt(theRotation) && canAttack()) {
+        if (RotationHandler.isServerLookingAt(theRotation) && canAttack()) {
             attack(target?.player ?: return)
         }
     }

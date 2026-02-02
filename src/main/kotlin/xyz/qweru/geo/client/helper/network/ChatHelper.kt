@@ -45,8 +45,10 @@ object ChatHelper {
                 .withBold(true)
             )
 
-    fun log(text: Component) =
+    fun log(text: Component) {
+        if (mc.player == null) return
         mc.thePlayer.displayClientMessage(prefix.append(text), false)
+    }
 
     fun toggleMessage(module: Module) =
         log((if (module.enabled) enable else disable).append(module.name))

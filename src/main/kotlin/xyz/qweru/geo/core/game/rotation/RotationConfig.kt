@@ -4,4 +4,15 @@ data class RotationConfig(val sync: Boolean = false, val mouseFix: Boolean = fal
     companion object {
         val DEFAULT = RotationConfig()
     }
+
+    override fun toString(): String {
+        val sb = StringBuilder("Config( ")
+
+        if (sync) sb.append("sync ")
+        if (mouseFix) sb.append("gcd ")
+        if (moveFix) sb.append("move ")
+        if (forceClient) sb.append("forced ")
+
+        return sb.append(")").toString()
+    }
 }

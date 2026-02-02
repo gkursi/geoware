@@ -7,7 +7,6 @@ import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.*
 import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.client.helper.math.random.LayeredRandom
-import xyz.qweru.geo.client.helper.network.ChatHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.client.module.config.ModuleRotation
 import xyz.qweru.geo.core.Core.mc
@@ -24,6 +23,7 @@ import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.world.hit
 import xyz.qweru.geo.mixin.network.packet.ServerboundUseItemPacketAccessor
 import xyz.qweru.multirender.api.API
+import kotlin.math.abs
 
 object RotationHandler : ProposalHandler<Rotation>() {
 
@@ -39,30 +39,37 @@ object RotationHandler : ProposalHandler<Rotation>() {
     var crosshairTarget: HitResult? = null
         private set
 
+    private var rotatingBack = false
+
     private val fixMouse
         get() = rotationConfig.mouseFix || current?.config?.mouseFix == true
     private val fixMovement
         get() = rotationConfig.moveFix || current?.config?.moveFix == true
 
+    override var current: Rotation? = null
+
     override fun resetProposal() {
-        super.resetProposal()
         if (mc.player == null) return
 
-        if (current != null && current?.config?.sync == false) {
-            ChatHelper.info("Regular rotation")
-            return
-        }
-
-        ChatHelper.info("Sync rotation")
-
-        current = Rotation(
+        val client = Rotation(
             mc.thePlayer.yRot.wrapped,
             mc.thePlayer.xRot,
             RotationConfig(sync = true)
         )
 
-        if (isLookingAt(current!!)) {
-            current = null
+        val syncNeeded = shouldPreserve() && !isLookingAt(client, 5f)
+
+        super.resetProposal()
+
+        if (shouldPreserve()) {
+            return
+        }
+
+        if (rotatingBack) {
+            propose(client, -10)
+            rotatingBack = !isLookingAt(client, 5f)
+        } else {
+            rotatingBack = syncNeeded
         }
     }
 
@@ -92,7 +99,11 @@ object RotationHandler : ProposalHandler<Rotation>() {
         if (mc.player == null) return
 
         clientRot.copyRotationFrom(mc.thePlayer)
-        stepRotation()
+        if (current != null) {
+            stepRotation()
+        } else {
+            rot.copy2(clientRot)
+        }
         crosshairTarget = mc.theLevel.hit(mc.thePlayer.entityInteractionRange(), rot)
 
         if (!fixMouse) return
@@ -114,8 +125,8 @@ object RotationHandler : ProposalHandler<Rotation>() {
             }
             is ServerboundUseItemPacket -> {
                 packet as ServerboundUseItemPacketAccessor
-                packet.geo_setYRot(lastSentRot[0])
-                packet.geo_setXRot(lastSentRot[1])
+                packet.geo_setYRot(rot[0])
+                packet.geo_setXRot(rot[1])
             }
         }
     }
@@ -129,18 +140,39 @@ object RotationHandler : ProposalHandler<Rotation>() {
         return true
     }
 
-    fun isLookingAt(rot: Rotation) =
-        RangeHelper.ofRotationPoint(lastSentRot[0], rotationConfig.diff)
-            .contains(rot.yaw)
-        && RangeHelper.ofRotationPoint(lastSentRot[1], rotationConfig.diff)
+    fun isServerLookingAt(rot: Rotation, maxDeviation: Float = rotationConfig.diff) =
+        RangeHelper.ofRotationPoint(lastSentRot[0].wrapped, maxDeviation)
+            .contains(rot.yaw.wrapped)
+                && RangeHelper.ofRotationPoint(lastSentRot[1], maxDeviation)
             .contains(rot.pitch)
+
+    fun isLookingAt(theRot: Rotation, maxDeviation: Float = rotationConfig.diff) =
+        RangeHelper.ofRotationPoint(rot[0].wrapped, maxDeviation)
+            .contains(theRot.yaw.wrapped)
+                && RangeHelper.ofRotationPoint(rot[1], maxDeviation)
+            .contains(theRot.pitch)
 
     private fun stepRotation() {
         val rotation = current ?: return
         val dt = API.base.getDeltaTime()
 
-        var yawDelta = engine.stepYaw(initialRot[0].wrapped, rotation.yaw.wrapped, rot[0].wrapped) * dt
-        var pitchDelta = engine.stepPitch(initialRot[1], rotation.pitch, rot[1]) * dt
+        val startYaw = initialRot[0].wrapped
+        val endYaw = rotation.yaw.wrapped
+        val currentYaw = rot[0].wrapped
+        val startPitch = initialRot[1]
+        val endPitch = rotation.pitch
+        val currentPitch = rot[1]
+
+        var yawDelta = engine.stepYaw(startYaw, endYaw, currentYaw) * dt
+        var pitchDelta = engine.stepPitch(startPitch, endPitch, currentPitch) * dt
+
+        if (abs((endYaw - currentYaw).wrapped) < abs(yawDelta)) {
+            yawDelta = (endYaw - currentYaw).wrapped
+        }
+
+        if (abs(endPitch - currentPitch) < abs(pitchDelta)) {
+            pitchDelta = endPitch - currentPitch
+        }
 
         if (rotationConfig.gcdFix) {
             val gcd = RotationHelper.gcd()
@@ -158,4 +190,7 @@ object RotationHandler : ProposalHandler<Rotation>() {
 
         rotation.applied = true // rotate towards the rotation at least once before allowing its removal
     }
+
+    private fun shouldPreserve() =
+        current != null && current?.config?.sync == false
 }

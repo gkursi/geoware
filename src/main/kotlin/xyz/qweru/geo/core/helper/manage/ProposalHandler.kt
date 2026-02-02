@@ -4,7 +4,7 @@ import xyz.qweru.geo.extend.kotlin.math.not
 
 abstract class ProposalHandler<T : Proposal> {
 
-    protected var current: T? = null
+    protected open var current: T? = null
     protected var currentPriority = Int.MIN_VALUE
 
     open fun propose(proposal: T, priority: Int): Boolean {
@@ -14,7 +14,7 @@ abstract class ProposalHandler<T : Proposal> {
     }
 
     protected open fun resetProposal() {
-        if (current == null || !current?.isComplete()) {
+        if (current == null || !current!!.isComplete()) {
             return
         }
 

@@ -3,7 +3,6 @@ package xyz.qweru.geo.client.helper.player
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
-import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.helper.entity.Target
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.game.rotation.Rotation
@@ -92,7 +91,7 @@ object RotationHelper {
     /**
      * converts yaw from [-180; 180] to [0; 360]
      */
-    fun circularDistance(start: Float, x: Float): Float {
+    fun toCircular(start: Float, x: Float): Float {
         var d = (x - start).wrapped
         if (d < 0) d += 360f
         return d
