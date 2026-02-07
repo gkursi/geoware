@@ -12,17 +12,12 @@ import xyz.qweru.geo.client.command.argument.NewConfigArgumentType
 import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.command.Command
 import xyz.qweru.geo.core.system.SystemCache
-import xyz.qweru.geo.core.system.Systems
-import xyz.qweru.geo.core.system.config.Config
-import xyz.qweru.geo.core.system.config.ConfigType
-import xyz.qweru.geo.core.system.config.Configs
+import xyz.qweru.geo.core.config.Config
+import xyz.qweru.geo.core.config.ConfigType
+import xyz.qweru.geo.core.config.Configs
 
 class CommandConfig : Command("config", "Save/load/export configs",
     "config <save|load> <config name>", "config export <config name> <export type>") {
-
-    companion object {
-        val configs: Configs by SystemCache.get()
-    }
 
     override fun build(builder: LiteralArgumentBuilder<ClientSuggestionProvider>) {
         builder.then(
@@ -56,25 +51,26 @@ class CommandConfig : Command("config", "Save/load/export configs",
 
             when (action) {
                 "save" -> {
-                    configs.save(config.name, config.type)
+                    Configs.updateAndSave(config.name, config.type)
                     Core.logger.info("saved ${config.name}")
                 }
-                "load" -> configs.loadConfig(config)
+                "load" -> Configs.applyConfig(config)
                 else -> throw IllegalArgumentException("Invalid action")
             }
 
             return 1
-        } catch (e: NullPointerException) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create().also {
-                it.addSuppressed(e)
-            }
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+//            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create().also {
+//                it.addSuppressed(e)
+//            }
         }
     }
 
     private fun export(ctx: CommandContext<ClientSuggestionProvider>): Int {
         val config = StringArgumentType.getString(ctx, "config")
         val type = ctx.getArgument("type", ConfigType::class.java)
-        Systems.get(Configs::class).save(config, type)
+        Configs.updateAndSave(config, type)
         return 1
     }
 }

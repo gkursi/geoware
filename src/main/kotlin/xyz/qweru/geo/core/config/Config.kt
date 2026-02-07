@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.system.config
+package xyz.qweru.geo.core.config
 
 import com.google.gson.JsonObject
 

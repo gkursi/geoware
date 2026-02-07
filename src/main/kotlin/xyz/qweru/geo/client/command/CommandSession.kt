@@ -31,8 +31,8 @@ class CommandSession : Command("session", "Load a session token from the clipboa
                         BufferedReader(InputStreamReader(c.getInputStream()))
                     ).asJsonObject
 
-                    val username = json.get("name").asString
-                    val id = json.get("id").asString
+                    val username = json["name"].asString
+                    val id = json["id"].asString
                     val uuid = UndashedUuid.fromString(id)
 
                     val user = mc.user as IUser
