@@ -28,7 +28,7 @@ class EnumSetting<T : Enum<*>>(name: String, description: String, default: T, gr
     }
 
     override fun load(jsonObject: JsonObject) {
-        val name = jsonObject.get("value").asString
+        val name = jsonObject["value"].asString
         constants.forEachIndexed { i, it ->
             if (it.name == name) {
                 value = it

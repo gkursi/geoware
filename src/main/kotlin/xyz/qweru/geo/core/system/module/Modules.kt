@@ -3,6 +3,7 @@ package xyz.qweru.geo.core.system.module
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import xyz.qweru.geo.client.module.combat.*
+import xyz.qweru.geo.client.module.config.ModuleCCBlueX
 import xyz.qweru.geo.client.module.config.ModulePacket
 import xyz.qweru.geo.client.module.config.ModuleRotation
 import xyz.qweru.geo.client.module.config.ModuleSwap
@@ -56,6 +57,7 @@ class Modules() : System("modules", Type.ROOT) {
         add(ModuleFastProjectile())
         add(ModulePacketLogger())
         add(ModulePacket())
+        add(ModuleCCBlueX())
 
         // todo finish
 

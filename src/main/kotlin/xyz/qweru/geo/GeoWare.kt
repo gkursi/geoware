@@ -2,6 +2,8 @@ package xyz.qweru.geo
 
 import net.fabricmc.api.ModInitializer
 import xyz.qweru.geo.core.Core
+import xyz.qweru.geo.core.config.Config
+import xyz.qweru.geo.core.config.Configs
 import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.event.PostInitEvent
 import xyz.qweru.geo.core.system.Systems
@@ -14,8 +16,7 @@ class GeoWare : ModInitializer {
         Core.init()
         Systems.init()
         UI.init()
-
-        EventBus.subscribe(this)
+        Configs.init()
 
         Core.logger.info("Initialized ${Core.MOD} in ${(System.nanoTime() - i)/1000000}ms")
 

@@ -29,6 +29,6 @@ class BooleanSetting(name: String, description: String, default: Boolean, group:
     }
 
     override fun load(jsonObject: JsonObject) {
-        value = jsonObject.get("value").asBoolean
+        value = jsonObject["value"].asBoolean
     }
 }

@@ -40,7 +40,7 @@ class MultiEnumSetting<T : Enum<T>>(name: String, description: String, group: Se
 
     override fun load(jsonObject: JsonObject) {
         value.clear()
-        val enabled = jsonObject.get("enabled").asJsonArray
+        val enabled = jsonObject["enabled"].asJsonArray
         for (ts in enabled) {
             val name = ts.asString
             value.add(constants.find { it.name == name } ?: continue)

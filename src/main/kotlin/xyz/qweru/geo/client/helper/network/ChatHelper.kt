@@ -6,7 +6,7 @@ import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
-import java.awt.Color
+import xyz.qweru.multirender.api.util.color.Color
 
 object ChatHelper {
     private val prefix

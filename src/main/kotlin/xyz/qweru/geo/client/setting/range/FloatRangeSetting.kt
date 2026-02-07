@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import xyz.qweru.geo.client.helper.math.RangeHelper
+import xyz.qweru.geo.core.helper.file.set
 import xyz.qweru.geo.core.system.setting.Setting
 import xyz.qweru.geo.core.system.setting.SettingGroup
 import java.util.concurrent.CompletableFuture
@@ -24,11 +25,14 @@ class FloatRangeSetting(name: String, description: String, default: ClosedRange<
     }
 
     override fun save(jsonObject: JsonObject) {
-        jsonObject.addProperty("min", value.start)
-        jsonObject.addProperty("max", value.endInclusive)
+        jsonObject["min"] = value.start
+        jsonObject["max"] = value.endInclusive
     }
 
     override fun load(jsonObject: JsonObject) {
-        value = RangeHelper.of(jsonObject.get("min")?.asFloat ?: minMax.start, jsonObject.get("max")?.asFloat ?: minMax.endInclusive)
+        value = RangeHelper.of(
+            jsonObject["min"].asFloat,
+            jsonObject["max"].asFloat
+        )
     }
 }

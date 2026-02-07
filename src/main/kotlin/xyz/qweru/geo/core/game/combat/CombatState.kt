@@ -6,6 +6,7 @@ import net.minecraft.world.entity.projectile.Projectile
 import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.EntityDamageEvent
 import xyz.qweru.geo.client.helper.player.AttackConditions
+import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.event.Handler
 
@@ -13,7 +14,9 @@ class CombatState(private val playerProvider: (CombatState) -> Player?) {
 
     companion object {
         val SELF = CombatState { mc.player }
+            .also(Core::manage)
         val TARGET = CombatState { TargetTracker.target }
+            .also(Core::manage)
     }
 
     val player: Player?

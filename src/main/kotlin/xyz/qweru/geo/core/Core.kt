@@ -6,6 +6,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.core.command.CommandManager
+import xyz.qweru.geo.core.config.Configs
 import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.game.combat.CombatEventHandler
 import xyz.qweru.geo.core.game.combat.CombatState
@@ -29,17 +30,17 @@ object Core {
         manage(CommandManager)
         manage(MovementTicker)
         manage(InvHelper)
-        manage(CombatState.SELF)
-        manage(CombatState.TARGET)
+        manage(CombatState)
         manage(CombatEventHandler)
         manage(TargetTracker)
         manage(RotationHandler)
         manage(BotTracker)
         manage(InteractionManager)
         manage(PacketManager)
+        manage(Configs)
     }
 
-    private fun manage(o: Any) {
+    fun manage(o: Any) {
         EventBus.subscribe(o)
     }
 

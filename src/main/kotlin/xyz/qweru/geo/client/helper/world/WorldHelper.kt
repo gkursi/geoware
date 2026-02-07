@@ -20,19 +20,22 @@ import kotlin.math.floor
 
 
 object WorldHelper {
-    // https://github.com/Eglijohn/brew-addon/blob/1.21.8/src/main/java/blub/brewaddon/utils/misc/HitResults.java#L18
     fun getCrosshairTarget(
-        entity: Entity = mc.thePlayer,
         range: Double,
+        rotation: FloatArray,
+        wallRange: Double = range,
         ignoreBlocks: Boolean = false,
         filter: Predicate<Entity> = Predicate<Entity> { true },
-        level: Level = mc.theLevel,
-        rotation: FloatArray
+        entity: Entity = mc.thePlayer,
+        level: Level = mc.theLevel
     ): HitResult? {
         val cameraPos = entity.eyePosition
 
-        val direction = Vec3.directionFromRotation(rotation[1], rotation[0]).scale(range)
-        val targetPos = cameraPos.add(direction)
+        val direction = Vec3.directionFromRotation(rotation[1], rotation[0])
+        val offset = direction.scale(range)
+        val wallOffset = direction.scale(wallRange)
+        val targetPos = cameraPos.add(offset)
+        val wallPos = cameraPos.add(wallOffset)
 
         val entityHitResult = ProjectileUtil.getEntityHitResult(
             entity,
@@ -43,8 +46,6 @@ object WorldHelper {
             range * range
         )
 
-//        println("${if (entityHitResult == null) "(failed) " else ""}Raycasting from $cameraPos to $targetPos with box ${entity.boundingBox.expandTowards(direction).inflate(1.0)}")
-
         if (entityHitResult != null) {
             return entityHitResult
         }
@@ -52,7 +53,7 @@ object WorldHelper {
         if (!ignoreBlocks) {
             val context = ClipContext(
                 cameraPos,
-                targetPos,
+                wallPos,
                 ClipContext.Block.OUTLINE,
                 ClipContext.Fluid.NONE,
                 entity
