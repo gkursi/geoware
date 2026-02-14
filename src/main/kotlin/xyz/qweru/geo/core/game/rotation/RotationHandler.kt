@@ -95,7 +95,7 @@ object RotationHandler : ProposalHandler<Rotation>() {
     }
 
     @Handler(priority = EventPriority.LAST)
-    private fun preCrosshair(e: PreCrosshair) {
+    private fun preCrosshair(e: PreCrosshairEvent) {
         if (mc.player == null) return
 
         clientRot.copyRotationFrom(mc.thePlayer)
@@ -111,7 +111,7 @@ object RotationHandler : ProposalHandler<Rotation>() {
     }
 
     @Handler
-    private fun postCrosshair(e: PostCrosshair) {
+    private fun postCrosshair(e: PostCrosshairEvent) {
         if (mc.player == null || !fixMouse) return
         clientRot.applyRotation(mc.thePlayer)
     }

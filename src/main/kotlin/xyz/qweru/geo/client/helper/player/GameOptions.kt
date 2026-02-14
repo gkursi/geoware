@@ -12,7 +12,7 @@ object GameOptions {
     private val options: Options
         get() = Core.mc.options
     private val handle: Long
-        get() = Core.mc.window.window
+        get() = Core.mc.window.handle()
 
     /* Binds */
     var forwardKey by wrapBind(options.keyUp)

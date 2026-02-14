@@ -81,7 +81,7 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
             ?: doAction.takeUnless { it == Action.NONE }
             ?: return
 
-        if (!InvHelper.find({ it.isOf(action.item) }).found()) return
+        if (!InvHelper.findInInventory { it.isOf(action.item) }.found()) return
         InvHelper.swap(action.item, 0)
         if (!InvHelper.isInMainhand(action.item)) {
             doAction = action

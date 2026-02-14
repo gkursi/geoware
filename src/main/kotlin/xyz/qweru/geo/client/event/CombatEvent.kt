@@ -4,17 +4,17 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 
-abstract class PVPCombatEvent {
+abstract class CombatEvent {
     lateinit var source: Player
     lateinit var player: Player
 }
 
-object AttackPlayerEvent : PVPCombatEvent()
-object AttackFromPlayerEvent : PVPCombatEvent()
-object PlayerAttackPlayerEvent : PVPCombatEvent()
+object AttackPlayerEvent : CombatEvent()
+object AttackFromPlayerEvent : CombatEvent()
+object PlayerAttackPlayerEvent : CombatEvent()
 
 object EntityDamageEvent {
-    lateinit var source: DamageSource
+    var source: DamageSource? = null
     var entity: Entity? = null
     var sourceEntity: Entity? = null
     var directSourceEntity: Entity? = null

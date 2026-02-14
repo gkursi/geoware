@@ -9,7 +9,6 @@
     "block.CobwebBlockMixin",
     "block.SlimeBlockMixin",
     "entity.EntityMixin",
-    "entity.EntityVelocityUpdateS2CPacketAccessor",
     "entity.LivingEntityAccessor",
     "entity.LivingEntityMixin",
     "entity.PlayerMixin",
@@ -21,7 +20,8 @@
     "network.packet.PositionMoveRotationAccessor",
     "network.packet.ServerboundPlayerInputPacketAccessor",
     "network.packet.ServerboundUseItemPacketAccessor",
-    "screen.HorseScreenHandlerAccessor",
+    "render.WindowMixin",
+    "screen.AbstractMountInventoryScreenAccessor",
     "screen.ItemGroupsAccessor"
   ],
   "client": [
@@ -38,6 +38,7 @@
     "render.GameRendererMixin",
     "render.HeldItemRendererMixin",
     "render.InGameHudMixin",
+    "render.RenderSystemMixin",
     "screen.CreativeInventoryScreenAccessor",
     "screen.HandledScreenAccessor",
     "world.ClientWorldAccessor"

@@ -3,12 +3,7 @@ package xyz.qweru.geo.client.helper.inventory
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.entity.animal.camel.Camel
-import net.minecraft.world.entity.animal.horse.AbstractHorse
-import net.minecraft.world.entity.animal.horse.Donkey
-import net.minecraft.world.entity.animal.horse.Horse
-import net.minecraft.world.entity.animal.horse.Llama
-import net.minecraft.world.entity.animal.horse.SkeletonHorse
-import net.minecraft.world.entity.animal.horse.ZombieHorse
+import net.minecraft.world.entity.animal.equine.*
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.AnvilMenu
 import net.minecraft.world.inventory.BeaconMenu
@@ -34,8 +29,8 @@ import net.minecraft.world.inventory.SmokerMenu
 import net.minecraft.world.inventory.StonecutterMenu
 import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.mixin.screen.AbstractMountInventoryScreenAccessor
 import xyz.qweru.geo.mixin.screen.CreativeInventoryScreenAccessor
-import xyz.qweru.geo.mixin.screen.HorseScreenHandlerAccessor
 import xyz.qweru.geo.mixin.screen.ItemGroupsAccessor
 
 object SlotHelper {
@@ -171,7 +166,7 @@ object SlotHelper {
     }
 
     private fun horse(handler: AbstractContainerMenu, i: Int): Int {
-        val entity: AbstractHorse? = (handler as HorseScreenHandlerAccessor).geo_getEntity()
+        val entity: AbstractHorse = (handler as AbstractMountInventoryScreenAccessor).mount as AbstractHorse
 
         if (entity is Llama) {
             val strength = entity.strength

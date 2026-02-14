@@ -1,21 +1,17 @@
 package xyz.qweru.geo.client.module.combat
 
-import net.minecraft.world.InteractionHand
 import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.PacketSendEvent
-import xyz.qweru.geo.client.event.PostTickEvent
-import xyz.qweru.geo.client.event.PreCrosshair
+import xyz.qweru.geo.client.event.PreCrosshairEvent
 import xyz.qweru.geo.client.event.PreMoveSendEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.math.RangeHelper
-import xyz.qweru.geo.client.helper.network.ChatHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.interaction.InteractionManager
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.network.isInteract
 
 class ModuleAutoBlock : Module("AutoBlock", "Automatically block", Category.COMBAT) {
@@ -34,7 +30,7 @@ class ModuleAutoBlock : Module("AutoBlock", "Automatically block", Category.COMB
         private set
 
     @Handler
-    private fun preCrosshair(e: PreCrosshair) {
+    private fun preCrosshair(e: PreCrosshairEvent) {
         if (!inGame || mode != Mode.LEGIT) return
         invert = if (!blocking) {
             canBlock() && shouldBlock() && timer.hasPassed()

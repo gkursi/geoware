@@ -1,5 +1,6 @@
 package xyz.qweru.geo.client.helper.inventory
 
+import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Inventory
@@ -12,9 +13,16 @@ import xyz.qweru.geo.client.event.PostTickEvent
 import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.core.Core
+import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.item.armorToughness
+import xyz.qweru.geo.extend.minecraft.item.attackDamage
+import xyz.qweru.geo.extend.minecraft.item.isChestArmor
+import xyz.qweru.geo.extend.minecraft.item.isFootArmor
+import xyz.qweru.geo.extend.minecraft.item.isHeadArmor
+import xyz.qweru.geo.extend.minecraft.item.isLegArmor
 
 object InvHelper {
 
@@ -38,7 +46,7 @@ object InvHelper {
         }
 
     val inventory: Inventory
-        get() = Core.mc.thePlayer.getInventory()
+        get() = mc.thePlayer.getInventory()
 
     @Handler(priority = EventPriority.LAST)
     private fun postTick(e: PostTickEvent) {
@@ -77,7 +85,7 @@ object InvHelper {
     fun swap(item: Item, priority: Int = 0): Boolean = swap({ it.`is`(item) }, priority)
 
     fun swap(item: (ItemStack) -> Boolean, priority: Int = 0): Boolean {
-        val res = find(item)
+        val res = findInInventory(item = item)
         return res.found().also { if (it) res.swap(priority) }
     }
 
@@ -92,7 +100,7 @@ object InvHelper {
         swap0(selectedSlot, 0)
     }
 
-    fun find(item: (ItemStack) -> Boolean, start: Int = 0, end: Int = 9): FindResult {
+    fun findInInventory(start: Int = 0, end: Int = 9, item: (ItemStack) -> Boolean): FindResult {
         for (i in start..<end) {
             if (item.invoke(inventory.getItem(i))) {
                 return FindResult(i)
@@ -101,15 +109,77 @@ object InvHelper {
         return FindResult.NONE
     }
 
-    fun move(): InvAction = InvAction(InvAction.Type.MOVE)
-    fun offhand(): InvAction = InvAction(InvAction.Type.QUICK_OFFHAND)
-    fun pickup(): InvAction = InvAction(InvAction.Type.PICKUP)
-    fun quickMove(): InvAction = InvAction(InvAction.Type.QUICK_MOVE)
+    fun findInScreen(screen: ContainerScreen, min: Int = 0, max: Int = screen.menu.rowCount * 9, item: (ItemStack, Int) -> Boolean): FindResult {
+        for ((index, stack) in screen.menu.items.withIndex()) {
+            if (index < min) continue
+            if (index >= max) break
+            if (item.invoke(stack, index)) {
+                return FindResult(index)
+            }
+        }
+
+        return FindResult.NONE
+    }
+
+    fun findBest(start: Int = 0, end: Int = 44, filter: (ItemStack) -> Boolean = { false }, valueFunc: (ItemStack) -> Double): ItemStack? {
+        var highest = 0.0
+        var stack: ItemStack? = null
+
+        findInInventory(start, end) {
+            if (filter(it)) {
+                return@findInInventory false
+            }
+
+            val value = valueFunc(it)
+
+            if (value > highest) {
+                highest = value
+                stack = it
+            }
+
+            return@findInInventory false
+        }
+
+        return stack
+    }
+
+    fun findHighestDamage() =
+        findBest { it.attackDamage }
+
+    fun findHighestProtection() =
+        findBest { it.armorToughness }
+
+    fun findHighestProtection(type: ItemStack) =
+        findBest(filter = { !isSameArmor(it, type) }) { it.armorToughness }
+
+    // Todo: find a better way of doing this
+    fun isSameArmor(a: ItemStack, b: ItemStack) =
+        (a.isFootArmor && b.isFootArmor)
+                || (a.isLegArmor && b.isLegArmor)
+                || (a.isChestArmor && b.isChestArmor)
+                || (a.isHeadArmor && b.isHeadArmor)
+
+    fun move(): InvAction =
+        InvAction(InvAction.Type.MOVE)
+
+    fun offhand(): InvAction =
+        InvAction(InvAction.Type.QUICK_OFFHAND)
+
+    fun pickup(): InvAction =
+        InvAction(InvAction.Type.PICKUP)
+
+    fun quickMove(): InvAction =
+        InvAction(InvAction.Type.QUICK_MOVE)
 
     private fun swap0(slot: Int, priority: Int) {
         if (priority < lastSwapPriority) return
-        if (module.silentSwap) PacketHelper.swap(slot)
-        else selectedSlot = slot
+
+        if (module.silentSwap) {
+            PacketHelper.swap(slot)
+        } else {
+            selectedSlot = slot
+        }
+
         serverSlot = slot
     }
 
@@ -119,8 +189,8 @@ object InvHelper {
         val leftDist = (current - target + 9) % 9
 
         return when {
-            rightDist <= leftDist -> (current + 1) % 9 // go right
-            else -> (current + 9 - 1) % 9              // go left
+            rightDist <= leftDist -> (current + 1) % 9
+            else -> (current + 9 - 1) % 9
         }
     }
 

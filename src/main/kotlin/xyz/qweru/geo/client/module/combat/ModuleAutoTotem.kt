@@ -93,7 +93,7 @@ class ModuleAutoTotem : Module("AutoTotem", "Automatically use totems", Category
                     slot.containerSlot
                 }
                 Mode.PACKET -> {
-                    val slot = InvHelper.find({ it.isOf(Items.TOTEM_OF_UNDYING) }, 9, 36)
+                    val slot = InvHelper.findInInventory(9, 36) { it.isOf(Items.TOTEM_OF_UNDYING) }
                     if (!slot.found()) return
                     slot.toId()
                 }

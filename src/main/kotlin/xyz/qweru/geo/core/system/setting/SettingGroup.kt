@@ -48,8 +48,18 @@ class SettingGroup(val name: String, val parent: Settings, private var visiblePr
     fun <T : Enum<*>> enum(name: String, description: String, value: T): EnumSetting<T> =
         EnumSetting(name.lowercase().replace(" ", "-"), description, value, this).apply { parent.add(this) }
 
-    fun <T : Enum<T>> multiEnum(name: String, description: String, value: T, vararg values: T): MultiEnumSetting<T> =
-        MultiEnumSetting<T>(name.lowercase().replace(" ", "-"), description, this, value, *values).apply { parent.add(this) }
+    fun <T : Enum<T>> multiEnum(name: String, description: String, value: T, vararg values: T, enumConstants: Array<T>? = value.javaClass.enumConstants): MultiEnumSetting<T> =
+        MultiEnumSetting(
+            name.lowercase()
+                .replace(" ", "-"),
+            description,
+            this,
+            enumConstants,
+            value,
+            *values
+        ).apply {
+            parent.add(this)
+        }
 
     fun visible(v: () -> Boolean): SettingGroup {
         visibleProvider = v

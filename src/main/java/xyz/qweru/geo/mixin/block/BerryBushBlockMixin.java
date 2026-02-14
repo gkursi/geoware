@@ -18,7 +18,7 @@ import static xyz.qweru.geo.core.Core.mc;
 public class BerryBushBlockMixin {
 
     @Inject(method = "entityInside", at = @At("HEAD"))
-    private void onSlow(BlockState blockState, Level level, BlockPos blockPos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier, CallbackInfo ci) {
+    private void onSlow(BlockState blockState, Level level, BlockPos blockPos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier, boolean bl, CallbackInfo ci) {
         if (entity != mc.player) return;
         MovementState.INSTANCE.setSlowedByBlock(true);
     }

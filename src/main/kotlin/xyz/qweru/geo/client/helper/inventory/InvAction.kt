@@ -22,9 +22,10 @@ class InvAction(private val type: Type) {
     /**
      * From action
      */
-    fun item(predicate: (ItemStack) -> Boolean): InvAction {
-        val item = InvHelper.find(predicate)
-        return fromId(if (item.found()) item.toId() else -1)
+    fun item(predicate: (ItemStack) -> Boolean): InvAction? {
+        val item = InvHelper.findInInventory(item = predicate)
+        return if (!item.found()) null
+               else from(item.slot)
     }
 
     /**
@@ -41,13 +42,8 @@ class InvAction(private val type: Type) {
 
     fun toOffhand() = toId(45)
 
-    fun toFreeSlot(): InvAction? {
-        val inv = mc.thePlayer.inventory
-        for (slot in 9..36) {
-            if (inv.getItem(slot).isEmpty) return to(slot)
-        }
-        return null
-    }
+    fun toFreeSlot(): InvAction? =
+        item { it.isEmpty }
 
     /**
      * Returns true on success, false on fail

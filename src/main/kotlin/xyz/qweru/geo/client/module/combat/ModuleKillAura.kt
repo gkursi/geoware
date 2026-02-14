@@ -3,11 +3,11 @@ package xyz.qweru.geo.client.module.combat
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Items
 import net.minecraft.world.phys.EntityHitResult
-import xyz.qweru.geo.client.event.PreCrosshair
+import xyz.qweru.geo.client.event.PreCrosshairEvent
+import xyz.qweru.geo.client.event.PreMoveSendEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.Target
 import xyz.qweru.geo.client.helper.entity.TargetHelper
-import xyz.qweru.geo.client.helper.network.ChatHelper
 import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
@@ -18,7 +18,6 @@ import xyz.qweru.geo.core.game.rotation.Rotation
 import xyz.qweru.geo.core.game.rotation.RotationHandler
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.kotlin.array.copyRotation
 import xyz.qweru.geo.extend.minecraft.entity.attackCharge
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.item.isOf
@@ -43,10 +42,10 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
     private val fov by sc.float("FOV", "Target fov", 360f, 0f, 360f)
     private val invisible by sc.boolean("Invisible", "Attack fully invisible players", false)
     private val behindEntity by sg.boolean("Behind Entities", "Attack entities behind other entities", false)
+    private val multitask by sg.boolean("Multitask", "Allow multitasking", false)
 
     private var target: Target? = null
     private var theRotation: Rotation = Rotation(0f, 0f)
-    private val rot = floatArrayOf(0f, 0f)
     private val timer = TimerDelay()
 
     @Handler
@@ -57,14 +56,16 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
         if (rotation == RotationMode.TICK) {
             rotate()
         }
-
-        if (canAttack() && isLookingAtTarget()) {
-            attack(target?.player ?: return)
-        }
     }
 
     @Handler
-    private fun frame(e: PreCrosshair) {
+    private fun preMovePacket(e: PreMoveSendEvent) {
+        if (!canAttack() || !isLookingAtTarget()) return
+        attack(target?.player ?: return)
+    }
+
+    @Handler
+    private fun frame(e: PreCrosshairEvent) {
         if (!inGame || rotation != RotationMode.FRAME) return
         rotate()
     }
@@ -86,6 +87,7 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
 
     private fun rotate() {
         if (!inGame) return
+        if (!multitask && mc.thePlayer.isUsingItem) return
         val target = target ?: return
         theRotation = RotationHelper.get(target, point = aimPoint)
         RotationHandler.propose(theRotation, Rotation.ATTACK)

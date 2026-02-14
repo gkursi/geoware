@@ -80,7 +80,8 @@ class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VI
     /**
      * @param side 1/-1 depending on which arm is being rendered
      */
-    fun swing(swingProgress: Float, equipProgress: Float, stack: PoseStack, side: Int, arm: HumanoidArm) {
+    fun swing(swingProgress: Float, stack: PoseStack, side: Int, arm: HumanoidArm) {
+        // todo
     }
 
     private fun vec(x: Float, y: Float, z: Float): Vector3f = Vector3f(x, y, z)
@@ -89,13 +90,5 @@ class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VI
         NORMAL,
         COMPATIBILITY
     }
-
-//    enum class Preset {
-//        VANILLA;
-//
-//        abstract fun transform(stack: ) {
-//
-//        }
-//    }
 
 }

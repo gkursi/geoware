@@ -4,5 +4,7 @@ object GameRenderEvent
 object WorldRenderEvent
 object VanillaHudRenderEvent
 
-object PreCrosshair
-object PostCrosshair
+object PreCrosshairEvent
+object PostCrosshairEvent
+
+object PostRenderInitEvent

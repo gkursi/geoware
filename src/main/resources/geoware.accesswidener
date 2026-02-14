@@ -1,0 +1,4 @@
+accessWidener v2 named
+
+# fixes some weird fapi bug
+accessible method net/minecraft/client/gui/components/debug/DebugScreenEntries register (Lnet/minecraft/resources/Identifier;Lnet/minecraft/client/gui/components/debug/DebugScreenEntry;)Lnet/minecraft/resources/Identifier;

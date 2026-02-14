@@ -65,7 +65,7 @@ class Modules() : System("modules", Type.ROOT) {
 //        add(ModuleScaffold())
 //        add(ModuleSafeAnchor())
 //        add(ModuleMine())
-//        add(ModuleChestStealer())
+        add(ModuleChestStealer())
 
         sorted.sortWith(Comparator.comparing(Module::name))
     }

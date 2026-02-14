@@ -1,6 +1,6 @@
 package xyz.qweru.geo.client.module.move
 
-import xyz.qweru.geo.client.event.PostCrosshair
+import xyz.qweru.geo.client.event.PostCrosshairEvent
 import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.movement.MovementTicker
@@ -21,7 +21,7 @@ class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category
         get() = glideTicks in 1..glideTick
 
     @Handler
-    private fun crosshair(e: PostCrosshair) {
+    private fun crosshair(e: PostCrosshairEvent) {
         MovementTicker.tickSpeed = if (gliding) moveTick else 20
     }
 

@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "2.2.20"
-    id("fabric-loom") version "1.11-SNAPSHOT"
+    id("fabric-loom") version "1.15-SNAPSHOT"
     id("maven-publish")
 }
 
@@ -34,6 +34,10 @@ val skijaNatives = Pair(
 version = project.property("mod_version") as String
 group = project.property("maven_group") as String
 
+loom {
+    accessWidenerPath = file("src/main/resources/geoware.accesswidener")
+}
+
 base {
     archivesName.set(project.property("archives_base_name") as String)
 }
@@ -61,18 +65,18 @@ dependencies {
     mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fapi_version")}")
+//    modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fapi_version")}")
 
     modImplementation("com.ptsmods:devlogin:3.5")
     implementation("org.apache.commons:commons-math3:3.6.1")
-    modImplementation("com.viaversion:viafabricplus-api:4.2.5")
+    modImplementation("com.viaversion:viafabricplus-api:4.4.5")
     implementation("com.github.gkursi:basalt:20dd54f16b")
 
     // render
     implementation("xyz.qweru:multirender-api:1.0-SNAPSHOT")
     implementation("xyz.qweru:multirender-gl-compat:1.0-SNAPSHOT")
     implementation("xyz.qweru:multirender-twm:1.0-SNAPSHOT")
-    modRuntimeOnly("xyz.qweru:multirender-1-21-8:0.0.1")?.let { include(it) }
+    include(modRuntimeOnly("xyz.qweru:multirender-1-21-11:0.0.1")!!)
     implementation("io.github.humbleui:${skijaNatives}:0.143.9")
 }
 

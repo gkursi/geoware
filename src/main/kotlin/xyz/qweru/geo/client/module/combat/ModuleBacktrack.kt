@@ -21,6 +21,7 @@ import xyz.qweru.geo.extend.kotlin.log.dbg
 import xyz.qweru.geo.extend.kotlin.math.not
 import xyz.qweru.geo.extend.minecraft.entity.pos
 import xyz.qweru.geo.extend.minecraft.entity.relativeMotion
+import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you an advantage", Category.COMBAT) {
@@ -61,7 +62,7 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you an advant
         val packet = e.packet
 
         if (packet is ClientboundTeleportEntityPacket && packet.id == (TargetTracker.target?.id ?: -1)
-            || packet is ClientboundMoveEntityPacket && packet.getEntity(mc.level) == TargetTracker.target
+            || packet is ClientboundMoveEntityPacket && packet.getEntity(mc.theLevel) == TargetTracker.target
             || packet is ClientboundEntityPositionSyncPacket && packet.id == (TargetTracker.target?.id ?: -1)) {
 
             TargetTracker.target?.let {
@@ -71,13 +72,24 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you an advant
             }
 
             when (packet) {
-                is ClientboundTeleportEntityPacket -> trackedPosition?.pos = PositionMoveRotation.calculateAbsolute(PositionMoveRotation.of(TargetTracker.target), packet.change(), packet.relatives).position
+                is ClientboundTeleportEntityPacket -> {
+                    trackedPosition?.pos = PositionMoveRotation.calculateAbsolute(
+                        PositionMoveRotation.of(TargetTracker.target!!),
+                        packet.change(),
+                        packet.relatives
+                    ).position
+                }
+
                 is ClientboundMoveEntityPacket -> {
-                    trackedPosition?.pos = packet.getEntity(mc.level)?.pos ?: Vec3.ZERO
+                    trackedPosition?.pos = packet.getEntity(mc.theLevel)?.pos ?: Vec3.ZERO
                     if (packet.hasPosition())
                         trackedPosition?.addDelta(packet.xa.toLong(), packet.ya.toLong(), packet.za.toLong())
                 }
-                is ClientboundEntityPositionSyncPacket -> trackedPosition?.pos = packet.values.position
+
+                is ClientboundEntityPositionSyncPacket -> {
+                    trackedPosition?.pos = packet.values.position
+                }
+
                 else -> throw IllegalArgumentException()
             }
 
@@ -92,8 +104,11 @@ class ModuleBacktrack : Module("Backtrack", "Simulates lag to give you an advant
 
     private fun shouldBacktrack(): Boolean {
         if (requireTarget && TargetTracker.target == null) return false
-        return always || (CombatState.SELF.combo >= combo && combo > 0) || TargetTracker.target?.let { target ->
-            target.relativeMotion.x < 0 && backwards || trackedPosition.inRange(range) && inRange
-        } ?: false
+        return always
+                || (CombatState.SELF.combo >= combo && combo > 0)
+                || TargetTracker.target?.let {
+                    it.relativeMotion.x < 0 && backwards
+                            || trackedPosition.inRange(range) && inRange
+                } ?: false
     }
 }

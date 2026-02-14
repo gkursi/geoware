@@ -25,8 +25,9 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
                 if (now) {
                     module.sprint(sprinting)
                 }
+            } else {
+                GameOptions.sprintKey = sprinting
             }
-            else GameOptions.sprintKey = sprinting
         }
     }
 

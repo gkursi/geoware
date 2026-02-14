@@ -5,6 +5,7 @@ import com.mojang.brigadier.ParseResults
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.client.multiplayer.ClientSuggestionProvider
+import net.minecraft.server.permissions.PermissionSet
 import xyz.qweru.geo.client.command.CommandConfig
 import xyz.qweru.geo.client.command.CommandSession
 import xyz.qweru.geo.client.command.CommandSet
@@ -13,7 +14,10 @@ import xyz.qweru.geo.core.Core.mc
 
 object CommandManager {
     val dispatcher = CommandDispatcher<ClientSuggestionProvider>()
-    val source = ClientSuggestionProvider(mc.connection, mc, false)
+    val permissions = PermissionSet.ALL_PERMISSIONS
+    val source by lazy {
+        ClientSuggestionProvider(mc.connection!!, mc, permissions)
+    }
     val commands = ObjectArrayList<Command>()
 
     init {
