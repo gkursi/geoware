@@ -8,12 +8,13 @@ import net.minecraft.world.item.AxeItem
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import org.lwjgl.glfw.GLFW
-import xyz.qweru.geo.client.helper.player.GameOptions
-import xyz.qweru.geo.client.event.PostMovementTickEvent
+import xyz.qweru.basalt.EventPriority
+import xyz.qweru.geo.client.event.PreMoveSendEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.client.helper.player.AttackConditions
-import xyz.qweru.geo.client.helper.inventory.InvHelper
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.core.event.Handler
@@ -23,13 +24,12 @@ import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.system.SystemCache
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.kotlin.log.dbg
 import xyz.qweru.geo.extend.minecraft.entity.attackCharge
 import xyz.qweru.geo.extend.minecraft.entity.isOnGround
 import xyz.qweru.geo.extend.minecraft.entity.relativeMotion
 import xyz.qweru.geo.extend.minecraft.game.theLevel
-import xyz.qweru.geo.extend.minecraft.world.hit
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.world.hit
 import xyz.qweru.multirender.api.API
 import xyz.qweru.multirender.api.input.Input
 import java.util.*
@@ -73,8 +73,8 @@ class ModuleTriggerBot : Module("TriggerBot", "Automatically hit entities when h
     var nextDamage = Attack()
     val block: ModuleAutoBlock by SystemCache.getModule()
 
-    @Handler
-    private fun onTick(e: PostMovementTickEvent) {
+    @Handler(priority = EventPriority.LOWEST)
+    private fun onTick(e: PreMoveSendEvent) {
         if (!inGame || mc.screen != null || !timer.hasPassed() || (pauseUse && !mc.thePlayer.useItem.isEmpty)) return
 
         nextDamage = Attack()

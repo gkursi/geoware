@@ -72,9 +72,12 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
 
     private fun attack(player: Player) {
         PacketHelper.attackAndSwing(player)
-        mc.thePlayer.attack(player)
-        if (sprintReset) ModuleSprint.sprint(false)
+        mc.thePlayer.resetAttackStrengthTicker()
         timer.reset(delay)
+
+        if (sprintReset) {
+            ModuleSprint.sprint(false)
+        }
     }
 
     private fun canAttack(): Boolean {
