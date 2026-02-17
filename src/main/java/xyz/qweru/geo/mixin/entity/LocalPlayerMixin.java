@@ -21,6 +21,7 @@ import xyz.qweru.geo.client.module.move.ModuleNoSlow;
 import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.game.movement.MovementState;
 import xyz.qweru.geo.core.game.movement.MovementTicker;
+import xyz.qweru.geo.core.game.rotation.RotationHandler;
 import xyz.qweru.geo.core.system.SystemCache;
 import xyz.qweru.geo.core.system.Systems;
 import xyz.qweru.geo.core.system.module.Modules;
@@ -146,4 +147,14 @@ public abstract class LocalPlayerMixin implements ILocalPlayer {
         if (noSlow.cast().getEnabled() && noSlow.cast().getBlockPush())
             ci.cancel();
     }
+
+//    @WrapOperation(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getYRot()F", ordinal = 3))
+//    private float changeLastYaw(LocalPlayer instance, Operation<Float> original) {
+//        return RotationHandler.INSTANCE.getRot()[0];
+//    }
+//
+//    @WrapOperation(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getXRot()F", ordinal = 3))
+//    private float changeLastPitch(LocalPlayer instance, Operation<Float> original) {
+//        return RotationHandler.INSTANCE.getRot()[1];
+//    }
 }

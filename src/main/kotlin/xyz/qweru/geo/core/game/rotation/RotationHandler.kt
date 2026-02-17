@@ -14,8 +14,8 @@ import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.rotation.interpolate.HumanInterpolationEngine
 import xyz.qweru.geo.core.helper.manage.ProposalHandler
 import xyz.qweru.geo.core.system.SystemCache
-import xyz.qweru.geo.extend.kotlin.array.copy2
 import xyz.qweru.geo.extend.kotlin.array.applyRotation
+import xyz.qweru.geo.extend.kotlin.array.copy2
 import xyz.qweru.geo.extend.kotlin.array.copyRotationFrom
 import xyz.qweru.geo.extend.kotlin.math.wrapped
 import xyz.qweru.geo.extend.minecraft.game.theLevel
@@ -165,6 +165,8 @@ object RotationHandler : ProposalHandler<Rotation>() {
 
         var yawDelta = engine.stepYaw(startYaw, endYaw, currentYaw) * dt
         var pitchDelta = engine.stepPitch(startPitch, endPitch, currentPitch) * dt
+
+
 
         if (abs((endYaw - currentYaw).wrapped) < abs(yawDelta)) {
             yawDelta = (endYaw - currentYaw).wrapped

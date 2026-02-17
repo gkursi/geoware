@@ -30,7 +30,7 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
 
     private val rotation by sg.enum("Rotation", "When should we rotate", RotationMode.FRAME)
     private val sprintReset by sg.boolean("Sprint Reset", "Reset sprint after hit", true)
-    private val aimPoint by sg.enum("Aim Point", "Where should we aim", RotationHelper.TargetPoint.NEAR)
+    private val aimPoint by sg.enum("Aim Point", "Where should we aim", RotationHelper.TargetPoint.CLAMP)
 
     private val delay by st.longRange("Delay", "Hit delay", 90L..105L, 0L..200L)
     private val charge by st.float("Charge", "Item charge", 1f, 0f, 1f)
@@ -92,6 +92,7 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
         if (!inGame) return
         if (!multitask && mc.thePlayer.isUsingItem) return
         val target = target ?: return
+
         theRotation = RotationHelper.get(target, point = aimPoint)
         RotationHandler.propose(theRotation, Rotation.ATTACK)
     }

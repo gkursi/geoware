@@ -4,8 +4,8 @@ import xyz.qweru.geo.client.event.GameRenderEvent
 import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.rotation.InterpolationEngine
-import xyz.qweru.geo.core.game.rotation.RotationHandler.rotationConfig
 import xyz.qweru.geo.core.game.rotation.RotationHandler.random
+import xyz.qweru.geo.core.game.rotation.RotationHandler.rotationConfig
 import xyz.qweru.geo.extend.kotlin.math.inRange
 import xyz.qweru.geo.extend.kotlin.math.wrapped
 import xyz.qweru.multirender.api.API
@@ -40,7 +40,7 @@ object HumanInterpolationEngine : InterpolationEngine {
 
     private fun step(start: Float, end: Float, current: Float, tracker: Tracker): Float {
         val wStart = start.wrapped
-        val dist = end.wrapped - wStart
+        val dist = (end.wrapped - wStart).wrapped
         val progress = abs(current.wrapped - wStart)
         val speed = tracker.getSpeed(progress, abs(dist))
         val mod = random.double(0.1, 1.0) * speed
