@@ -1,7 +1,7 @@
 package xyz.qweru.geo.client.module.config
 
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 
 class ModuleSwap : Module("Swap", "Global swap settings", Category.CONFIG) {
     val sg = settings.general

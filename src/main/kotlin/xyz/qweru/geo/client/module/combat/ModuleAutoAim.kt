@@ -8,11 +8,11 @@ import xyz.qweru.geo.client.helper.entity.TargetHelper
 import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.game.rotation.Rotation
-import xyz.qweru.geo.core.game.rotation.RotationConfig
-import xyz.qweru.geo.core.game.rotation.RotationHandler
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.game.rotation.RotationManager
+import xyz.qweru.geo.core.game.rotation.data.Rotation
+import xyz.qweru.geo.core.game.rotation.data.RotationConfig
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.inFov
 import xyz.qweru.geo.extend.minecraft.entity.inRange
 import xyz.qweru.geo.extend.minecraft.game.theLevel
@@ -40,7 +40,7 @@ class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
     private fun onFrame(e: GameRenderEvent) {
         if (!inGame || mc.screen != null || !canTarget()) return
         val target = this.currentTarget ?: return
-        RotationHandler.propose(RotationHelper.get(target, point = this.target, config = rotations), Rotation.UNIMPORTANT_ATTACK)
+        RotationManager.propose(RotationHelper.get(target, point = this.target, config = rotations), Rotation.UNIMPORTANT_ATTACK)
     }
 
     fun canTarget(): Boolean {

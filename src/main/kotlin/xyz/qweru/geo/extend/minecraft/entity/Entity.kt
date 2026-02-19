@@ -13,12 +13,15 @@ fun Entity.distanceFromEyesSq(vec: Vec3i) = this.eyePosition.distanceToSqr(Vec3.
 
 val Entity.attackCharge: Float
     get() = if (this is Player) this.getAttackStrengthScale(.5f) else 1f
+
 var Entity.isOnGround: Boolean
     get() = this.onGround()
     set(value) = this.setOnGround(value)
+
 var Entity.pos: Vec3
     get() = this.position()
     set(v) = this.setPos(v)
+
 val Player.armorItems: Iterable<ItemStack>
     get() = listOf(
         getItemBySlot(EquipmentSlot.FEET),
@@ -26,3 +29,8 @@ val Player.armorItems: Iterable<ItemStack>
         getItemBySlot(EquipmentSlot.CHEST),
         getItemBySlot(EquipmentSlot.HEAD),
     )
+
+fun Entity.setRotation(floatArray: FloatArray) {
+    yRot = floatArray[0]
+    xRot = floatArray[1]
+}

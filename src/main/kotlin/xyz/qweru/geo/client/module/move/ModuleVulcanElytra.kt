@@ -4,8 +4,8 @@ import xyz.qweru.geo.client.event.PostCrosshairEvent
 import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.movement.MovementTicker
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 class ModuleVulcanElytra : Module("VulcanElytra","Fly without rockets", Category.MOVEMENT) {

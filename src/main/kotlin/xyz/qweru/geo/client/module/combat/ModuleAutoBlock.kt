@@ -10,8 +10,8 @@ import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.interaction.InteractionManager
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.network.isInteract
 
 class ModuleAutoBlock : Module("AutoBlock", "Automatically block", Category.COMBAT) {

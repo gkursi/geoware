@@ -3,13 +3,13 @@ package xyz.qweru.geo.core.config
 import com.google.gson.JsonObject
 import org.apache.commons.lang3.text.WordUtils
 import xyz.qweru.geo.core.system.System
-import xyz.qweru.geo.core.system.friend.Friends
+import xyz.qweru.geo.core.system.impl.friend.Friends
 import xyz.qweru.geo.core.helper.tree.SettingFilter
 import xyz.qweru.geo.core.helper.tree.SystemFilter
-import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.core.system.module.Modules
-import xyz.qweru.geo.core.system.setting.SettingUsage
-import xyz.qweru.geo.core.system.setting.Settings
+import xyz.qweru.geo.core.system.impl.module.Module
+import xyz.qweru.geo.core.system.impl.module.Modules
+import xyz.qweru.geo.core.system.impl.setting.SettingUsage
+import xyz.qweru.geo.core.system.impl.setting.Settings
 
 enum class ConfigType(val systemFilter: SystemFilter, val settingFilter: SettingFilter) {
     ALL(

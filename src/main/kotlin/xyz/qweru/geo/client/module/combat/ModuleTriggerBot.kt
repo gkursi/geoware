@@ -22,8 +22,8 @@ import xyz.qweru.geo.core.game.combat.Attack
 import xyz.qweru.geo.core.game.combat.CombatState
 import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.system.SystemCache
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.attackCharge
 import xyz.qweru.geo.extend.minecraft.entity.isOnGround
 import xyz.qweru.geo.extend.minecraft.entity.relativeMotion

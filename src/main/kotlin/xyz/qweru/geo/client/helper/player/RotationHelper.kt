@@ -8,10 +8,10 @@ import xyz.qweru.geo.client.helper.entity.Target
 import xyz.qweru.geo.client.helper.world.WorldHelper
 import xyz.qweru.geo.client.module.config.ModuleRotation
 import xyz.qweru.geo.core.Core.mc
-import xyz.qweru.geo.core.game.rotation.Rotation
-import xyz.qweru.geo.core.game.rotation.RotationConfig
+import xyz.qweru.geo.core.game.rotation.data.Rotation
+import xyz.qweru.geo.core.game.rotation.data.RotationConfig
 import xyz.qweru.geo.core.system.SystemCache
-import xyz.qweru.geo.extend.kotlin.math.wrapped
+import xyz.qweru.geo.extend.kotlin.math.wrappedDeg
 import xyz.qweru.geo.extend.minecraft.entity.pos
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import kotlin.math.max
@@ -19,11 +19,11 @@ import kotlin.math.min
 import kotlin.math.sqrt
 
 object RotationHelper {
-    fun get(target: Vec3, config: RotationConfig = RotationConfig.DEFAULT): Rotation {
-        val pitch = getPitch(target)
-        val yaw = getYaw(target)
-        return Rotation(yaw, pitch, config)
-    }
+    val gcd: Float
+        get() {
+            val f = (mc.options.sensitivity().get() * 0.6f + 0.2f).toFloat()
+            return f * f * f * 1.2f
+        }
 
     fun getYaw(target: Vec3): Float {
         val player: Vec3 = mc.thePlayer.eyePosition
@@ -41,6 +41,15 @@ object RotationHelper {
         return Mth.wrapDegrees((-(Mth.atan2(dy, dist) * 57.2957763671875)).toFloat())
     }
 
+    fun getYawDelta(a: Float, b: Float) =
+        Mth.wrapDegrees(a - b)
+
+    fun get(target: Vec3, config: RotationConfig = RotationConfig.DEFAULT): Rotation {
+        val pitch = getPitch(target)
+        val yaw = getYaw(target)
+        return Rotation(yaw, pitch, config)
+    }
+
     fun get(target: Entity, config: RotationConfig = RotationConfig.DEFAULT, point: TargetPoint = TargetPoint.BODY) =
         get(target.pos.add(point.value(target)), config)
 
@@ -52,28 +61,15 @@ object RotationHelper {
         return getAngle(target.yaw, target.pitch)
     }
 
-    fun getAngle(vec3: Vec3, pYaw: Float = mc.thePlayer.yRot.wrapped, pPitch: Float = mc.thePlayer.xRot): Float {
+    fun getAngle(vec3: Vec3, pYaw: Float = mc.thePlayer.yRot.wrappedDeg, pPitch: Float = mc.thePlayer.xRot): Float {
         val target = get(vec3)
         return getAngle(target.yaw, target.pitch, pYaw, pPitch)
     }
 
-    fun getAngle(yaw: Float, pitch: Float, pYaw: Float = mc.thePlayer.yRot.wrapped, pPitch: Float = mc.thePlayer.xRot): Float {
+    fun getAngle(yaw: Float, pitch: Float, pYaw: Float = mc.thePlayer.yRot.wrappedDeg, pPitch: Float = mc.thePlayer.xRot): Float {
         val dy = Mth.wrapDegrees(yaw) - pYaw
         val dp = pitch - pPitch
         return sqrt(dy * dy + dp * dp)
-    }
-
-    fun getDelta(target: Entity, point: TargetPoint = TargetPoint.BODY): FloatArray {
-        val angles = floatArrayOf(0f, 0f)
-        get(target, point = point).set(angles)
-        angles[0] = Mth.wrapDegrees(angles[0] - mc.thePlayer.yRot)
-        angles[1] = angles[1] - mc.thePlayer.xRot
-        return angles
-    }
-
-    fun gcd(): Float {
-        val f = (mc.options.sensitivity().get() * 0.6f + 0.2f).toFloat()
-        return f * f * f * 1.2f
     }
 
     fun inputToYaw(facing: Float = mc.thePlayer.yRot): Float {
@@ -103,13 +99,13 @@ object RotationHelper {
     }
 
     fun unwrapYaw(yaw: Float, current: Float): Float =
-        current + (yaw.wrapped - current.wrapped).wrapped
+        current + (yaw.wrappedDeg - current.wrappedDeg).wrappedDeg
 
     /**
      * converts yaw from [-180; 180] to [0; 360]
      */
     fun toCircular(start: Float, x: Float): Float {
-        var d = (x - start).wrapped
+        var d = (x - start).wrappedDeg
         if (d < 0) d += 360f
         return d
     }

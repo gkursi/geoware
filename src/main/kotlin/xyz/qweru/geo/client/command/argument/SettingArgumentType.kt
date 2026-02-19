@@ -5,8 +5,8 @@ import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.core.system.setting.Setting
+import xyz.qweru.geo.core.system.impl.module.Module
+import xyz.qweru.geo.core.system.impl.setting.Setting
 import java.util.concurrent.CompletableFuture
 
 class SettingArgumentType(val moduleArgName: String) : ArgumentType<String> {
