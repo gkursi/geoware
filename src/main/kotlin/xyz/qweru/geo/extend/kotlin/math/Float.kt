@@ -2,5 +2,5 @@ package xyz.qweru.geo.extend.kotlin.math
 
 import net.minecraft.util.Mth
 
-val Float.wrapped: Float
+val Float.wrappedDeg: Float
     get() = Mth.wrapDegrees(this)

@@ -2,12 +2,11 @@ package xyz.qweru.geo.client.module.misc
 
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Player
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.kotlin.string.stripMinecraftColorCodes
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.item.getArmorColor
-import kotlin.math.log
 
 /**
  * Credit to liquidbounce

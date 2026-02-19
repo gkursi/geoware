@@ -1,16 +1,14 @@
 package xyz.qweru.geo.client.setting.enums
 
-import com.google.common.collect.ImmutableSet
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import xyz.qweru.geo.core.system.setting.Setting
-import xyz.qweru.geo.core.system.setting.SettingGroup
+import xyz.qweru.geo.core.system.impl.setting.Setting
+import xyz.qweru.geo.core.system.impl.setting.SettingGroup
 import xyz.qweru.geo.extend.kotlin.array.withModification
 import java.util.concurrent.CompletableFuture
-import kotlin.reflect.KClass
 
 class MultiEnumSetting<T : Enum<T>>(
     name: String,

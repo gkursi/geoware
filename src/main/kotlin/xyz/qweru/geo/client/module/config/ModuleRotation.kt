@@ -1,14 +1,10 @@
 package xyz.qweru.geo.client.module.config
 
 import xyz.qweru.geo.core.Core.mc
-import xyz.qweru.geo.core.game.rotation.InterpolationEngine
 import xyz.qweru.geo.core.game.rotation.RotationHandler
-import xyz.qweru.geo.core.game.rotation.interpolate.ConstantInterpolationEngine
-import xyz.qweru.geo.core.game.rotation.interpolate.HumanInterpolationEngine
-import xyz.qweru.geo.core.game.rotation.interpolate.InstantInterpolationEngine
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.kotlin.math.wrapped
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
+import xyz.qweru.geo.extend.kotlin.math.wrappedDeg
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 class ModuleRotation : Module("Rotation", "How to rotate", Category.CONFIG) {
@@ -20,9 +16,6 @@ class ModuleRotation : Module("Rotation", "How to rotate", Category.CONFIG) {
 
     val speed by sg.float("Speed", "Rotation speed", 75f, 0.1f, 200f)
     val diff by sg.float("Allowed Diff", "Allowed difference from a rotation", 5f, 1f, 90f)
-    @Suppress("UNUSED")
-    val randomizer by sg.enum("Randomizer", "Randomizer to use", Engine.HUMANIZED)
-        .onChange { RotationHandler.engine = it.value.engine }
 
     val source by sa.enum("Calculation Source", "Which rotation to use for aim point calculations", Source.SERVER)
 
@@ -51,25 +44,18 @@ class ModuleRotation : Module("Rotation", "How to rotate", Category.CONFIG) {
     val step by sc.float("Step", "Rotation step each tick", 30f, 1f, 90f)
     val offset by sc.float("Offset", "Max random offset", 0.2f, 0f, 1f)
 
-    @Suppress("UNUSED")
-    enum class Engine(val engine: InterpolationEngine) {
-        CONSTANT(ConstantInterpolationEngine),
-        INSTANT(InstantInterpolationEngine),
-        HUMANIZED(HumanInterpolationEngine)
-    }
-
     enum class Source {
         CLIENT {
             override val yaw: Float
-                get() = mc.thePlayer.yRot.wrapped
+                get() = mc.thePlayer.yRot.wrappedDeg
             override val pitch: Float
                 get() = mc.thePlayer.xRot
         },
         SERVER {
             override val yaw: Float
-                get() = RotationHandler.rot[0].wrapped
+                get() = RotationHandler.serverRotation[0].wrappedDeg
             override val pitch: Float
-                get() = RotationHandler.rot[1]
+                get() = RotationHandler.serverRotation[1]
         };
 
         abstract val yaw: Float

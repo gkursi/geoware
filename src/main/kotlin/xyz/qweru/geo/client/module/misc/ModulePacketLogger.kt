@@ -7,8 +7,8 @@ import xyz.qweru.geo.client.event.PacketQueueEvent
 import xyz.qweru.geo.client.event.PostTickEvent
 import xyz.qweru.geo.client.helper.network.ChatHelper
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 
 class ModulePacketLogger : Module("PacketLogger", "Log certain packets", Category.MISC) {
     val sg = settings.general

@@ -10,7 +10,7 @@ import xyz.qweru.geo.core.command.Command
 import xyz.qweru.geo.client.command.argument.ModuleArgumentType
 import xyz.qweru.geo.client.command.argument.SettingArgumentType
 import xyz.qweru.geo.client.command.argument.SettingValueArgumentType
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Module
 
 class CommandSet : Command("set", "Change the value of a setting", "set <module> <setting> <value>") {
     override fun build(builder: LiteralArgumentBuilder<ClientSuggestionProvider>) {

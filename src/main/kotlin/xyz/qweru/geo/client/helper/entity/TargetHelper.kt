@@ -9,7 +9,7 @@ import xyz.qweru.geo.core.tracking.bot.BotTracker
 import xyz.qweru.geo.core.game.combat.TargetTracker.config
 import xyz.qweru.geo.core.game.combat.TargetTracker.teams
 import xyz.qweru.geo.core.system.SystemCache
-import xyz.qweru.geo.core.system.friend.Friends
+import xyz.qweru.geo.core.system.impl.friend.Friends
 import xyz.qweru.geo.extend.minecraft.entity.inFov
 import xyz.qweru.geo.extend.minecraft.entity.inRange
 import xyz.qweru.geo.extend.minecraft.game.thePlayer

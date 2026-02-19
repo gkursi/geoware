@@ -3,8 +3,8 @@ package xyz.qweru.geo.client.setting.range
 import com.google.gson.JsonObject
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import xyz.qweru.geo.core.system.setting.Setting
-import xyz.qweru.geo.core.system.setting.SettingGroup
+import xyz.qweru.geo.core.system.impl.setting.Setting
+import xyz.qweru.geo.core.system.impl.setting.SettingGroup
 import java.util.concurrent.CompletableFuture
 
 class LongRangeSetting(name: String, description: String, default: LongRange, val minMax: LongRange, group: SettingGroup) : Setting<LongRangeSetting, LongRange>(name, description,

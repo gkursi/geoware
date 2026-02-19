@@ -4,10 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.HumanoidArm
 import org.joml.Vector3f
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.core.system.setting.SettingUsage
-import xyz.qweru.geo.core.system.setting.Usage
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
+import xyz.qweru.geo.core.system.impl.setting.SettingUsage
+import xyz.qweru.geo.core.system.impl.setting.Usage
 
 class ModuleViewModel : Module("ViewModel", "Change your viewmodel", Category.VISUAL) {
     val sg = settings.general

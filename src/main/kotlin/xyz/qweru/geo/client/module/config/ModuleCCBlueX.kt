@@ -3,7 +3,7 @@ package xyz.qweru.geo.client.module.config
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Module
 
 class ModuleCCBlueX : Module("CCBlueX", "guh") {
 

@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.system.setting
+package xyz.qweru.geo.core.system.impl.setting
 
 /**
  * Indicates how a setting/group is used for partial config exporting

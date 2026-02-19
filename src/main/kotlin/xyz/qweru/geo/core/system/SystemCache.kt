@@ -2,8 +2,8 @@ package xyz.qweru.geo.core.system
 
 import com.mojang.blaze3d.systems.RenderSystem
 import xyz.qweru.geo.core.config.Configs
-import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.core.system.module.Modules
+import xyz.qweru.geo.core.system.impl.module.Module
+import xyz.qweru.geo.core.system.impl.module.Modules
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 

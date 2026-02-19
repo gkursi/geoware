@@ -1,11 +1,10 @@
-package xyz.qweru.geo.core.system.setting
+package xyz.qweru.geo.core.system.impl.setting
 
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
-import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.system.System
 import xyz.qweru.geo.core.helper.tree.SystemContext
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.kotlin.log.dbg
 
 class Settings(val module: Module) : System("settings") {

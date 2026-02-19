@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.system.module
+package xyz.qweru.geo.core.system.impl.module
 
 data class Category(val name: String, val icon: String = "") {
     companion object {
