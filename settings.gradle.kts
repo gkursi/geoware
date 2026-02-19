@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.project
-
 pluginManagement {
     repositories {
         maven("https://maven.fabricmc.net/") {
@@ -13,4 +11,6 @@ buildCache {
     local.isEnabled = false
 }
 
+// I develop these alongside each other
+// you can get it from https://github.com/gkursi/multirender
 includeBuild("../multirender")
