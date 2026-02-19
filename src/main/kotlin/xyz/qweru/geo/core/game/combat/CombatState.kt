@@ -5,7 +5,8 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 import xyz.qweru.basalt.EventPriority
 import xyz.qweru.geo.client.event.EntityDamageEvent
-import xyz.qweru.geo.client.helper.player.AttackHelper
+import xyz.qweru.geo.client.helper.player.AttackConditions
+import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.event.Handler
 
@@ -13,7 +14,9 @@ class CombatState(private val playerProvider: (CombatState) -> Player?) {
 
     companion object {
         val SELF = CombatState { mc.player }
+            .also(Core::manage)
         val TARGET = CombatState { TargetTracker.target }
+            .also(Core::manage)
     }
 
     val player: Player?
@@ -51,12 +54,12 @@ class CombatState(private val playerProvider: (CombatState) -> Player?) {
     }
 
     private fun set(attack: Attack, source: Entity?) {
-        attack.crit = source is Player && AttackHelper.canCrit(source)
-        attack.critPossible = source is Player && AttackHelper.willCrit(source)
+        attack.crit = source is Player && AttackConditions.canCrit(source)
+        attack.critPossible = source is Player && AttackConditions.willCrit(source)
         attack.sprint = source?.isSprinting ?: false
         attack.ranged = source is Projectile
     }
 
     fun predictNextAttack(): Attack =
-        player?.let { pl -> Attack(pl.isSprinting, AttackHelper.canCrit(pl)) } ?: Attack()
+        player?.let { pl -> Attack(pl.isSprinting, AttackConditions.canCrit(pl)) } ?: Attack()
 }

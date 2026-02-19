@@ -2,28 +2,31 @@ package xyz.qweru.geo.client.module.move
 
 import net.minecraft.network.protocol.game.ClientboundExplodePacket
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket
-import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
 import org.lwjgl.glfw.GLFW
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.combat.CombatState
+import xyz.qweru.geo.core.game.packet.PacketManager
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.extend.minecraft.entity.isOnGround
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
-import xyz.qweru.geo.mixin.entity.EntityVelocityUpdateS2CPacketAccessor
 import xyz.qweru.geo.mixin.math.Vec3Accessor
 import xyz.qweru.multirender.api.API
 import xyz.qweru.multirender.api.input.Input
 
 class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT) {
-    val sg = settings.group("General")
-    val sJr = settings.group("Conditions").visible { mode == Mode.JUMP }
+    val sg = settings.general
+    val sJr = settings.group("Conditions").visible { mode.has(Mode.JUMP) }
 
-    var mode by sg.enum("Mode", "Mode for velocity", Mode.JUMP)
-    var explosions by sg.boolean("Explosions", "Remove explosion velocity", false).visible { mode == Mode.VANILLA }
+    var mode by sg.multiEnum("Modes", "Modes for velocity", Mode.JUMP, Mode.LATENCY)
+    var explosions by sg.boolean("Explosions", "Remove explosion velocity", false)
+    val hMod by sg.float("H Velocity", "Horizontal velocity", 1f, 0f..1f)
+        .visible { mode.has(Mode.VANILLA) || mode.has(Mode.VULCAN) }
+    val vMod by sg.float("V Velocity", "Vertical velocity", 1f, 0f..1f)
+        .visible { mode.has(Mode.VANILLA) || mode.has(Mode.VULCAN) }
 
     var always by sJr.boolean("Always", "Always jump reset", false)
     var firstHit by sJr.boolean("First Hit", "Jump Reset on the first hit in an exchange", true)
@@ -34,11 +37,15 @@ class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT)
         .visible { !always }
     var pauseCombo by sJr.int("Pause Combo", "Don't reset when the combo against you >= this (0 = disabled)", 0, 0, 5)
 
+
+    private var jump = false
+
     @Handler
     private fun onTick(e: PreTickEvent) {
         if (!inGame) return
-        if (mode != Mode.JUMP) return
-        if (mc.thePlayer.hurtTime == mc.player!!.hurtDuration - 1 && mc.thePlayer.onGround() && checkConditions()) {
+
+        if (mode.has(Mode.JUMP) && jump) {
+            jump = false
             API.keyboardHandler.input(GLFW.GLFW_KEY_SPACE, Input.CLICK)
         }
     }
@@ -46,43 +53,47 @@ class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT)
     @Handler
     private fun onPacketReceive(e: PacketReceiveEvent) {
         if (!inGame) return
-        val packet = e.packet
-        if (packet is ClientboundExplodePacket) {
-            if (packet.playerKnockback.isEmpty || !explosions) return
-            onKB(packet.playerKnockback.get(), e)
-        } else if (packet is ClientboundSetEntityMotionPacket) {
-            val acc = packet as EntityVelocityUpdateS2CPacketAccessor
-            val vec = Vec3(packet.xa, packet.ya, packet.za)
-            onKB(vec, e)
-            val e = Mth.clamp(vec.x, -3.9, 3.9)
-            val f = Mth.clamp(vec.y, -3.9, 3.9)
-            val g = Mth.clamp(vec.z, -3.9, 3.9)
-            acc.geo_setVelocityX((e * 8000.0).toInt())
-            acc.geo_setVelocityY((f * 8000.0).toInt())
-            acc.geo_setVelocityZ((g * 8000.0).toInt())
+        when (val packet = e.packet) {
+            is ClientboundExplodePacket -> {
+                if (packet.playerKnockback.isEmpty || !explosions) return
+                onKB(packet.playerKnockback.get(), e)
+            }
+
+            is ClientboundSetEntityMotionPacket -> {
+                if (packet.id != mc.thePlayer.id) return
+                onKB(packet.movement, e)
+            }
         }
     }
 
     private fun onKB(vec: Vec3, e: PacketReceiveEvent) {
         val accessor = vec as Vec3Accessor
-        when (mode) {
-            Mode.VANILLA-> {
-                accessor.geo_setX(0.0)
-                accessor.geo_setY(0.0)
-                accessor.geo_setZ(0.0)
-            }
+        for (mode in mode.getEnabled()) {
+            when (mode) {
+                Mode.VANILLA-> {
+                    accessor.geo_setX(vec.x * hMod)
+                    accessor.geo_setY(vec.y * vMod)
+                    accessor.geo_setZ(vec.z * hMod)
+                }
 
-            Mode.VULCAN -> {
-                if (mc.thePlayer.isFallFlying) {
-                    accessor.geo_setX(0.0)
-                    accessor.geo_setY(0.0)
-                    accessor.geo_setZ(0.0)
-                    e.cancelled = true
-                    return
+                Mode.VULCAN -> {
+                    if (!mc.thePlayer.isFallFlying) {
+                        continue
+                    }
+                    accessor.geo_setX(vec.x * hMod)
+                    accessor.geo_setY(vec.y * vMod)
+                    accessor.geo_setZ(vec.z * hMod)
+                }
+
+                Mode.LATENCY -> PacketManager.lag(onlyIfInactive = true)
+
+                Mode.JUMP -> {
+                    if (!mc.thePlayer.isOnGround || !checkConditions()) {
+                        continue
+                    }
+                    jump = true
                 }
             }
-
-            else -> {}
         }
     }
 
@@ -91,6 +102,6 @@ class ModuleVelocity : Module("Velocity", "Modify knockback", Category.MOVEMENT)
         && !(pauseCombo > 0 && CombatState.TARGET.combo >= pauseCombo)
 
     enum class Mode {
-        VANILLA, JUMP, VULCAN
+        VANILLA, JUMP, VULCAN, LATENCY
     }
 }

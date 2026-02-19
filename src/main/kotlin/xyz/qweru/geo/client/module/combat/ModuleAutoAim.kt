@@ -4,11 +4,9 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.AxeItem
 import net.minecraft.world.item.Items
 import xyz.qweru.geo.client.event.GameRenderEvent
-import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.player.RotationHelper
-import xyz.qweru.geo.client.setting.BooleanSetting
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.rotation.Rotation
 import xyz.qweru.geo.core.game.rotation.RotationConfig
@@ -19,11 +17,9 @@ import xyz.qweru.geo.extend.minecraft.entity.inFov
 import xyz.qweru.geo.extend.minecraft.entity.inRange
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.item.isOf
-import xyz.qweru.multirender.api.API
-import java.util.*
 
 class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
-    val sg = settings.group("General")
+    val sg = settings.general
     val st = settings.group("Target")
 
     val silent: Boolean by sg.boolean("Silent", "Silently aim", false)
@@ -44,7 +40,7 @@ class ModuleAutoAim : Module("AutoAim", "Auto aim", Category.COMBAT) {
     private fun onFrame(e: GameRenderEvent) {
         if (!inGame || mc.screen != null || !canTarget()) return
         val target = this.currentTarget ?: return
-        RotationHandler.propose(RotationHelper.get(target, point = this.target, config = rotations), Rotation.NOT_IMPORTANT_ATTACK)
+        RotationHandler.propose(RotationHelper.get(target, point = this.target, config = rotations), Rotation.UNIMPORTANT_ATTACK)
     }
 
     fun canTarget(): Boolean {

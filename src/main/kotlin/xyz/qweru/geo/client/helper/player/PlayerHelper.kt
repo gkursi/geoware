@@ -6,7 +6,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object PlayerHelper {
-    /** get the players velocity relative to their rotation */
+    /** velocity relative to the players rotation */
     fun getRelativeVelocity(player: Player): Vec3 {
         val vel = player.deltaMovement
 

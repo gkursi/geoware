@@ -1,17 +1,16 @@
 package xyz.qweru.geo.core.game.rotation.interpolate
 
-import net.minecraft.util.Mth
-import org.joml.Math.clamp
 import xyz.qweru.geo.client.event.GameRenderEvent
 import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.rotation.InterpolationEngine
-import xyz.qweru.geo.core.game.rotation.RotationHandler.rotationConfig
 import xyz.qweru.geo.core.game.rotation.RotationHandler.random
+import xyz.qweru.geo.core.game.rotation.RotationHandler.rotationConfig
 import xyz.qweru.geo.extend.kotlin.math.inRange
 import xyz.qweru.geo.extend.kotlin.math.wrapped
 import xyz.qweru.multirender.api.API
 import kotlin.math.abs
+import kotlin.math.max
 
 object HumanInterpolationEngine : InterpolationEngine {
     private var yawMoved = 0f
@@ -41,9 +40,9 @@ object HumanInterpolationEngine : InterpolationEngine {
 
     private fun step(start: Float, end: Float, current: Float, tracker: Tracker): Float {
         val wStart = start.wrapped
-        val dist = abs(end.wrapped - wStart)
+        val dist = (end.wrapped - wStart).wrapped
         val progress = abs(current.wrapped - wStart)
-        val speed = tracker.getSpeed(progress, dist)
+        val speed = tracker.getSpeed(progress, abs(dist))
         val mod = random.double(0.1, 1.0) * speed
         return dist * mod.toFloat()
     }
@@ -74,16 +73,16 @@ object HumanInterpolationEngine : InterpolationEngine {
             if (rotationConfig.mousePad)
                 speed *= yawPenalty
             if (rotationConfig.speedUp)
-                speed *= calculateSpeedup(current, dist)
+                speed *= accelerate(current, dist)
             return speed * mul
         }
 
-        private fun calculateSpeedup(current: Float, dist: Float): Float {
+        private fun accelerate(current: Float, dist: Float): Float {
             val max = rotationConfig.speedYaw
-            val percent = current / dist
+            val percent = current / max(dist, 1f)
 
-            return if (percent >= max) 1f
-            else percent / max
+            return if (percent >= max) 2f
+            else 1f + percent / max + random.float(-0.1f..0.1f)
         }
     }
 }

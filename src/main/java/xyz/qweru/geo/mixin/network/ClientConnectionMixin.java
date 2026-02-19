@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.qweru.geo.client.event.PacketEvent;
+import xyz.qweru.geo.client.event.PacketQueueEvent;
 import xyz.qweru.geo.client.event.PacketReceiveEvent;
 import xyz.qweru.geo.client.event.PacketSendEvent;
 import xyz.qweru.geo.core.event.EventBus;
@@ -40,6 +41,13 @@ public abstract class ClientConnectionMixin implements IConnection {
     @Inject(method = "doSendPacket", at = @At("HEAD"), cancellable = true)
     private void onPacketSend(Packet<?> packet, ChannelFutureListener channelFutureListener, boolean flush, CallbackInfo ci) {
         if (onPacket(packet, PacketSendEvent.INSTANCE)) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "sendPacket", at = @At("HEAD"), cancellable = true)
+    private void onPacketQueue(Packet<?> packet, @Nullable ChannelFutureListener channelFutureListener, boolean bl, CallbackInfo ci) {
+        if (onPacket(packet, PacketQueueEvent.INSTANCE)) {
             ci.cancel();
         }
     }

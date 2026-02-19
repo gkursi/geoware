@@ -8,7 +8,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.world.entity.player.Player
-import xyz.qweru.geo.abstraction.network.ClientConnection
+import xyz.qweru.geo.client.helper.network.ClientConnection
 import xyz.qweru.geo.client.event.PacketReceiveEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.Core.mc

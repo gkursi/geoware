@@ -6,6 +6,7 @@ import xyz.qweru.geo.client.event.*
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.event.EventBus
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.extend.minecraft.game.theLevel
 
 object CombatEventHandler {
 
@@ -18,6 +19,7 @@ object CombatEventHandler {
 
     @Handler
     private fun onPacketReceive(e: PacketReceiveEvent) {
+        if (mc.level == null)
         when (val packet = e.packet) {
             is ClientboundDamageEventPacket -> {
                 if (packet.sourceDirectId == -1 && packet.entityId == -1) return
@@ -25,11 +27,10 @@ object CombatEventHandler {
                 val source = mc.level?.getEntity(packet.sourceCauseId)
                 val entity = mc.level?.getEntity(packet.entityId)
 
-//                mc.player?.sendMessage(Text.of("Damage from ${if(source is ArrowEntity) "arrow" else if (source is Player) source.gameProfile.name else source.toString()} to $entity"), false)
                 EntityDamageEvent.sourceEntity = source
                 EntityDamageEvent.directSourceEntity = sourceDirect
                 EntityDamageEvent.entity = entity
-                EntityDamageEvent.source = packet.getSource(mc.level)
+                EntityDamageEvent.source = packet.getSource(mc.theLevel)
 
                 if (source == null || source !is Player) return
                 if (entity == null || entity !is Player) return
@@ -44,7 +45,7 @@ object CombatEventHandler {
         EventBus.post(set(PlayerAttackPlayerEvent, attacker, target))
     }
 
-    private fun <T : PVPCombatEvent> set(event: T, source: Player, player: Player): T {
+    private fun <T : CombatEvent> set(event: T, source: Player, player: Player): T {
         event.source = source
         event.player = player
         return event

@@ -1,14 +1,25 @@
 package xyz.qweru.geo.extend.kotlin.array
 
 import net.minecraft.world.entity.Entity
+import xyz.qweru.geo.client.helper.player.RotationHelper
+import xyz.qweru.geo.core.game.rotation.Rotation
+import xyz.qweru.geo.core.game.rotation.RotationHandler
+import xyz.qweru.geo.extend.kotlin.math.wrapped
 
-fun FloatArray.getRotation(entity: Entity) {
+fun FloatArray.copyRotationFrom(entity: Entity) {
     this[0] = entity.yRot
     this[1] = entity.xRot
 }
 
-fun FloatArray.setRotation(entity: Entity) {
-    entity.yRot = this[0]
+fun FloatArray.copyRotation(rotation: Rotation) {
+    this[0] = rotation.yaw
+    this[1] = rotation.pitch
+}
+
+fun FloatArray.applyRotation(entity: Entity) {
+    val yaw = RotationHelper.unwrapYaw(this[0].wrapped, entity.yRot)
+
+    entity.yRot = yaw
     entity.xRot = this[1]
 }
 

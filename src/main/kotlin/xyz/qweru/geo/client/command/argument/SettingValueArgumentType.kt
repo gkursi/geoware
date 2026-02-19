@@ -18,8 +18,8 @@ class SettingValueArgumentType(val settingArgName: String, val moduleArgName: St
     override fun parse(reader: StringReader): String = reader.readAllRemaining()
 
     override fun <S> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
-        val module = ModuleArgumentType.get(context, moduleArgName)
         try {
+            val module = ModuleArgumentType.get(context, moduleArgName)
             val setting = SettingArgumentType.get(context, settingArgName, module)
             return setting.suggest<S>(builder)
         } catch (_: Throwable) {

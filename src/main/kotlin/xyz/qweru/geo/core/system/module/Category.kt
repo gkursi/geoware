@@ -5,6 +5,7 @@ data class Category(val name: String, val icon: String = "") {
         val COMBAT = Category("Combat")
         val PLAYER = Category("Player")
         val MOVEMENT = Category("Movement")
+        val WORLD = Category("World")
         val VISUAL = Category("Visual")
         val MISC = Category("Miscellaneous")
         val SPECIFIC = Category("Specific")

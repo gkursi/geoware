@@ -1,5 +1,6 @@
 package xyz.qweru.geo.mixin.game;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.prediction.PredictiveAction;
@@ -7,6 +8,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -22,6 +24,7 @@ import xyz.qweru.geo.client.event.AttackBlockEvent;
 import xyz.qweru.geo.client.event.AttackEntityEvent;
 import xyz.qweru.geo.client.event.PostPlaceBlockEvent;
 import xyz.qweru.geo.core.event.EventBus;
+import xyz.qweru.geo.core.ui.notification.Notifications;
 import xyz.qweru.geo.imixin.IMultiplayerGameMode;
 
 import static xyz.qweru.geo.core.Core.mc;
@@ -47,6 +50,11 @@ public abstract class MultiPlayerGameModeMixin implements IMultiplayerGameMode {
     @Override
     public void geo_sequencedPacket(PredictiveAction action) {
         startPrediction(mc.level, action);
+    }
+
+    @Inject(method = "startPrediction", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", shift = At.Shift.BEFORE))
+    private void onPredict(ClientLevel clientLevel, PredictiveAction predictiveAction, CallbackInfo ci, @Local int seq, @Local Packet<ServerGamePacketListener> packet) {
+//        Notifications.INSTANCE.info("Predicting sequence %s for packet %s".formatted(seq, packet.type()));
     }
 
     @Inject(method = "startDestroyBlock", at = @At("HEAD"), cancellable = true)

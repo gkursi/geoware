@@ -13,7 +13,7 @@ import kotlin.math.log
  * Credit to liquidbounce
  */
 class ModuleTeams : Module("Teams", "Don't target players in your team", Category.CONFIG) {
-    val sg = settings.group("General")
+    val sg = settings.general
     val color by sg.boolean("Color", "Don't target if your color matches", true)
     val prefix by sg.boolean("Prefix", "Don't target if your prefix matches", true)
     val scoreboard by sg.boolean("Scoreboard", "Don't target if your scoreboard team matches", true)

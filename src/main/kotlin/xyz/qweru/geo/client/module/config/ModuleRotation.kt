@@ -1,5 +1,6 @@
 package xyz.qweru.geo.client.module.config
 
+import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.game.rotation.InterpolationEngine
 import xyz.qweru.geo.core.game.rotation.RotationHandler
 import xyz.qweru.geo.core.game.rotation.interpolate.ConstantInterpolationEngine
@@ -7,19 +8,23 @@ import xyz.qweru.geo.core.game.rotation.interpolate.HumanInterpolationEngine
 import xyz.qweru.geo.core.game.rotation.interpolate.InstantInterpolationEngine
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.extend.kotlin.math.wrapped
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 class ModuleRotation : Module("Rotation", "How to rotate", Category.CONFIG) {
-    private val sg = settings.group("General")
+    private val sg = settings.general
+    private val sa = settings.group("Point")
     private val sf = settings.group("Fix")
     private val sh = settings.group("Humanized")
     private val sc = settings.group("Constant")
 
     val speed by sg.float("Speed", "Rotation speed", 75f, 0.1f, 200f)
-    val nonlinear by sg.boolean("Nonlinear", "Calculate from the current yaw instead of the base yaw", false)
     val diff by sg.float("Allowed Diff", "Allowed difference from a rotation", 5f, 1f, 90f)
     @Suppress("UNUSED")
     val randomizer by sg.enum("Randomizer", "Randomizer to use", Engine.HUMANIZED)
         .onChange { RotationHandler.engine = it.value.engine }
+
+    val source by sa.enum("Calculation Source", "Which rotation to use for aim point calculations", Source.SERVER)
 
     val moveFix by sf.boolean("Fix Move", "Fix Movement", true)
     val mouseFix by sf.boolean("Fix Mouse", "Fix crosshair target", true)
@@ -48,6 +53,26 @@ class ModuleRotation : Module("Rotation", "How to rotate", Category.CONFIG) {
 
     @Suppress("UNUSED")
     enum class Engine(val engine: InterpolationEngine) {
-        CONSTANT(ConstantInterpolationEngine), INSTANT(InstantInterpolationEngine), HUMANIZED(HumanInterpolationEngine)
+        CONSTANT(ConstantInterpolationEngine),
+        INSTANT(InstantInterpolationEngine),
+        HUMANIZED(HumanInterpolationEngine)
+    }
+
+    enum class Source {
+        CLIENT {
+            override val yaw: Float
+                get() = mc.thePlayer.yRot.wrapped
+            override val pitch: Float
+                get() = mc.thePlayer.xRot
+        },
+        SERVER {
+            override val yaw: Float
+                get() = RotationHandler.rot[0].wrapped
+            override val pitch: Float
+                get() = RotationHandler.rot[1]
+        };
+
+        abstract val yaw: Float
+        abstract val pitch: Float
     }
 }

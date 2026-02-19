@@ -2,7 +2,7 @@ package xyz.qweru.geo.client.module.move
 
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket
 import xyz.qweru.basalt.EventPriority
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.event.PreMovementTickEvent
 import xyz.qweru.geo.client.helper.timing.TimerDelay
@@ -25,12 +25,13 @@ class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT)
                 if (now) {
                     module.sprint(sprinting)
                 }
+            } else {
+                GameOptions.sprintKey = sprinting
             }
-            else GameOptions.sprintKey = sprinting
         }
     }
 
-    val sg = settings.group("General")
+    val sg = settings.general
     val mode by sg.enum("Mode", "Mode for applying sprint", Mode.LEGIT)
     val keyMode by sg.enum("Key", "Key to tap when resetting sprint", KeyMode.W)
     val resetTime by sg.longRange("Reset Time", "Delay between stopping and starting sprint", 50L..100L, 0L..1500L)

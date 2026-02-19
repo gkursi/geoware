@@ -9,12 +9,11 @@ import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import org.lwjgl.glfw.GLFW
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
-import xyz.qweru.geo.client.helper.math.RangeHelper
 import xyz.qweru.geo.client.helper.network.PacketHelper
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.game.combat.TargetTracker
@@ -32,7 +31,7 @@ import xyz.qweru.multirender.api.input.Input
  * this needs major cleanup, maybe separate in to different modules?
  */
 class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLAYER) {
-    val sg = settings.group("General")
+    val sg = settings.general
     var swapBack by sg.boolean("Swap Back", "Swap back", true)
     var delay by sg.longRange("Delay", "Delay between actions", 250L..275L, 0L..1000L)
     val simulateClick by sg.boolean("Sim Click", "Simulate click", true)
@@ -82,7 +81,7 @@ class ModuleKeyAction : Module("KeyAction", "Bind actions to keys", Category.PLA
             ?: doAction.takeUnless { it == Action.NONE }
             ?: return
 
-        if (!InvHelper.find({ it.isOf(action.item) }).found()) return
+        if (!InvHelper.findInInventory { it.isOf(action.item) }.found()) return
         InvHelper.swap(action.item, 0)
         if (!InvHelper.isInMainhand(action.item)) {
             doAction = action

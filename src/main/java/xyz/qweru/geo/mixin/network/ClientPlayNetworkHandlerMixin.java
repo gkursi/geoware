@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import xyz.qweru.geo.client.helper.network.ChatHelper;
 import xyz.qweru.geo.core.Core;
 import xyz.qweru.geo.core.command.CommandManager;
 
@@ -20,7 +21,7 @@ public class ClientPlayNetworkHandlerMixin {
             try {
                 CommandManager.INSTANCE.execute(content.substring(Core.PREFIX.length()));
             } catch (CommandSyntaxException e) {
-                mc.player.displayClientMessage(Component.literal("Invalid command: " + e.getMessage()), false);
+                ChatHelper.INSTANCE.error(e.getMessage());
             }
             ci.cancel();
         }

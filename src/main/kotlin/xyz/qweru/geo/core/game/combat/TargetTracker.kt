@@ -26,8 +26,8 @@ object TargetTracker {
     val config: ModuleTarget by SystemCache.getModule()
 
     val lookingAtTarget: Boolean
-        get() = RotationHandler.crosshairTarget?.let {
-                it is EntityHitResult && it.entity == target } == true
+        get() = RotationHandler.crosshairTarget
+            ?.let { it is EntityHitResult && it.entity == target } == true
 
     @Handler(priority = EventPriority.FIRST)
     private fun onAttackPlayer(e: AttackPlayerEvent) {

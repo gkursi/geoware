@@ -26,6 +26,6 @@ class IntSetting(name: String, description: String, default: Int, group: Setting
     }
 
     override fun load(jsonObject: JsonObject) {
-        value = jsonObject.get("value").asInt
+        value = jsonObject["value"].asInt
     }
 }

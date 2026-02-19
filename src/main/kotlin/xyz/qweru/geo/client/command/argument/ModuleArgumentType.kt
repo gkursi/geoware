@@ -24,7 +24,7 @@ class ModuleArgumentType : ArgumentType<Module> {
 
     override fun <S> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
         val input = builder.remaining.lowercase()
-        for (system in Systems.get(Modules::class).getSubsystems())
+        for (system in Systems.get(Modules::class).getSystems())
             if (system.name.lowercase().startsWith(input)) builder.suggest(system.name)
         return builder.buildFuture()
     }

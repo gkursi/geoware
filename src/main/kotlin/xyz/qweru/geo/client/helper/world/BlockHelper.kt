@@ -1,19 +1,21 @@
 package xyz.qweru.geo.client.helper.world
 
+import net.minecraft.core.BlockPos
 import net.minecraft.tags.FluidTags
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.enchantment.Enchantments
 import net.minecraft.world.level.block.state.BlockState
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.core.Core.mc
+import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.item.getEnchantmentLevel
 
 object BlockHelper {
     fun getBreakDelta(state: BlockState, slot: Int = InvHelper.serverSlot): Double {
-        val hardness: Float = state.getDestroySpeed(null, null)
+        val hardness: Float = state.getDestroySpeed(mc.theLevel, BlockPos.ZERO)
         return if (hardness == -1f) 0.0
                else {
                    getBlockBreakingSpeed(slot, state) / hardness /

@@ -1,0 +1,52 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "xyz.qweru.geo.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "block.BedBlockMixin",
+    "block.BerryBushBlockMixin",
+    "block.CobwebBlockMixin",
+    "block.SlimeBlockMixin",
+    "entity.EntityMixin",
+    "entity.LivingEntityAccessor",
+    "entity.LivingEntityMixin",
+    "entity.PlayerMixin",
+    "game.DownloaderMixin",
+    "game.GameProfileAccessor",
+    "math.Vec2fAccessor",
+    "math.Vec3Accessor",
+    "network.ClientConnectionMixin",
+    "network.packet.PositionMoveRotationAccessor",
+    "network.packet.ServerboundPlayerInputPacketAccessor",
+    "network.packet.ServerboundUseItemPacketAccessor",
+    "render.WindowMixin",
+    "screen.AbstractMountInventoryScreenAccessor",
+    "screen.ItemGroupsAccessor"
+  ],
+  "client": [
+    "entity.LocalPlayerMixin",
+    "entity.PlayerInfoAccessor",
+    "game.ChatInputSuggestorMixin",
+    "game.MinecraftClientAccessor",
+    "game.MinecraftMixin",
+    "game.MultiPlayerGameModeMixin",
+    "game.UserMixin",
+    "input.KeyBindingAccessor",
+    "input.MouseMixin",
+    "network.ClientPlayNetworkHandlerMixin",
+    "render.GameRendererMixin",
+    "render.HeldItemRendererMixin",
+    "render.InGameHudMixin",
+    "render.RenderSystemMixin",
+    "screen.CreativeInventoryScreenAccessor",
+    "screen.HandledScreenAccessor",
+    "world.ClientWorldAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

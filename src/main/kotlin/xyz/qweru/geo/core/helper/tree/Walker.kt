@@ -7,6 +7,6 @@ internal object Walker {
 
     fun walk(system: System) {
         size++
-        system.getSubsystems().forEach { walk(it) }
+        system.getSystems().forEach(::walk)
     }
 }

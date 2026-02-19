@@ -2,7 +2,7 @@ package xyz.qweru.geo.core.game.movement
 
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.network.protocol.game.ServerboundClientTickEndPacket
-import xyz.qweru.geo.abstraction.network.ClientConnection
+import xyz.qweru.geo.client.helper.network.ClientConnection
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.client.helper.timing.Timer
@@ -21,7 +21,7 @@ object MovementTicker {
 
     fun canTick(): Boolean {
         return tickSpeed == 20 // we can always tick at 20, since it's called at the usual timing
-                || tickTimer.hasPassed(1000L / tickSpeed)
+                || tickSpeed != 0 && tickTimer.hasPassed(1000L / tickSpeed)
     }
 
     fun tick() {

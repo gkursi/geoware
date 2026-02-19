@@ -1,66 +1,71 @@
 package xyz.qweru.geo.client.module.combat
 
-import net.minecraft.world.phys.HitResult
 import xyz.qweru.basalt.EventPriority
-import xyz.qweru.geo.client.event.PreTickEvent
+import xyz.qweru.geo.client.event.PacketSendEvent
+import xyz.qweru.geo.client.event.PreCrosshairEvent
+import xyz.qweru.geo.client.event.PreMoveSendEvent
 import xyz.qweru.geo.client.helper.entity.TargetHelper
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.math.RangeHelper
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
-import xyz.qweru.geo.client.helper.world.WorldHelper
 import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.game.interaction.InteractionManager
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.core.system.SystemCache
-import xyz.qweru.geo.extend.minecraft.entity.rotation
+import xyz.qweru.geo.extend.minecraft.network.isInteract
 
 class ModuleAutoBlock : Module("AutoBlock", "Automatically block", Category.COMBAT) {
 
-    companion object {
-        private val module: ModuleAutoBlock by SystemCache.getModule()
-
-        fun unblock() {
-            if (!module.enabled || !module.timer.hasPassed()) return
-            module.blocking = false
-            module.timer.reset(0, 1)
-            GameOptions.useKey = module.blocking
-        }
-    }
+    val sg = settings.general
+    val mode by sg.enum("Mode", "Auto block mode", Mode.LEGIT)
+    val delay by sg.longRange("Delay", "Delay", 50L..100L, 0L..500L)
 
     val sc = settings.group("Conditions")
     val fov by sc.float("FOV", "Fov to block", 90f, 0f, 180f)
     val distance by sc.floatRange("Distance", "Required distance to the player", 0f..3.5f, 0f..8f)
-    val raycast by sc.boolean("Raycast", "Raycast from the player to check if they can hit you", true)
-    val assumeReach by sc.float("Assume Reach", "Raycast distance", 3.2f, 3f, 7f)
-        .visible { raycast }
 
-    val timer = TimerDelay()
+    private var invert = false
+    private val timer = TimerDelay()
     var blocking = false
         private set
 
-    @Handler(priority = EventPriority.FIRST)
-    private fun beforePreTick(e: PreTickEvent) {
-        if (!inGame || !canBlock()) {
-            if (blocking) blocking = false
-            GameOptions.syncBind(GameOptions::useKey)
-            return
+    @Handler
+    private fun preCrosshair(e: PreCrosshairEvent) {
+        if (!inGame || mode != Mode.LEGIT) return
+        invert = if (!blocking) {
+            canBlock() && shouldBlock() && timer.hasPassed()
+        } else {
+            !canBlock() || !shouldBlock()
         }
-        blocking = shouldBlock() && timer.hasPassed()
-        GameOptions.useKey = blocking
+    }
+
+    fun unblock() {
+        if (!blocking) return
+        invert = true
+    }
+
+    @Handler
+    private fun packetSend(e: PacketSendEvent) {
+        if (!e.packet.isInteract) return
+        invert = false
     }
 
     @Handler(priority = EventPriority.LAST)
-    private fun afterPreTick(e: PreTickEvent) {
-        if (!inGame || !canBlock()) return
-        GameOptions.useKey = blocking
+    private fun postTick(e: PreMoveSendEvent) {
+        if (!inGame || mode != Mode.LEGIT || !invert) return
+        invert = false
+        blocking = !blocking
+        InteractionManager.useItem.client = blocking
+        InteractionManager.useItem.applyClient()
+        timer.reset(delay)
     }
 
-    private fun shouldBlock(): Boolean {
-        val target = TargetHelper.findTarget(distance, RangeHelper.from(0f, 0f), fov)?.player ?: return false
-        return if (raycast) (WorldHelper.getCrosshairTarget(target, assumeReach.toDouble(), rotation = target.rotation)
-            ?.type == HitResult.Type.ENTITY) else true
-    }
+    private fun shouldBlock(): Boolean =
+        TargetHelper.findTarget(distance, RangeHelper.of(0f, 0f), fov) != null
 
     private fun canBlock(): Boolean = InvHelper.isInMainhand { InvHelper.isSword(it.item) }
+
+    enum class Mode {
+        LEGIT
+    }
 }

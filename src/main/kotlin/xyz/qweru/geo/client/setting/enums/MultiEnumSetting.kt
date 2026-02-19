@@ -10,12 +10,29 @@ import xyz.qweru.geo.core.system.setting.Setting
 import xyz.qweru.geo.core.system.setting.SettingGroup
 import xyz.qweru.geo.extend.kotlin.array.withModification
 import java.util.concurrent.CompletableFuture
+import kotlin.reflect.KClass
 
-class MultiEnumSetting<T : Enum<T>>(name: String, description: String, group: SettingGroup, default: T, vararg defaults: T
+class MultiEnumSetting<T : Enum<T>>(
+    name: String,
+    description: String,
+    group: SettingGroup,
+    enumConstants: Array<T>?,
+    default: T,
+    vararg defaults: T
 ) : Setting<MultiEnumSetting<T>, MultiEnumSetting.MultiEnumChoice<T>>(name, description, MultiEnumChoice(default, *defaults), group) {
 
-    val constants = default.javaClass.enumConstants!!
-    val displayNames = constants.associateWith { it.name.replace("_", " ").lowercase().replaceFirstChar { c -> c.uppercase() } }
+    val constants: Array<T> = enumConstants
+        ?: throw IllegalArgumentException(
+            "Could not reflect enum constants for $name ($description). " +
+                "Set them manually via the constructor."
+        )
+
+    val displayNames = constants.associateWith {
+        it.name
+            .replace("_", " ")
+            .lowercase()
+            .replaceFirstChar { c -> c.uppercase() }
+    }
 
     private val suggestions = displayNames.values.let { arr ->
         arr.withModification { "+$it" } + arr.withModification { "-$it" }
@@ -40,7 +57,7 @@ class MultiEnumSetting<T : Enum<T>>(name: String, description: String, group: Se
 
     override fun load(jsonObject: JsonObject) {
         value.clear()
-        val enabled = jsonObject.get("enabled").asJsonArray
+        val enabled = jsonObject["enabled"].asJsonArray
         for (ts in enabled) {
             val name = ts.asString
             value.add(constants.find { it.name == name } ?: continue)

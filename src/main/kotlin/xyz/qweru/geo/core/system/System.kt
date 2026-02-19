@@ -2,17 +2,15 @@ package xyz.qweru.geo.core.system
 
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap
-import it.unimi.dsi.fastutil.objects.ReferenceCollection
 import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.helper.tree.SystemContext
 import kotlin.reflect.KClass
 
 /**
- * @param name must be lowercase
  * @param type indicator for config options
  */
 abstract class System(open val name: String, val type: Type = Type.INTERNAL) {
-    private val sub: Reference2ReferenceOpenHashMap<KClass<out System>, System> = Reference2ReferenceOpenHashMap()
+    private val sub: MutableMap<KClass<out System>, System> = Reference2ReferenceOpenHashMap()
 
     protected var firstInit = true
         private set
@@ -44,7 +42,6 @@ abstract class System(open val name: String, val type: Type = Type.INTERNAL) {
     open fun save(json: JsonObject, ctx: SystemContext = SystemContext()) {
         saveThis(json)
         for (system in sub.values) {
-            if (system == null) throw IllegalStateException("System is null!")
             if (!(ctx.systemFilter?.invoke(this, system) ?: false)) continue
             val obj = JsonObject()
             system.save(obj, ctx)
@@ -52,7 +49,7 @@ abstract class System(open val name: String, val type: Type = Type.INTERNAL) {
         }
     }
 
-    fun getSubsystems(): ReferenceCollection<System> = sub.values
+    fun getSystems(): Collection<System> = sub.values
 
     open fun init() {
         sub.clear()

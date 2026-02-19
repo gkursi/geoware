@@ -11,6 +11,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -32,10 +33,6 @@ import xyz.qweru.geo.core.system.module.Modules;
 
 @Mixin(ItemInHandRenderer.class)
 public abstract class HeldItemRendererMixin {
-
-    @Shadow @Final private Minecraft minecraft;
-
-    @Shadow protected abstract void swingArm(float swingProgress, float equipProgress, PoseStack matrices, int armX, HumanoidArm arm);
 
     @Unique
     SystemCache.Cached<ModuleViewModel> cache = SystemCache.INSTANCE.getModule(ModuleViewModel.class);
@@ -63,8 +60,8 @@ public abstract class HeldItemRendererMixin {
 //        matrices.translate((float)i * 0.56F, 0F, -0.72F);
     }
 
-    @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"))
-    private void onRenderItem(AbstractClientPlayer abstractClientPlayer, float f, float g, InteractionHand hand, float h, ItemStack itemStack, float i, PoseStack matrices, MultiBufferSource multiBufferSource, int j, CallbackInfo ci) {
+    @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V"))
+    private void onRenderItem(AbstractClientPlayer abstractClientPlayer, float f, float g, InteractionHand hand, float h, ItemStack itemStack, float i, PoseStack matrices, SubmitNodeCollector submitNodeCollector, int j, CallbackInfo ci) {
         if (!viewModel.getEnabled()) return;
         Vector3f scale = viewModel.getScale(hand);
         Vector3f off = viewModel.getOffset(hand);
@@ -136,11 +133,11 @@ public abstract class HeldItemRendererMixin {
     }
 
     @WrapMethod(method = "swingArm")
-    private void swingArm(float f, float g, PoseStack poseStack, int i, HumanoidArm humanoidArm, Operation<Void> original) {
+    private void swingArm(float f, PoseStack poseStack, int i, HumanoidArm humanoidArm, Operation<Void> original) {
         if (!viewModel.getEnabled() || viewModel.getMode() != ModuleViewModel.Mode.NORMAL) {
-            original.call(f, g, poseStack, i, humanoidArm);
+            original.call(f, poseStack, i, humanoidArm);
         } else {
-            viewModel.swing(f, g, poseStack, i, humanoidArm);
+            viewModel.swing(f, poseStack, i, humanoidArm);
         }
     }
 }

@@ -1,7 +1,7 @@
 package xyz.qweru.geo.client.module.move
 
 import xyz.qweru.geo.client.event.PreTickEvent
-import xyz.qweru.geo.abstraction.game.GameOptions
+import xyz.qweru.geo.client.helper.player.GameOptions
 import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
@@ -10,7 +10,7 @@ import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
 
 class ModuleSafeWalk : Module("SafeWalk", "Don't fall off edges", Category.MOVEMENT) {
-    val sg = settings.group("General")
+    val sg = settings.general
     var sneak by sg.boolean("Sneak", "Also sneaks", true)
     var standDelay by sg.longRange("Stand Delay", "Delay for un-sneaking", 50L..65L, 0L..400L)
         .visible { sneak }

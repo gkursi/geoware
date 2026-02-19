@@ -10,7 +10,7 @@ import xyz.qweru.geo.core.system.module.Category
 import xyz.qweru.geo.core.system.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.game.theLevel
-import xyz.qweru.geo.client.helper.player.inventory.InvHelper
+import xyz.qweru.geo.client.helper.inventory.InvHelper
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.extend.minecraft.item.isOf
@@ -19,7 +19,7 @@ import xyz.qweru.multirender.api.API
 import xyz.qweru.multirender.api.input.Input
 
 class ModuleAutoTotem : Module("AutoTotem", "Automatically use totems", Category.COMBAT) {
-    val sg = settings.group("General")
+    val sg = settings.general
     val sdh = settings.group("Double Hand")
 
 //    var silent by sg.boolean("Silent Inv", "Open inventory silently", false)
@@ -85,29 +85,24 @@ class ModuleAutoTotem : Module("AutoTotem", "Automatically use totems", Category
 
         if (mc.screen is InventoryScreen) {
             if (!autoSwap) return
-            when (swapMode) {
-                Mode.HOVER -> hoverSwap()
-                Mode.PACKET -> packetSwap()
-            }
+            swap(when (swapMode) {
+                Mode.HOVER -> {
+                    val slot = (mc.screen as HandledScreenAccessor).geo_getFocusedSlot() ?: return
+                    val stack = slot.item
+                    if (!stack.isOf(Items.TOTEM_OF_UNDYING)) return
+                    slot.containerSlot
+                }
+                Mode.PACKET -> {
+                    val slot = InvHelper.findInInventory(9, 36) { it.isOf(Items.TOTEM_OF_UNDYING) }
+                    if (!slot.found()) return
+                    slot.toId()
+                }
+            })
         } else if (openScreen && openTimer.hasPassed()) {
 //            mc.setScreen(InventoryScreen(mc.player))
             API.keyboardHandler.input(GLFW.GLFW_KEY_E, Input.CLICK)
             openScreen = false
         }
-    }
-
-    private fun hoverSwap() {
-        val slot = (mc.screen as HandledScreenAccessor).geo_getFocusedSlot()
-        if (slot == null) return
-        val stack = slot.item
-        if (!stack.isOf(Items.TOTEM_OF_UNDYING)) return
-        swap(slot.containerSlot)
-    }
-
-    private fun packetSwap() {
-        val slot = InvHelper.find({ it.isOf(Items.TOTEM_OF_UNDYING) }, 9, 36)
-        if (!slot.found()) return
-        swap(slot.toId())
     }
 
     private fun swap(id: Int) {
@@ -116,9 +111,10 @@ class ModuleAutoTotem : Module("AutoTotem", "Automatically use totems", Category
             swapTimer.reset(swapTime)
         }
         if (!swapTimer.hasPassed()) return
-        InvHelper.move().fromId(id).toOffhand().apply()
+        InvHelper.offhand().fromId(id).apply()
         closeScreen = closeInv
         closeTimer.reset(closeDelay)
+        readyToSwap = false
     }
 
     enum class Mode {

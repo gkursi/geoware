@@ -15,8 +15,8 @@ import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import kotlin.math.abs
 
 class ModuleLimiter : Module("Limiter", "Hard cap movement speed", Category.MOVEMENT) {
-    private val sg = settings.group("General")
-    private val limit by sg.float("Limit", "Movement speed limit", 0.006f, 0f, 6f)
+    private val sg = settings.general
+    private val limit by sg.float("Limit", "Movement speed limit", 0.0006f, 0f, 6f)
     private val reset by sg.boolean("Reset", "Reset position delta after moving", false)
 
     @Handler

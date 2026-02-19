@@ -1,0 +1,212 @@
+package xyz.qweru.geo.client.helper.inventory
+
+import net.minecraft.client.gui.screens.inventory.ContainerScreen
+import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
+import xyz.qweru.basalt.EventPriority
+import xyz.qweru.geo.client.event.PacketSendEvent
+import xyz.qweru.geo.client.event.PostTickEvent
+import xyz.qweru.geo.client.helper.network.PacketHelper
+import xyz.qweru.geo.client.module.config.ModuleSwap
+import xyz.qweru.geo.core.Core
+import xyz.qweru.geo.core.Core.mc
+import xyz.qweru.geo.core.event.Handler
+import xyz.qweru.geo.core.system.SystemCache
+import xyz.qweru.geo.extend.minecraft.game.thePlayer
+import xyz.qweru.geo.extend.minecraft.item.armorToughness
+import xyz.qweru.geo.extend.minecraft.item.attackDamage
+import xyz.qweru.geo.extend.minecraft.item.isChestArmor
+import xyz.qweru.geo.extend.minecraft.item.isFootArmor
+import xyz.qweru.geo.extend.minecraft.item.isHeadArmor
+import xyz.qweru.geo.extend.minecraft.item.isLegArmor
+
+object InvHelper {
+
+    private var lastSwapPriority = -1
+
+    private val module: ModuleSwap by SystemCache.getModule()
+
+    var selectedSlot: Int
+        get() = inventory.selectedSlot
+        set(value) {
+            inventory.selectedSlot = value
+            serverSlot = value
+        }
+
+    var serverSlot = -1
+        private set
+        get() {
+            if (field == -1)
+                return selectedSlot
+            return field
+        }
+
+    val inventory: Inventory
+        get() = mc.thePlayer.getInventory()
+
+    @Handler(priority = EventPriority.LAST)
+    private fun postTick(e: PostTickEvent) {
+        if (lastSwapPriority != -1) {
+            swap0(selectedSlot, Int.MAX_VALUE)
+        }
+        lastSwapPriority = -1
+    }
+
+    @Handler(priority = EventPriority.LAST)
+    private fun packetSend(e: PacketSendEvent) {
+        val packet = e.packet
+        if (packet !is ServerboundSetCarriedItemPacket) return
+        serverSlot = packet.slot
+    }
+
+    fun isHolding(item: (ItemStack) -> Boolean): Boolean = isInMainhand(item) || isInOffhand(item)
+
+    fun isHolding(item: Item): Boolean = isHolding { it.`is`(item) }
+
+    fun isInMainhand(item: (ItemStack) -> Boolean): Boolean = item.invoke(getMainhand())
+
+    fun isInMainhand(item: Item): Boolean = isInMainhand { it.`is`(item) }
+
+    fun isInOffhand(item: (ItemStack) -> Boolean): Boolean = item.invoke(getOffhand())
+
+    fun isInOffhand(item: Item): Boolean = isInOffhand { it.`is`(item) }
+
+    fun getMainhand(): ItemStack = inventory.getItem(serverSlot)
+
+    fun getOffhand(): ItemStack = Core.mc.thePlayer.getItemBySlot(EquipmentSlot.OFFHAND)
+
+    fun isSword(item: Item): Boolean =
+        item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD
+
+    fun swap(item: Item, priority: Int = 0): Boolean = swap({ it.`is`(item) }, priority)
+
+    fun swap(item: (ItemStack) -> Boolean, priority: Int = 0): Boolean {
+        val res = findInInventory(item = item)
+        return res.found().also { if (it) res.swap(priority) }
+    }
+
+    fun swap(slot: Int, priority: Int = 0) {
+        if (slot == selectedSlot) return
+        if (module.scrollSwap && slot >= module.scrollSwapMin - 1) swap0(scrollSlot(slot), priority)
+        else swap0(slot, priority)
+    }
+
+    fun sync() {
+        if (serverSlot == selectedSlot) return
+        swap0(selectedSlot, 0)
+    }
+
+    fun findInInventory(start: Int = 0, end: Int = 9, item: (ItemStack) -> Boolean): FindResult {
+        for (i in start..<end) {
+            if (item.invoke(inventory.getItem(i))) {
+                return FindResult(i)
+            }
+        }
+        return FindResult.NONE
+    }
+
+    fun findInScreen(screen: ContainerScreen, min: Int = 0, max: Int = screen.menu.rowCount * 9, item: (ItemStack, Int) -> Boolean): FindResult {
+        for ((index, stack) in screen.menu.items.withIndex()) {
+            if (index < min) continue
+            if (index >= max) break
+            if (item.invoke(stack, index)) {
+                return FindResult(index)
+            }
+        }
+
+        return FindResult.NONE
+    }
+
+    fun findBest(start: Int = 0, end: Int = 44, filter: (ItemStack) -> Boolean = { false }, valueFunc: (ItemStack) -> Double): ItemStack? {
+        var highest = 0.0
+        var stack: ItemStack? = null
+
+        findInInventory(start, end) {
+            if (filter(it)) {
+                return@findInInventory false
+            }
+
+            val value = valueFunc(it)
+
+            if (value > highest) {
+                highest = value
+                stack = it
+            }
+
+            return@findInInventory false
+        }
+
+        return stack
+    }
+
+    fun findHighestDamage() =
+        findBest { it.attackDamage }
+
+    fun findHighestProtection() =
+        findBest { it.armorToughness }
+
+    fun findHighestProtection(type: ItemStack) =
+        findBest(filter = { !isSameArmor(it, type) }) { it.armorToughness }
+
+    // Todo: find a better way of doing this
+    fun isSameArmor(a: ItemStack, b: ItemStack) =
+        (a.isFootArmor && b.isFootArmor)
+                || (a.isLegArmor && b.isLegArmor)
+                || (a.isChestArmor && b.isChestArmor)
+                || (a.isHeadArmor && b.isHeadArmor)
+
+    fun move(): InvAction =
+        InvAction(InvAction.Type.MOVE)
+
+    fun offhand(): InvAction =
+        InvAction(InvAction.Type.QUICK_OFFHAND)
+
+    fun pickup(): InvAction =
+        InvAction(InvAction.Type.PICKUP)
+
+    fun quickMove(): InvAction =
+        InvAction(InvAction.Type.QUICK_MOVE)
+
+    private fun swap0(slot: Int, priority: Int) {
+        if (priority < lastSwapPriority) return
+
+        if (module.silentSwap) {
+            PacketHelper.swap(slot)
+        } else {
+            selectedSlot = slot
+        }
+
+        serverSlot = slot
+    }
+
+    private fun scrollSlot(target: Int): Int {
+        val current = inventory.selectedSlot
+        val rightDist = (target - current + 9) % 9
+        val leftDist = (current - target + 9) % 9
+
+        return when {
+            rightDist <= leftDist -> (current + 1) % 9
+            else -> (current + 9 - 1) % 9
+        }
+    }
+
+    data class FindResult(val slot: Int) {
+        companion object {
+            val NONE = FindResult(-1)
+        }
+
+        fun found(): Boolean = this != NONE
+
+        fun swap(priority: Int = 0) {
+            if (found()) swap(slot, priority)
+            else throw IllegalStateException("Item not found")
+        }
+
+        fun toId(): Int = SlotHelper.indexToId(slot)
+    }
+
+}

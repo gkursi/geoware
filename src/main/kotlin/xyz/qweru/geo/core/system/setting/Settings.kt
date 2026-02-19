@@ -10,6 +10,7 @@ import xyz.qweru.geo.extend.kotlin.log.dbg
 
 class Settings(val module: Module) : System("settings") {
     val allSettings = ObjectArrayList<Setting<*, *>>(5)
+    val general = group("General")
 
     fun group(name: String): SettingGroup = SettingGroup(name, this)
 
@@ -20,9 +21,7 @@ class Settings(val module: Module) : System("settings") {
 
     override fun loadThis(json: JsonObject) {
         for (setting in allSettings)
-            json[setting.name]?.let { setting.load(it.asJsonObject) } ?: {
-                Core.logger.info("$name has no value in $json")
-            }
+            json[setting.name]?.let { setting.load(it.asJsonObject) }
     }
 
     override fun save(json: JsonObject, ctx: SystemContext) {
