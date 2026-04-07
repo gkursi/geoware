@@ -46,7 +46,7 @@ data class Rotation(val yaw: Float, val pitch: Float, val config: RotationConfig
     fun deltaTo(other: Rotation): Rotation =
         Rotation(
             RotationHelper.getYawDelta(other.yaw, yaw),
-            other.pitch - pitch
+            pitch - other.pitch
         )
 
     override fun toString(): String {

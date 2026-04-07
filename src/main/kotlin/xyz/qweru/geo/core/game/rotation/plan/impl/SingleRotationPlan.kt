@@ -1,10 +1,13 @@
 package xyz.qweru.geo.core.game.rotation.plan.impl
 
+import xyz.qweru.geo.client.helper.math.function.CombinedFunction
+import xyz.qweru.geo.client.helper.math.function.SigmoidFunction
 import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.game.rotation.data.Rotation
 import xyz.qweru.geo.core.game.rotation.plan.RotationPlan
 import xyz.qweru.geo.core.game.rotation.processor.ProcessorChain
 import xyz.qweru.geo.core.game.rotation.processor.impl.FactorRotationProcessor
+import xyz.qweru.geo.core.game.rotation.processor.impl.FunctionRotationProcessor
 
 class SingleRotationPlan(
     val target: Rotation,
@@ -13,7 +16,19 @@ class SingleRotationPlan(
     val guh: Boolean = false
 ) : RotationPlan {
     private val pipeline = ProcessorChain(
-        FactorRotationProcessor(0.9f..1f)
+        FunctionRotationProcessor(
+            CombinedFunction(
+                arrayOf(
+                    SigmoidFunction(),
+                ),
+                floatArrayOf(
+                    1f,
+                )
+            )
+        ),
+        FactorRotationProcessor(0.9f..1f),
+//        VelocityRotationProcessor,
+//        StopRotationProcessor(50f, 10f)
     )
 
     override fun nextStep(current: Rotation?): Rotation? {
@@ -24,24 +39,11 @@ class SingleRotationPlan(
             return null
         }
 
-        val preDelta = current.deltaTo(target)
-
         val delta = pipeline.process(
             start,
             target,
             current
         )
-
-        val postDelta = (current + delta).deltaTo(target)
-
-//        if (guh) {
-//            Core.logger.warn("pre=$preDelta\npost=$postDelta")
-//        } else {
-//            Core.logger.info("pre=$preDelta\npost=$postDelta")
-//        }
-
-//        Core.logger.info("pipe produced delta=$delta")
-//        Core.logger.info("will result in ${current + delta}")
 
         return current + delta
     }

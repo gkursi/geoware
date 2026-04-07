@@ -13,8 +13,7 @@ object RotationManager {
     var currentPlan: RotationPlan? = null
         private set
 
-    var lastRotation: Rotation? = null
-        get() = field ?: mc.thePlayer.rotation
+    var lastValidRotation: Rotation? = null
         private set
 
     var currentRotation: Rotation? = null
@@ -22,7 +21,8 @@ object RotationManager {
     private val playerRotationPlan: RotationPlan
         get() = SingleRotationPlan(
             mc.thePlayer.rotation,
-            lastRotation!!,
+            lastValidRotation
+                ?: mc.thePlayer.rotation,
             -10,
             true
         )
@@ -37,15 +37,15 @@ object RotationManager {
 
         currentRotation = plan.nextStep(currentRotation)
             ?.fix()
-            ?.also { nextRotation ->
+            ?.also { rot ->
+                lastValidRotation = rot
                 RotationHandler.serverRotation
-                    .copyRotation(nextRotation)
+                    .copyRotation(rot)
             }
             ?: null.also {
                 currentPlan = null
+                lastValidRotation = previous
             }
-
-        lastRotation = previous ?: return
     }
 
     fun propose(rotation: Rotation, priority: Int) {
@@ -59,7 +59,9 @@ object RotationManager {
 
         currentPlan = SingleRotationPlan(
             rotation,
-            lastRotation!!,
+            currentRotation
+                ?: lastValidRotation
+                ?: mc.thePlayer.rotation,
             priority
         )
     }

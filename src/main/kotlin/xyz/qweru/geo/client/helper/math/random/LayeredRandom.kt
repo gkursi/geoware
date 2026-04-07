@@ -1,7 +1,7 @@
 package xyz.qweru.geo.client.helper.math.random
 
 import xyz.qweru.geo.client.helper.math.FloatingPointHelper
-import xyz.qweru.geo.client.helper.math.RandomProvider
+import xyz.qweru.geo.client.helper.math.random.RandomProvider
 import kotlin.math.round
 
 /**

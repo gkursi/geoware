@@ -1,5 +1,6 @@
 package xyz.qweru.geo.core.game.rotation.processor
 
+import xyz.qweru.geo.client.helper.math.random.RandomProvider
 import xyz.qweru.geo.core.game.rotation.data.Rotation
 
 interface RotationProcessor {
@@ -12,7 +13,8 @@ interface RotationProcessor {
         start: Rotation,
         end: Rotation,
         current: Rotation,
-        delta: Rotation
+        delta: Rotation,
+        random: RandomProvider
     ): Rotation
 
 }

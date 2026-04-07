@@ -1,7 +1,5 @@
 package xyz.qweru.geo.core.helper.manage
 
-import xyz.qweru.geo.extend.kotlin.math.not
-
 abstract class ProposalHandler<T : Proposal> {
 
     protected open var current: T? = null
