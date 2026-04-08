@@ -1,7 +1,7 @@
 package xyz.qweru.geo.client.module.config
 
 import xyz.qweru.geo.core.tracking.bot.BotType
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Module
 
 class ModuleTarget : Module("Target", "Global target settings") {
     val sc = settings.group("Conditions")

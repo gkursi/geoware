@@ -4,10 +4,9 @@ import com.google.gson.JsonObject
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import xyz.qweru.geo.core.helper.file.set
-import xyz.qweru.geo.core.system.setting.Setting
-import xyz.qweru.geo.core.system.setting.SettingGroup
+import xyz.qweru.geo.core.system.impl.setting.Setting
+import xyz.qweru.geo.core.system.impl.setting.SettingGroup
 import java.util.concurrent.CompletableFuture
-import kotlin.reflect.KProperty
 
 class FloatSetting(name: String, description: String, default: Float, group: SettingGroup,
                    val min: Float, val max: Float)

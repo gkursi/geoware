@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.system.setting
+package xyz.qweru.geo.core.system.impl.setting
 
 import xyz.qweru.geo.client.setting.BooleanSetting
 import xyz.qweru.geo.client.setting.range.LongRangeSetting

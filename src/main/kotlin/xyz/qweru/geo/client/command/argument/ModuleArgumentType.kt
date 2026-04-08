@@ -6,8 +6,8 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import xyz.qweru.geo.core.system.Systems
-import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.core.system.module.Modules
+import xyz.qweru.geo.core.system.impl.module.Module
+import xyz.qweru.geo.core.system.impl.module.Modules
 import java.util.concurrent.CompletableFuture
 
 class ModuleArgumentType : ArgumentType<Module> {

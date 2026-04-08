@@ -9,8 +9,8 @@ import net.minecraft.world.phys.Vec3
 import xyz.qweru.geo.client.event.PacketSendEvent
 import xyz.qweru.geo.client.helper.network.PacketHelper
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.pos
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 

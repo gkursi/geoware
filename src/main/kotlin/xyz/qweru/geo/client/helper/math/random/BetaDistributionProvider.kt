@@ -1,7 +1,7 @@
 package xyz.qweru.geo.client.helper.math.random
 
 import org.apache.commons.math3.distribution.BetaDistribution
-import xyz.qweru.geo.client.helper.math.RandomProvider
+import xyz.qweru.geo.client.helper.math.random.RandomProvider
 
 class BetaDistributionProvider(a: Double, b: Double, val bidirectional: Boolean) : RandomProvider {
     val length = (b - a) * .5

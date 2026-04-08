@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.system.setting
+package xyz.qweru.geo.core.system.impl.setting
 
 import com.google.gson.JsonObject
 import com.mojang.brigadier.suggestion.Suggestions

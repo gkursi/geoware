@@ -14,10 +14,11 @@ import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.client.helper.world.WorldHelper
 import xyz.qweru.geo.client.module.move.ModuleSprint
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.game.rotation.Rotation
 import xyz.qweru.geo.core.game.rotation.RotationHandler
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.game.rotation.RotationManager
+import xyz.qweru.geo.core.game.rotation.data.Rotation
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.entity.attackCharge
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.item.isOf
@@ -94,7 +95,7 @@ class ModuleKillAura : Module("KillAura", "Automatically attack players in range
         val target = target ?: return
 
         theRotation = RotationHelper.get(target, point = aimPoint)
-        RotationHandler.propose(theRotation, Rotation.ATTACK)
+        RotationManager.propose(theRotation, Rotation.ATTACK)
     }
 
     private fun isLookingAtTarget(): Boolean {

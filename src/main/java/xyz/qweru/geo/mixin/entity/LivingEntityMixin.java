@@ -2,8 +2,6 @@ package xyz.qweru.geo.mixin.entity;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.minecraft.client.gui.components.debug.DebugScreenEntries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -19,7 +17,7 @@ import xyz.qweru.geo.client.module.combat.ModuleHitbox;
 import xyz.qweru.geo.client.module.visual.ModuleViewModel;
 import xyz.qweru.geo.core.Core;
 import xyz.qweru.geo.core.event.EventBus;
-import xyz.qweru.geo.core.system.module.Modules;
+import xyz.qweru.geo.core.system.impl.module.Modules;
 import xyz.qweru.geo.core.system.Systems;
 
 @Mixin(LivingEntity.class)

@@ -12,7 +12,7 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraft.world.phys.shapes.VoxelShape
 import xyz.qweru.geo.core.Core.mc
-import xyz.qweru.geo.core.game.rotation.Rotation
+import xyz.qweru.geo.core.game.rotation.data.Rotation
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import java.util.function.Predicate

@@ -1,12 +1,11 @@
-package xyz.qweru.geo.core.system.module
+package xyz.qweru.geo.core.system.impl.module
 
 import com.google.gson.JsonObject
 import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.event.EventBus
-import xyz.qweru.geo.core.system.setting.Settings
+import xyz.qweru.geo.core.system.impl.setting.Settings
 import xyz.qweru.geo.core.system.System
 import xyz.qweru.geo.core.ui.notification.Notifications
-import xyz.qweru.geo.extend.kotlin.log.dbg
 
 abstract class Module(
     name: String,

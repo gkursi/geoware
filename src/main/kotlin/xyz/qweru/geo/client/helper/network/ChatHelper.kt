@@ -2,9 +2,8 @@ package xyz.qweru.geo.client.helper.network
 
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
-import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.Core.mc
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.multirender.api.util.color.Color
 

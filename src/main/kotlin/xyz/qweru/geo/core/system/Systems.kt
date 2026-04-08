@@ -1,8 +1,8 @@
 package xyz.qweru.geo.core.system
 
 import com.google.gson.JsonObject
-import xyz.qweru.geo.core.system.friend.Friends
-import xyz.qweru.geo.core.system.module.Modules
+import xyz.qweru.geo.core.system.impl.friend.Friends
+import xyz.qweru.geo.core.system.impl.module.Modules
 import xyz.qweru.geo.core.helper.tree.Walker
 
 /**

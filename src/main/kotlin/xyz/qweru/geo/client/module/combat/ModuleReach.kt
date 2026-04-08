@@ -1,7 +1,7 @@
 package xyz.qweru.geo.client.module.combat
 
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 
 class ModuleReach : Module("Reach", "Lets you reach further", Category.COMBAT) {
     val sGeneral = settings.general

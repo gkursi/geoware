@@ -3,7 +3,7 @@ package xyz.qweru.geo.core.ui.notification
 import xyz.qweru.geo.client.helper.network.ChatHelper
 import xyz.qweru.geo.core.Core
 import xyz.qweru.geo.core.Core.mc
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Module
 
 object Notifications {
     fun onToggle(module: Module) {

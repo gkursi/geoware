@@ -1,6 +1,6 @@
 package xyz.qweru.geo.client.helper.math
 
-import xyz.qweru.geo.extend.kotlin.math.wrapped
+import xyz.qweru.geo.extend.kotlin.math.wrappedDeg
 
 object RangeHelper {
     fun <T: Comparable<T>> of(x: T, y: T): ClosedRange<T> =
@@ -13,5 +13,5 @@ object RangeHelper {
         of(mod.invoke(point - dev), mod.invoke(point + dev))
 
     fun ofRotationPoint(point: Float, dev: Float)
-        = ofPoint(point, dev) { it.wrapped }
+        = ofPoint(point, dev) { it.wrappedDeg }
 }

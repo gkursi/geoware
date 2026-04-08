@@ -1,4 +1,4 @@
-package xyz.qweru.geo.core.system.module
+package xyz.qweru.geo.core.system.impl.module
 
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
@@ -10,12 +10,10 @@ import xyz.qweru.geo.client.module.config.ModuleSwap
 import xyz.qweru.geo.client.module.config.ModuleTarget
 import xyz.qweru.geo.client.module.misc.ModulePacketLogger
 import xyz.qweru.geo.client.module.specific.ModuleGunColony
-import xyz.qweru.geo.client.module.misc.ModuleScaffold
 import xyz.qweru.geo.client.module.misc.ModuleTeams
 import xyz.qweru.geo.client.module.move.*
 import xyz.qweru.geo.client.module.player.ModuleFastUse
 import xyz.qweru.geo.client.module.player.ModuleKeyAction
-import xyz.qweru.geo.client.module.player.ModuleMine
 import xyz.qweru.geo.client.module.visual.ModuleViewModel
 import xyz.qweru.geo.client.module.world.ModuleChestStealer
 import xyz.qweru.geo.core.system.System

@@ -3,15 +3,12 @@ package xyz.qweru.geo.mixin.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.HitResult;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xyz.qweru.geo.client.event.GameRenderEvent;
 import xyz.qweru.geo.client.event.PostCrosshairEvent;
 import xyz.qweru.geo.client.event.PreCrosshairEvent;
@@ -19,7 +16,7 @@ import xyz.qweru.geo.client.event.WorldRenderEvent;
 import xyz.qweru.geo.client.module.visual.ModuleViewModel;
 import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.system.Systems;
-import xyz.qweru.geo.core.system.module.Modules;
+import xyz.qweru.geo.core.system.impl.module.Modules;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {

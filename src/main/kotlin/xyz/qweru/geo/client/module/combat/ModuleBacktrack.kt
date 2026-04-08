@@ -15,8 +15,8 @@ import xyz.qweru.geo.core.event.PacketManagerFlushEvent
 import xyz.qweru.geo.core.game.combat.CombatState
 import xyz.qweru.geo.core.game.combat.TargetTracker
 import xyz.qweru.geo.core.game.packet.PacketManager
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.kotlin.log.dbg
 import xyz.qweru.geo.extend.kotlin.math.not
 import xyz.qweru.geo.extend.minecraft.entity.pos

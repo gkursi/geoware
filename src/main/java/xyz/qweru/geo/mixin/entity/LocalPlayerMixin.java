@@ -21,10 +21,9 @@ import xyz.qweru.geo.client.module.move.ModuleNoSlow;
 import xyz.qweru.geo.core.event.EventBus;
 import xyz.qweru.geo.core.game.movement.MovementState;
 import xyz.qweru.geo.core.game.movement.MovementTicker;
-import xyz.qweru.geo.core.game.rotation.RotationHandler;
 import xyz.qweru.geo.core.system.SystemCache;
 import xyz.qweru.geo.core.system.Systems;
-import xyz.qweru.geo.core.system.module.Modules;
+import xyz.qweru.geo.core.system.impl.module.Modules;
 import xyz.qweru.geo.imixin.ILocalPlayer;
 
 @Mixin(LocalPlayer.class)

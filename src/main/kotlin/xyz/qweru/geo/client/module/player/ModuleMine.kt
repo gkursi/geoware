@@ -17,8 +17,8 @@ import xyz.qweru.geo.client.helper.world.BlockHelper
 import xyz.qweru.geo.client.helper.world.WorldHelper
 import xyz.qweru.geo.core.Core.mc
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.world.within

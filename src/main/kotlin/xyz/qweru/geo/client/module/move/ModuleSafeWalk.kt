@@ -2,8 +2,8 @@ package xyz.qweru.geo.client.module.move
 
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.client.helper.player.GameOptions
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.client.helper.timing.TimerDelay

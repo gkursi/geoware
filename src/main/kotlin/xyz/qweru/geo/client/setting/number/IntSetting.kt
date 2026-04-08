@@ -3,8 +3,8 @@ package xyz.qweru.geo.client.setting.number
 import com.google.gson.JsonObject
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import xyz.qweru.geo.core.system.setting.Setting
-import xyz.qweru.geo.core.system.setting.SettingGroup
+import xyz.qweru.geo.core.system.impl.setting.Setting
+import xyz.qweru.geo.core.system.impl.setting.SettingGroup
 import java.util.concurrent.CompletableFuture
 
 class IntSetting(name: String, description: String, default: Int, group: SettingGroup,

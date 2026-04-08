@@ -8,10 +8,8 @@ import xyz.qweru.geo.client.event.PreMovementTickEvent
 import xyz.qweru.geo.client.helper.timing.TimerDelay
 import xyz.qweru.geo.core.event.Handler
 import xyz.qweru.geo.core.system.SystemCache
-import xyz.qweru.geo.core.system.Systems
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.core.system.module.Modules
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 
 class ModuleSprint : Module("Sprint", "Automatically sprint", Category.MOVEMENT) {

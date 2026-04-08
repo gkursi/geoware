@@ -3,15 +3,13 @@ package xyz.qweru.geo.client.module.misc
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.phys.BlockHitResult
-import net.minecraft.world.phys.HitResult
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.game.theLevel
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.extend.minecraft.world.isBottom
-import xyz.qweru.geo.extend.minecraft.world.sqrtSpeed
 import xyz.qweru.geo.extend.minecraft.world.state
 
 class ModuleScaffold : Module("Scaffold", "Automatically places blocks below you", Category.MISC) {

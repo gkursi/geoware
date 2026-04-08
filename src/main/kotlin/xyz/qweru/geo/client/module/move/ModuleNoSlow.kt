@@ -1,11 +1,9 @@
 package xyz.qweru.geo.client.module.move
 
-import xyz.qweru.geo.client.event.PostMovementTickEvent
 import xyz.qweru.geo.client.event.PreTickEvent
 import xyz.qweru.geo.core.event.Handler
-import xyz.qweru.geo.core.system.module.Category
-import xyz.qweru.geo.core.system.module.Module
-import xyz.qweru.geo.extend.minecraft.entity.isOnGround
+import xyz.qweru.geo.core.system.impl.module.Category
+import xyz.qweru.geo.core.system.impl.module.Module
 import xyz.qweru.geo.extend.minecraft.game.thePlayer
 import xyz.qweru.geo.imixin.IPlayer
 
